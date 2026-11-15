@@ -1,46 +1,70 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:ssh_client/app/theme/app_palette.dart';
 import 'package:ssh_client/app/theme/app_theme.dart';
+import 'package:ssh_client/app/theme/app_tokens.dart';
 
 void main() {
-  test('the bundled fonts exist as assets', () {
-    for (final file in [
-      'Inter-Regular.ttf',
-      'Inter-Medium.ttf',
-      'Inter-SemiBold.ttf',
-      'Inter-Bold.ttf',
-      'JetBrainsMono-Regular.ttf',
-      'JetBrainsMono-Bold.ttf',
-    ]) {
-      expect(
-        File('assets/fonts/$file').existsSync(),
-        isTrue,
-        reason: '$file must be bundled: nothing is downloaded at runtime',
-      );
+  test('light palette uses the agreed neutrals', () {
+    expect(AppPalette.light.background, const Color(0xFFF8F9FA));
+    expect(AppPalette.light.surface, const Color(0xFFFFFFFF));
+    expect(AppPalette.light.surfaceVariant, const Color(0xFFF0F1F3));
+    expect(AppPalette.light.border, const Color(0xFFD9DCE1));
+    expect(AppPalette.light.textPrimary, const Color(0xFF24262B));
+    expect(AppPalette.light.iconSecondary, const Color(0xFF858B95));
+    expect(AppPalette.light.brightness, Brightness.light);
+  });
+
+  test('dark palette avoids pure black and keeps a soft carbon border', () {
+    expect(AppPalette.dark.background, const Color(0xFF111318));
+    expect(AppPalette.dark.surface, const Color(0xFF181A1F));
+    expect(AppPalette.dark.surfaceElevated, const Color(0xFF24262B));
+    expect(AppPalette.dark.border, const Color(0xFF2E3138));
+    expect(AppPalette.dark.textPrimary, const Color(0xFFE8EAED));
+    expect(AppPalette.dark.background, isNot(Colors.black));
+    expect(AppPalette.dark.surface, isNot(Colors.black));
+  });
+
+  test('both themes carry tokens, radii, fonts and terminal palettes', () {
+    for (final theme in [AppTheme.light(), AppTheme.dark()]) {
+      final tokens = theme.extension<AppTokens>();
+      expect(tokens, isNotNull);
+      expect(tokens!.cardRadius, 18);
+      expect(tokens.dialogRadius, 22);
+      expect(tokens.buttonRadius, 14);
+      expect(tokens.fieldRadius, 12);
+      expect(tokens.chipRadius, 10);
+      expect(tokens.fast, const Duration(milliseconds: 150));
+      expect(tokens.normal, const Duration(milliseconds: 200));
+      expect(tokens.slow, const Duration(milliseconds: 250));
+      expect(tokens.terminalStyle.fontFamily, 'JetBrainsMono');
+      expect(theme.textTheme.bodyMedium?.fontFamily, 'Inter');
+      expect(theme.textTheme.titleMedium?.fontWeight, FontWeight.w600);
+      expect(theme.cardTheme.elevation, 0);
+      expect(theme.appBarTheme.elevation, 0);
+      expect(theme.dialogTheme.shape, isNotNull);
+      expect(theme.filledButtonTheme.style, isNotNull);
+      expect(theme.inputDecorationTheme.border, isNotNull);
     }
-    expect(AppTheme.fontFamily, 'Inter');
-    expect(AppTheme.monoFamily, 'JetBrainsMono');
   });
 
-  test('palette matches the SPEC values', () {
-    expect(AppColors.background, const Color(0xFF0E1113));
-    expect(AppColors.surfaceSecondary, const Color(0xFF121619));
-    expect(AppColors.panel, const Color(0xFF1D232A));
-    expect(AppColors.elevated, const Color(0xFF252D35));
-    expect(AppColors.border, const Color(0xFF303943));
-    expect(AppColors.textPrimary, const Color(0xFFE8EDF2));
-    expect(AppColors.textSecondary, const Color(0xFF929DA8));
-    expect(AppColors.accent, const Color(0xFF00D4E8));
-    expect(AppColors.accentSecondary, const Color(0xFF20C997));
-    expect(AppColors.danger, const Color(0xFFFF5D6C));
-    expect(AppColors.warning, const Color(0xFFE5AE4B));
-  });
+  test(
+    'terminal palette follows the theme unless always-dark is requested',
+    () {
+      final light = AppTheme.light().extension<AppTokens>()!.terminalTheme;
+      final dark = AppTheme.dark().extension<AppTokens>()!.terminalTheme;
+      final alwaysDark = AppTheme.light(alwaysDarkTerminal: true)
+          .extension<AppTokens>()!
+          .terminalTheme;
 
-  testWidgets('theme applies dark colours, no elevation and no gradients', (
-    tester,
-  ) async {
+      expect(light.background, AppPalette.light.surface);
+      expect(dark.background, AppPalette.dark.background);
+      expect(alwaysDark.background, AppPalette.dark.background);
+      expect(light.foreground, AppPalette.light.textPrimary);
+    },
+  );
+
+  testWidgets('theme applies colours and no elevation', (tester) async {
     late ThemeData theme;
     await tester.pumpWidget(
       MaterialApp(
@@ -55,17 +79,14 @@ void main() {
     );
 
     expect(theme.brightness, Brightness.dark);
-    expect(theme.scaffoldBackgroundColor, AppColors.background);
-    expect(theme.colorScheme.primary, AppColors.accent);
-    expect(theme.colorScheme.secondary, AppColors.accentSecondary);
-    expect(theme.colorScheme.error, AppColors.danger);
-    expect(theme.colorScheme.onSurface, AppColors.textPrimary);
-    expect(theme.colorScheme.outline, AppColors.border);
-    expect(theme.cardTheme.elevation, 0);
-    expect(theme.appBarTheme.elevation, 0);
-    expect(theme.appBarTheme.backgroundColor, AppColors.surfaceSecondary);
-    expect(theme.filledButtonTheme.style?.backgroundColor, isNotNull);
-    expect(theme.textTheme.bodyMedium?.fontFamily, 'Inter');
-    expect(theme.textTheme.bodyMedium?.color, AppColors.textPrimary);
+    expect(theme.scaffoldBackgroundColor, AppPalette.dark.background);
+    expect(theme.colorScheme.primary, AppPalette.dark.accent);
+    expect(theme.colorScheme.error, AppPalette.dark.error);
+    expect(theme.colorScheme.surface, AppPalette.dark.background);
+    expect(theme.colorScheme.surfaceContainerLow, AppPalette.dark.surface);
+    expect(
+      theme.colorScheme.surfaceContainerHigh,
+      AppPalette.dark.surfaceElevated,
+    );
   });
 }

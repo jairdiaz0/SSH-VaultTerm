@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../../app/theme/app_spacing.dart';
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_icons.dart';
+
+import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/connection.dart';
 import '../../../shared/models/server_collection.dart';
+import '../../../shared/widgets/status_badge.dart';
 import '../../collections/presentation/collection_dialog.dart';
 import '../../connections/presentation/connection_form_dialog.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
@@ -32,7 +34,7 @@ class Sidebar extends StatelessWidget {
     final ungrouped = controller.ungrouped;
 
     return Material(
-      color: AppColors.surfaceSecondary,
+      color: context.colors.surfaceContainerLow,
       child: SizedBox(
         width: AppLayout.sidebarWidth,
         child: Column(
@@ -103,7 +105,7 @@ class Sidebar extends StatelessWidget {
                       context,
                       controller: controller,
                     ),
-                    icon: const Icon(Icons.add, size: 16),
+                    icon: const Icon(AppIcons.add, size: 16),
                     label: Text(l10n.newConnectionAction),
                   ),
                   const SizedBox(height: AppSpacing.sm),
@@ -111,10 +113,7 @@ class Sidebar extends StatelessWidget {
                     key: const Key('new-collection-button'),
                     onPressed: () =>
                         CollectionDialog.show(context, controller: controller),
-                    icon: const Icon(
-                      Icons.create_new_folder_outlined,
-                      size: 16,
-                    ),
+                    icon: const Icon(AppIcons.folderPlus, size: 16),
                     label: Text(l10n.newCollectionAction),
                   ),
                 ],
@@ -144,12 +143,14 @@ class _Header extends StatelessWidget {
     return Container(
       height: 52,
       padding: const EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.xs),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: context.colors.outlineVariant),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.shield_outlined, size: 18, color: AppColors.accent),
+          Icon(AppIcons.shield, size: 18, color: context.colors.primary),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
@@ -162,13 +163,13 @@ class _Header extends StatelessWidget {
           IconButton(
             key: const Key('open-settings'),
             tooltip: l10n.settingsAction,
-            icon: const Icon(Icons.settings_outlined, size: 18),
+            icon: const Icon(AppIcons.settings, size: 18),
             onPressed: onOpenSettings,
           ),
           IconButton(
             key: const Key('lock-session-button'),
             tooltip: l10n.lockSessionAction,
-            icon: const Icon(Icons.lock_outline, size: 18),
+            icon: const Icon(AppIcons.lock, size: 18),
             onPressed: onLock,
           ),
         ],
@@ -185,29 +186,29 @@ class _ConnectionIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final (status, color) = switch (controller.workspace.status) {
+    final (label, tone) = switch (controller.workspace.status) {
       SshConnectionStatus.connected => (
         l10n.connectionStatusConnected,
-        AppColors.accentSecondary,
+        StatusTone.success,
       ),
       SshConnectionStatus.connecting ||
       SshConnectionStatus.awaitingHostKey ||
       SshConnectionStatus.authenticating => (
         l10n.connectionStatusConnecting,
-        AppColors.warning,
+        StatusTone.warning,
       ),
       SshConnectionStatus.failed => (
         l10n.connectionStatusFailed,
-        AppColors.danger,
+        StatusTone.danger,
       ),
       SshConnectionStatus.sessionEnded => (
         l10n.sessionEndedTitle,
-        AppColors.warning,
+        StatusTone.warning,
       ),
       SshConnectionStatus.disconnected ||
       SshConnectionStatus.disconnectedUnexpectedly => (
         l10n.connectionStatusDisconnected,
-        AppColors.textSecondary,
+        StatusTone.neutral,
       ),
     };
     return Padding(
@@ -217,17 +218,7 @@ class _ConnectionIndicator extends StatelessWidget {
         AppSpacing.md,
         0,
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Text(status, style: Theme.of(context).textTheme.bodySmall),
-        ],
-      ),
+      child: StatusBadge(label: label, tone: tone),
     );
   }
 }
@@ -246,12 +237,12 @@ class _SectionHeader extends StatelessWidget {
       AppSpacing.xs,
     ),
     child: Text(
-      title.toUpperCase(),
-      style: const TextStyle(
+      title,
+      style: TextStyle(
         fontSize: 11,
         letterSpacing: 0.8,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
+        color: context.colors.onSurfaceVariant,
       ),
     ),
   );
@@ -280,10 +271,10 @@ class _CollectionTile extends StatelessWidget {
       ),
       childrenPadding: const EdgeInsets.only(left: AppSpacing.sm),
       title: Text(collection.name, style: const TextStyle(fontSize: 13)),
-      leading: const Icon(Icons.folder_outlined, size: 16),
+      leading: const Icon(AppIcons.folder, size: 16),
       trailing: PopupMenuButton<String>(
         key: Key('collection-menu-${collection.id}'),
-        icon: const Icon(Icons.more_horiz, size: 16),
+        icon: const Icon(AppIcons.more, size: 16),
         onSelected: (value) async {
           switch (value) {
             case 'rename':
@@ -356,14 +347,14 @@ class _ConnectionTile extends StatelessWidget {
       onTap: () => controller.connect(context, connection),
       leading: Icon(
         connection.favorite
-            ? Icons.star
+            ? AppIcons.star
             : connection.connectionType == ConnectionType.sftp
-            ? Icons.folder_outlined
-            : Icons.terminal,
+            ? AppIcons.folder
+            : AppIcons.terminal,
         size: 16,
         color: connection.favorite
-            ? AppColors.warning
-            : AppColors.textSecondary,
+            ? context.tokens.warning
+            : context.colors.onSurfaceVariant,
       ),
       title: Text(
         connection.name,
@@ -379,7 +370,7 @@ class _ConnectionTile extends StatelessWidget {
       ),
       trailing: PopupMenuButton<String>(
         key: Key('connection-menu-${connection.id}'),
-        icon: const Icon(Icons.more_horiz, size: 16),
+        icon: const Icon(AppIcons.more, size: 16),
         onSelected: (value) async {
           switch (value) {
             case 'edit':
@@ -435,7 +426,7 @@ Future<bool> _confirm(
         FilledButton(
           key: const Key('confirm-delete'),
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+          style: FilledButton.styleFrom(backgroundColor: context.colors.error),
           child: Text(l10n.deleteAction),
         ),
       ],

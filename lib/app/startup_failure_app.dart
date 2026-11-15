@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
+import '../app/theme/app_icons.dart';
 
 import '../core/errors/app_exception.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'error_messages.dart';
+import 'localizations.dart';
 import 'theme/app_theme.dart';
 
 /// Shown when the app cannot even open its encrypted store (for example a
@@ -19,7 +22,7 @@ class StartupFailureApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark(),
       locale: const Locale('es'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
@@ -35,7 +38,10 @@ class StartupFailureApp extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.lock_outline, color: AppColors.danger),
+                        Icon(
+                          AppIcons.lock,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           describeAppError(l10n, error),

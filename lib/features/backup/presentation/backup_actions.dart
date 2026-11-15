@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../app/app_services.dart';
 import '../../../app/error_messages.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/widgets/confirm_password_dialog.dart';
 import '../../shell/presentation/shell_controller.dart';
-import '../data/backup_exporter.dart';
 import '../data/backup_importer.dart';
 import '../domain/backup_document.dart';
 import 'backup_dialogs.dart';
@@ -25,13 +25,6 @@ class BackupActions {
   final AppServices services;
   final ShellController controller;
 
-  BackupExporter get _exporter => BackupExporter(
-    catalog: services.catalog,
-    paths: services.paths,
-    keys: services.keys,
-    credentials: services.credentials,
-  );
-
   BackupImporter get _importer => BackupImporter(
     catalog: services.catalog,
     paths: services.paths,
@@ -39,25 +32,36 @@ class BackupActions {
     credentials: services.credentials,
   );
 
-  Future<String> buildEncodedBackup() async {
-    final document = await _exporter.build();
-    return document.encode();
-  }
-
+  /// Warning → explicit confirmation → profile password → only then is any
+  /// secret read and the file written. A failure or a cancellation produces no
+  /// file and reads no secret (the service verifies before exporting).
   Future<void> export(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     if (!await showExportWarning(context)) return;
     if (!context.mounted) return;
 
+    String? encoded;
+    final authorized = await showConfirmPasswordDialog(
+      context,
+      title: l10n.confirmPasswordTitle,
+      body: l10n.exportPasswordBody,
+      onConfirm: (password) async {
+        encoded = await services.backupExport.exportText(
+          profileId: controller.session.profile.id,
+          password: password,
+        );
+      },
+    );
+    if (!authorized || encoded == null || !context.mounted) return;
+
     try {
-      final encoded = await buildEncodedBackup();
       final stamp = DateTime.now()
           .toIso8601String()
           .replaceAll(RegExp(r'[^0-9]'), '')
           .substring(0, 14);
       final saved = await FilePicker.saveFile(
         fileName: 'ssh-client-backup-$stamp.json',
-        bytes: utf8.encode(encoded),
+        bytes: utf8.encode(encoded!),
         mimeType: 'application/json',
       );
       if (!context.mounted || saved == null) return;

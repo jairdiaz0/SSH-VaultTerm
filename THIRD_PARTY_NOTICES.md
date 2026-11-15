@@ -22,6 +22,10 @@ permisivas (MIT, BSD-2, BSD-3, Apache-2.0, OFL-1.1).
 | `file_picker` | 13.3.3 | MIT | Selector nativo de archivos (importar llaves, subir archivos a SFTP). |
 | `desktop_drop` | 0.8.4 | Apache-2.0 | Recepción de arrastrar y soltar del SO en los paneles (entrada). |
 | `intl` | 0.20.3 | BSD-3-Clause | Localización y formateo. |
+| `material_ui` | 1.11.0 | BSD-3-Clause | Widgets Material de Flutter 3.50 (`package:flutter/material.dart` quedó deprecado). |
+| `cupertino_ui` | 1.1.6 | BSD-3-Clause | Widgets y localizaciones Cupertino del paquete nuevo. |
+| `lucide_icons_flutter` | 4.0.3 | MIT | Iconos Lucide empaquetados como fuente; sin descargas en ejecución. |
+| `shared_preferences` | 2.5.4 | BSD-3-Clause | Persistencia global del tema (ui.themeMode, ui.terminalAlwaysDark). |
 
 ## Dependencias transitivas relevantes
 

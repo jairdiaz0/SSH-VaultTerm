@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_icons.dart';
+
+import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/format/bytes.dart';
 import '../data/transfer_queue.dart';
@@ -19,8 +21,8 @@ class TransferList extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: context.colors.outlineVariant)),
       ),
       constraints: const BoxConstraints(maxHeight: 180),
       child: Column(
@@ -31,11 +33,11 @@ class TransferList extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
             child: Text(
               l10n.transferQueueTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 letterSpacing: 0.8,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: context.colors.onSurfaceVariant,
               ),
             ),
           ),
@@ -74,10 +76,10 @@ class _TransferRow extends StatelessWidget {
             children: [
               Icon(
                 task.direction == TransferDirection.upload
-                    ? Icons.arrow_upward
-                    : Icons.arrow_downward,
+                    ? AppIcons.up
+                    : AppIcons.down,
                 size: 14,
-                color: AppColors.textSecondary,
+                color: context.colors.onSurfaceVariant,
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -94,8 +96,8 @@ class _TransferRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   color: task.status == TransferStatus.failed
-                      ? AppColors.danger
-                      : AppColors.textSecondary,
+                      ? context.colors.error
+                      : context.colors.onSurfaceVariant,
                 ),
               ),
               if (task.status == TransferStatus.running ||
@@ -103,7 +105,7 @@ class _TransferRow extends StatelessWidget {
                 IconButton(
                   key: Key('transfer-cancel-${task.id}'),
                   tooltip: l10n.cancelAction,
-                  icon: const Icon(Icons.close, size: 14),
+                  icon: const Icon(AppIcons.close, size: 14),
                   onPressed: () => queue.cancel(task.id),
                 )
               else if (task.status == TransferStatus.failed ||
@@ -111,7 +113,7 @@ class _TransferRow extends StatelessWidget {
                 IconButton(
                   key: Key('transfer-retry-${task.id}'),
                   tooltip: l10n.commonRetry,
-                  icon: const Icon(Icons.refresh, size: 14),
+                  icon: const Icon(AppIcons.refresh, size: 14),
                   onPressed: () {
                     queue.retry(task.id);
                     queue.start();
@@ -140,9 +142,9 @@ class _TransferRow extends StatelessWidget {
                       '${formatSpeed(task.bytesPerSecond)}'
                 : '${formatBytes(task.transferredBytes)} / '
                       '${formatBytes(task.totalBytes)}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
-              color: AppColors.textSecondary,
+              color: context.colors.onSurfaceVariant,
             ),
           ),
         ],

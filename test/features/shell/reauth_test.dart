@@ -1,11 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../support/shell_harness.dart';
 import '../../support/test_context.dart';
 
+Future<void> confirmPassword(WidgetTester tester, String password) async {
+  await tester.enterText(
+    find.byKey(const Key('confirm-password-field')),
+    password,
+  );
+  await tester.tap(find.byKey(const Key('confirm-password-submit')));
+  await tester.pumpAndSettle();
+}
+
 void main() {
-  testWidgets('the reauth switch persists in the profile settings', (
+  testWidgets('the reauth switch asks for the password and persists', (
     tester,
   ) async {
     final harness = await pumpShell(tester);
@@ -13,13 +22,48 @@ void main() {
 
     await tester.tap(find.byKey(const Key('open-settings')));
     await tester.pumpAndSettle();
+
+    // A wrong password keeps the previous value and stores nothing.
     await tester.tap(find.byKey(const Key('reauth-switch')));
     await tester.pumpAndSettle();
+    await confirmPassword(tester, 'wrong-password');
+    expect(find.byKey(const Key('confirm-password-error')), findsOneWidget);
 
-    final settings = harness.services.catalog.profiles
+    final before = harness.services.catalog.profiles
         .byId(harness.controller.profile!.id)!
-        .settings;
-    expect(settings['requireReauthOnEdit'], isTrue);
+        .settings['requireReauthOnEdit'];
+    expect(before, isFalse);
+
+    await tester.tap(find.byKey(const Key('confirm-password-cancel')));
+    await tester.pumpAndSettle();
+    expect(
+      harness.services.catalog.profiles
+          .byId(harness.controller.profile!.id)!
+          .settings['requireReauthOnEdit'],
+      isFalse,
+    );
+
+    // The correct password enables it.
+    await tester.tap(find.byKey(const Key('reauth-switch')));
+    await tester.pumpAndSettle();
+    await confirmPassword(tester, testPassword);
+    expect(
+      harness.services.catalog.profiles
+          .byId(harness.controller.profile!.id)!
+          .settings['requireReauthOnEdit'],
+      isTrue,
+    );
+
+    // Disabling also asks for the password.
+    await tester.tap(find.byKey(const Key('reauth-switch')));
+    await tester.pumpAndSettle();
+    await confirmPassword(tester, testPassword);
+    expect(
+      harness.services.catalog.profiles
+          .byId(harness.controller.profile!.id)!
+          .settings['requireReauthOnEdit'],
+      isFalse,
+    );
   });
 
   testWidgets('saving a connection asks for the password when required', (
@@ -32,6 +76,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('reauth-switch')));
     await tester.pumpAndSettle();
+    await confirmPassword(tester, testPassword);
     await tester.tap(find.byKey(const Key('settings-close')));
     await tester.pumpAndSettle();
 
@@ -56,25 +101,16 @@ void main() {
     await tester.tap(find.byKey(const Key('connection-save-button')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('reauth-password-field')), findsOneWidget);
-    await tester.enterText(
-      find.byKey(const Key('reauth-password-field')),
-      'wrong-password',
-    );
-    await tester.tap(find.byKey(const Key('reauth-confirm')));
+    expect(find.byKey(const Key('confirm-password-field')), findsOneWidget);
+    await confirmPassword(tester, 'wrong-password');
+    expect(find.byKey(const Key('confirm-password-error')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('confirm-password-cancel')));
     await tester.pumpAndSettle();
-
     expect(harness.controller.session!.connections.all(), isEmpty);
-    expect(find.byKey(const Key('connection-form-error')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('connection-save-button')));
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.byKey(const Key('reauth-password-field')),
-      testPassword,
-    );
-    await tester.tap(find.byKey(const Key('reauth-confirm')));
-    await tester.pumpAndSettle();
+    await confirmPassword(tester, testPassword);
 
     expect(harness.controller.session!.connections.all(), hasLength(1));
   });

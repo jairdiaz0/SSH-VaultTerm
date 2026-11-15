@@ -154,6 +154,25 @@ y `flutter test` (unitarios, widget, golden, FFI).
   `flutter test integration_test -d windows` con almacén seguro y BD cifrada reales.
 - [!] Android/macOS/Linux: sin toolchain aquí (D-001). Sin verificar en ejecución.
 
+## Ronda 3 (seguridad adicional y modernización de UI)
+
+- [x] Reautenticación de acciones sensibles en la capa de servicio: interruptor de
+  reautenticación y exportación de respaldos exigen contraseña verificada con el
+  mismo Argon2id y el bloqueo persistente; sin caché ni archivos temporales.
+- [x] Diálogo reutilizable de confirmación de contraseña en los tres flujos.
+- [x] Sistema de diseño en `lib/app/theme`: paletas clara/oscura a mano, tokens
+  (espaciados, radios, duraciones, curvas, estados, terminal) y component themes.
+- [x] Tema Sistema/Claro/Oscuro persistido globalmente y terminal siempre oscura.
+- [x] Iconos Lucide centralizados en `AppIcons`.
+- [x] Componentes reutilizables `EmptyState`, `StatusBadge` y ajustes de
+  accesibilidad (SafeArea, 48 dp, tooltips semánticos).
+- [x] Tests de contraste AA, matriz de pantallas (2 temas × 3 tamaños × 1,3 texto)
+  y persistencia del tema.
+- [x] `flutter build windows --release` e integración real en Windows tras la UI.
+- [ ] Golden tests: omitidos con motivo (fuentes de assets no cargadas en
+  `flutter_test`); ver `docs/UI_AUDIT.md` y `docs/TESTING.md`.
+- [!] Android/macOS/Linux: sin toolchain aquí; UI móvil solo con widget tests.
+
 ## Fase 8 — Revisión final
 - [x] `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` limpios.
 - [x] Tests de integración SSH/SFTP contra el servidor de pruebas.

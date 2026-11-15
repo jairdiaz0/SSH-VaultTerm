@@ -46,18 +46,26 @@ class ShellController extends ChangeNotifier {
     return profile?.settings['requireReauthOnEdit'] == true;
   }
 
-  void setRequireReauthOnEdit(bool value) {
-    final profile = services.catalog.profiles.byId(session.profile.id);
-    if (profile == null) return;
-    services.profiles.updateSettings(profile, {
-      ...profile.settings,
-      'requireReauthOnEdit': value,
-    });
+  /// Changes the setting after the service verifies the password. A wrong
+  /// password throws and leaves the stored value untouched.
+  Future<void> setRequireReauthOnEdit({
+    required bool value,
+    required String password,
+  }) async {
+    await services.securitySettings.setRequireReauthOnEdit(
+      profileId: session.profile.id,
+      value: value,
+      password: password,
+    );
     notifyListeners();
   }
 
-  Future<bool> confirmPassword(String password) => services.auth
-      .confirmPassword(profileId: session.profile.id, password: password);
+  /// Re-checks the profile password with the persistent lockout policy.
+  Future<void> verifyPassword(String password) =>
+      services.auth.verifyForSensitiveAction(
+        profileId: session.profile.id,
+        password: password,
+      );
 
   void reload() => notifyListeners();
 

@@ -1,14 +1,16 @@
 import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../app/error_messages.dart';
-import '../../../app/theme/app_spacing.dart';
+import '../../../app/theme/app_icons.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/connection.dart';
+import '../../../shared/widgets/confirm_password_dialog.dart';
 import '../../connections/data/credential_service.dart';
 import '../../shell/presentation/shell_controller.dart';
 import '../../ssh/domain/private_key_inspector.dart';
@@ -149,22 +151,15 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
     });
 
     if (widget.controller.requireReauthOnEdit) {
-      final password = await showDialog<String>(
-        context: context,
-        builder: (_) => const _ReauthDialog(),
+      final confirmed = await showConfirmPasswordDialog(
+        context,
+        title: l10n.reauthPromptTitle,
+        body: l10n.reauthPromptBody,
+        onConfirm: widget.controller.verifyPassword,
       );
       if (!mounted) return;
-      if (password == null) {
-        setState(() => _saving = false);
-        return;
-      }
-      final confirmed = await widget.controller.confirmPassword(password);
-      if (!mounted) return;
       if (!confirmed) {
-        setState(() {
-          _saving = false;
-          _error = l10n.errorInvalidCredentials;
-        });
+        setState(() => _saving = false);
         return;
       }
     }
@@ -378,7 +373,7 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                     OutlinedButton.icon(
                       key: const Key('connection-import-key'),
                       onPressed: _saving ? null : _importKey,
-                      icon: const Icon(Icons.upload_file, size: 16),
+                      icon: const Icon(AppIcons.upload, size: 16),
                       label: Text(l10n.privateKeyImportAction),
                     ),
                     const SizedBox(width: 12),
@@ -471,61 +466,4 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
     keyboardType: keyboardType,
     decoration: InputDecoration(labelText: label, helperText: helper),
   );
-}
-
-/// Asks for the profile password when the profile requires reauthentication on
-/// sensitive edits. Returns null when the user cancels.
-class _ReauthDialog extends StatefulWidget {
-  const _ReauthDialog();
-
-  @override
-  State<_ReauthDialog> createState() => _ReauthDialogState();
-}
-
-class _ReauthDialogState extends State<_ReauthDialog> {
-  final TextEditingController _password = TextEditingController();
-
-  @override
-  void dispose() {
-    _password.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return AlertDialog(
-      title: Text(l10n.reauthPromptTitle),
-      content: SizedBox(
-        width: 360,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.reauthPromptBody),
-            const SizedBox(height: 12),
-            TextField(
-              key: const Key('reauth-password-field'),
-              controller: _password,
-              autofocus: true,
-              obscureText: true,
-              decoration: InputDecoration(labelText: l10n.passwordLabel),
-              onSubmitted: (value) => Navigator.of(context).pop(value),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          key: const Key('reauth-confirm'),
-          onPressed: () => Navigator.of(context).pop(_password.text),
-          child: Text(l10n.unlockAction),
-        ),
-      ],
-    );
-  }
 }

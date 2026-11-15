@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../app/theme/app_theme.dart';
+import '../../app/theme/app_icons.dart';
+
+import '../../app/theme/app_tokens.dart';
 
 enum MessageTone { error, warning, info, success }
 
@@ -19,32 +21,35 @@ class InlineMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (tone) {
-      MessageTone.error => AppColors.danger,
-      MessageTone.warning => AppColors.warning,
-      MessageTone.success => AppColors.accentSecondary,
-      MessageTone.info => AppColors.textSecondary,
+      MessageTone.error => context.colors.error,
+      MessageTone.warning => context.tokens.warning,
+      MessageTone.success => context.tokens.success,
+      MessageTone.info => context.colors.onSurfaceVariant,
+    };
+    final icon = switch (tone) {
+      MessageTone.error => AppIcons.error,
+      MessageTone.warning => AppIcons.warning,
+      MessageTone.success => AppIcons.success,
+      MessageTone.info => AppIcons.info,
     };
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: const BorderRadius.all(Radius.circular(AppShape.radius)),
-        border: Border.all(color: color.withValues(alpha: 0.5)),
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(context.tokens.fieldRadius),
+        border: Border.all(color: color.withValues(alpha: 0.45)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            tone == MessageTone.error
-                ? Icons.error_outline
-                : Icons.info_outline,
-            size: 16,
-            color: color,
-          ),
-          const SizedBox(width: 8),
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
-            child: Text(message, style: TextStyle(color: color, fontSize: 12)),
+            child: Text(
+              message,
+              style: context.texts.bodySmall?.copyWith(color: color),
+            ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:ssh_client/app/localizations.dart';
 import 'package:ssh_client/app/theme/app_theme.dart';
 import 'package:ssh_client/features/terminal/presentation/terminal_key_bar.dart';
 import 'package:ssh_client/l10n/generated/app_localizations.dart';
@@ -7,7 +8,7 @@ import 'package:ssh_client/l10n/generated/app_localizations.dart';
 Widget host(Widget child) => MaterialApp(
   theme: AppTheme.dark(),
   locale: const Locale('es'),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: Scaffold(body: child),
 );

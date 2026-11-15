@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ssh_client/app/app_services.dart';
+import 'package:ssh_client/app/localizations.dart';
 import 'package:ssh_client/app/session_controller.dart';
 import 'package:ssh_client/app/theme/app_theme.dart';
+import 'package:ssh_client/app/theme/theme_controller.dart';
 import 'package:ssh_client/core/security/password_hasher.dart';
 import 'package:ssh_client/core/storage/app_paths.dart';
 import 'package:ssh_client/l10n/generated/app_localizations.dart';
@@ -43,13 +45,18 @@ class AppHarness {
     required this.root,
     required this.services,
     required this.controller,
+    required this.themeController,
   });
 
   final Directory root;
   final AppServices services;
   final SessionController controller;
+  final ThemeController themeController;
 
-  static Future<AppHarness> create() async {
+  static Future<AppHarness> create({
+    ThemeMode mode = ThemeMode.dark,
+    bool alwaysDarkTerminal = false,
+  }) async {
     final root = Directory.systemTemp.createTempSync('ssh_client_app_test_');
     final services = await AppServices.fromStorage(
       secrets: InMemorySecretStore(),
@@ -63,6 +70,10 @@ class AppHarness {
         services: services,
         createParams: testArgon2Params,
       ),
+      themeController: ThemeController.memory(
+        mode: mode,
+        alwaysDarkTerminal: alwaysDarkTerminal,
+      ),
     );
     // Registered as soon as the directory exists: a failing test still cleans up.
     addTearDown(harness.dispose);
@@ -74,12 +85,30 @@ class AppHarness {
   SessionController restartedController() =>
       SessionController(services: services, createParams: testArgon2Params);
 
-  Widget wrap(Widget child) => MaterialApp(
-    theme: AppTheme.dark(),
-    locale: const Locale('es'),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    home: child,
+  Widget wrap(Widget child, {double textScale = 1.0}) => AppThemeScope(
+    controller: themeController,
+    child: ListenableBuilder(
+      listenable: themeController,
+      builder: (context, _) => MaterialApp(
+        theme: AppTheme.light(
+          alwaysDarkTerminal: themeController.alwaysDarkTerminal,
+        ),
+        darkTheme: AppTheme.dark(
+          alwaysDarkTerminal: themeController.alwaysDarkTerminal,
+        ),
+        themeMode: themeController.mode,
+        themeAnimationDuration: const Duration(milliseconds: 220),
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(textScale)),
+          child: SafeArea(child: child ?? const SizedBox.shrink()),
+        ),
+        locale: const Locale('es'),
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: child,
+      ),
+    ),
   );
 
   bool _disposed = false;

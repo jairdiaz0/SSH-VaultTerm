@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../app/session_controller.dart';
+import '../../../app/theme/app_icons.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
+import '../../../app/theme/theme_controller.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/widgets/confirm_password_dialog.dart';
 import '../../backup/presentation/backup_actions.dart';
 import '../../profiles/presentation/profile_management_dialog.dart';
 import '../../shell/presentation/shell_controller.dart';
@@ -54,6 +58,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final themeController = AppThemeScope.maybeOf(context);
     final controller = widget.controller;
     final knownHosts = controller.session.knownHosts;
 
@@ -66,12 +71,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
           children: [
             _SectionHeader(title: l10n.profileSection),
             ListTile(
-              leading: const Icon(Icons.shield_outlined, size: 18),
+              leading: const Icon(AppIcons.shield, size: 18),
               title: Text(controller.profileName),
             ),
             ListTile(
               key: const Key('manage-profiles'),
-              leading: const Icon(Icons.people_outline, size: 18),
+              leading: const Icon(AppIcons.users, size: 18),
               title: Text(l10n.manageProfilesAction),
               onTap: () => ProfileManagementDialog.show(
                 context,
@@ -79,13 +84,68 @@ class _SettingsDialogState extends State<SettingsDialog> {
               ),
             ),
             const SizedBox(height: 8),
+            if (themeController != null) ...[
+              _SectionHeader(title: l10n.appearanceSection),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(l10n.themeLabel, style: context.texts.bodySmall),
+                    const SizedBox(height: AppSpacing.sm),
+                    SegmentedButton<ThemeMode>(
+                      key: const Key('theme-selector'),
+                      segments: [
+                        ButtonSegment(
+                          value: ThemeMode.system,
+                          label: Text(l10n.themeSystem),
+                          icon: Icon(AppIcons.settings, size: AppIconSize.sm),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.light,
+                          label: Text(l10n.themeLight),
+                          icon: Icon(AppIcons.eye, size: AppIconSize.sm),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.dark,
+                          label: Text(l10n.themeDark),
+                          icon: Icon(AppIcons.eyeOff, size: AppIconSize.sm),
+                        ),
+                      ],
+                      selected: {themeController.mode},
+                      onSelectionChanged: (selection) =>
+                          themeController.setMode(selection.first),
+                    ),
+                  ],
+                ),
+              ),
+              SwitchListTile(
+                key: const Key('terminal-dark-switch'),
+                value: themeController.alwaysDarkTerminal,
+                onChanged: themeController.setAlwaysDarkTerminal,
+                title: Text(l10n.terminalAlwaysDark),
+                subtitle: Text(l10n.terminalAlwaysDarkHelp),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
             _SectionHeader(title: l10n.securitySection),
             SwitchListTile(
               key: const Key('reauth-switch'),
               value: controller.requireReauthOnEdit,
-              onChanged: (value) {
-                controller.setRequireReauthOnEdit(value);
-                setState(() {});
+              onChanged: (value) async {
+                final confirmed = await showConfirmPasswordDialog(
+                  context,
+                  title: l10n.confirmPasswordTitle,
+                  body: l10n.requireReauthHelp,
+                  onConfirm: (password) => controller.setRequireReauthOnEdit(
+                    value: value,
+                    password: password,
+                  ),
+                );
+                if (confirmed && mounted) setState(() {});
               },
               title: Text(l10n.requireReauthLabel),
               subtitle: Text(l10n.requireReauthHelp),
@@ -114,7 +174,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   ),
                   subtitle: Text(
                     known.fingerprint,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTheme.monoFamily,
                       fontSize: 11,
                     ),
@@ -122,7 +182,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   trailing: IconButton(
                     key: Key('forget-known-host-${known.id}'),
                     tooltip: l10n.deleteAction,
-                    icon: const Icon(Icons.delete_outline, size: 18),
+                    icon: const Icon(AppIcons.delete, size: 18),
                     onPressed: () {
                       knownHosts.delete(known.id);
                       setState(() {});
@@ -145,7 +205,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       services: controller.services,
                       controller: controller,
                     ).export(context),
-                    icon: const Icon(Icons.download_outlined, size: 16),
+                    icon: const Icon(AppIcons.download, size: 16),
                     label: Text(l10n.exportBackupAction),
                   ),
                   const SizedBox(height: 6),
@@ -155,7 +215,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       services: controller.services,
                       controller: controller,
                     ).import(context, onLock: _lockAndClose),
-                    icon: const Icon(Icons.upload_outlined, size: 16),
+                    icon: const Icon(AppIcons.upload, size: 16),
                     label: Text(l10n.importBackupAction),
                   ),
                 ],
@@ -200,12 +260,12 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(top: 8, bottom: 4, left: 12),
     child: Text(
-      title.toUpperCase(),
-      style: const TextStyle(
+      title,
+      style: TextStyle(
         fontSize: 11,
         letterSpacing: 0.8,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
+        color: context.colors.onSurfaceVariant,
       ),
     ),
   );

@@ -1,18 +1,18 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:xterm/xterm.dart';
 
 import '../../../app/error_messages.dart';
-import '../../../app/theme/app_spacing.dart';
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_icons.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/connection.dart';
+import '../../../shared/widgets/empty_state.dart';
 import '../../sftp/presentation/sftp_panel.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
 import '../../terminal/presentation/terminal_key_bar.dart';
-import '../../terminal/presentation/terminal_style.dart';
 import 'workspace_actions.dart';
 import 'workspace_controller.dart';
 
@@ -100,24 +100,10 @@ class _EmptyWorkspace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.terminal_outlined,
-            size: 40,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(l10n.workspaceEmptyTitle),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            l10n.workspaceEmptyBody,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: AppIcons.terminal,
+      title: l10n.workspaceEmptyTitle,
+      message: l10n.workspaceEmptyBody,
     );
   }
 }
@@ -141,9 +127,11 @@ class _SessionEnded extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              unexpected ? Icons.cloud_off_outlined : Icons.logout,
+              unexpected ? AppIcons.offline : AppIcons.logout,
               size: 40,
-              color: unexpected ? AppColors.danger : AppColors.textSecondary,
+              color: unexpected
+                  ? context.colors.error
+                  : context.colors.onSurfaceVariant,
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
@@ -166,7 +154,7 @@ class _SessionEnded extends StatelessWidget {
                       ? null
                       : () =>
                             connectAndExplain(context, controller, connection),
-                  icon: const Icon(Icons.refresh, size: 16),
+                  icon: const Icon(AppIcons.refresh, size: 16),
                   label: Text(l10n.reconnectAction),
                 ),
                 const SizedBox(width: AppSpacing.sm),
@@ -198,18 +186,22 @@ class _WorkspaceHeader extends StatelessWidget {
     return Container(
       height: 52,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceSecondary,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainerLow,
+        border: Border(
+          bottom: BorderSide(color: context.colors.outlineVariant),
+        ),
       ),
       child: Row(
         children: [
           Icon(
             isSftp
-                ? (active ? Icons.folder : Icons.folder_outlined)
-                : (active ? Icons.terminal : Icons.terminal_outlined),
+                ? (active ? Icons.folder : AppIcons.folder)
+                : (active ? AppIcons.terminal : AppIcons.terminal),
             size: 18,
-            color: active ? AppColors.accentSecondary : AppColors.textSecondary,
+            color: active
+                ? context.colors.secondary
+                : context.colors.onSurfaceVariant,
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
@@ -235,14 +227,14 @@ class _WorkspaceHeader extends StatelessWidget {
               key: const Key('reconnect-button'),
               onPressed: () =>
                   connectAndExplain(context, controller, connection),
-              icon: const Icon(Icons.refresh, size: 16),
+              icon: const Icon(AppIcons.refresh, size: 16),
               label: Text(l10n.reconnectAction),
             ),
           if (active)
             TextButton.icon(
               key: const Key('disconnect-button'),
               onPressed: controller.close,
-              icon: const Icon(Icons.link_off, size: 16),
+              icon: const Icon(AppIcons.linkOff, size: 16),
               label: Text(l10n.disconnectAction),
             ),
         ],
@@ -262,19 +254,19 @@ class _ErrorBanner extends StatelessWidget {
     return Container(
       key: const Key('workspace-error'),
       width: double.infinity,
-      color: AppColors.danger.withValues(alpha: 0.12),
+      color: context.colors.error.withValues(alpha: 0.12),
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, size: 16, color: AppColors.danger),
+          Icon(AppIcons.error, size: 16, color: context.colors.error),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               describeAppError(l10n, AppException(code)),
-              style: const TextStyle(color: AppColors.danger, fontSize: 12),
+              style: TextStyle(color: context.colors.error, fontSize: 12),
             ),
           ),
         ],
@@ -295,14 +287,14 @@ class _TerminalPane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ColoredBox(
-    color: AppColors.background,
+    color: context.colors.surface,
     child: Column(
       children: [
         Expanded(
           child: TerminalView(
             terminal,
-            theme: appTerminalTheme,
-            textStyle: appTerminalStyle,
+            theme: context.tokens.terminalTheme,
+            textStyle: context.tokens.terminalStyle,
             padding: const EdgeInsets.all(AppSpacing.sm),
             autofocus: true,
             // Desktop must read raw key events: the IME text path of xterm
@@ -322,15 +314,9 @@ class _FilesUnavailable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Container(
-      color: AppColors.surfaceSecondary,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      alignment: Alignment.center,
-      child: Text(
-        l10n.sftpOpenFailed,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
+    return ColoredBox(
+      color: context.colors.surfaceContainerLow,
+      child: EmptyState(icon: AppIcons.folderOff, title: l10n.sftpOpenFailed),
     );
   }
 }

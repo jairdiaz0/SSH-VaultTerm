@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
 
@@ -55,6 +57,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get unlockAction => 'Desbloquear';
+
+  @override
+  String get confirmAction => 'Confirmar';
+
+  @override
+  String get confirmPasswordTitle => 'Confirma tu contraseña';
+
+  @override
+  String get confirmPasswordBody =>
+      'El perfil pide tu contraseña para continuar.';
+
+  @override
+  String get exportPasswordBody =>
+      'Introduce la contraseña del perfil para leer los secretos y crear el archivo.';
 
   @override
   String get switchProfileAction => 'Cambiar de perfil';
@@ -367,6 +383,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get connectionTypeSftp => 'SFTP · archivos';
 
   @override
+  String get refreshAction => 'Refrescar';
+
+  @override
+  String get backAction => 'Atrás';
+
+  @override
+  String get forwardAction => 'Adelante';
+
+  @override
+  String get upOneLevelAction => 'Subir un nivel';
+
+  @override
+  String get moreActions => 'Más acciones';
+
+  @override
   String get sessionEndedTitle => 'Sesión finalizada';
 
   @override
@@ -610,6 +641,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileSection => 'Perfil';
+
+  @override
+  String get appearanceSection => 'Apariencia';
+
+  @override
+  String get themeLabel => 'Tema';
+
+  @override
+  String get themeSystem => 'Sistema';
+
+  @override
+  String get themeLight => 'Claro';
+
+  @override
+  String get themeDark => 'Oscuro';
+
+  @override
+  String get terminalAlwaysDark => 'Terminal siempre oscura';
+
+  @override
+  String get terminalAlwaysDarkHelp =>
+      'Usa la paleta oscura del terminal aunque la interfaz esté en claro.';
 
   @override
   String get manageProfilesAction => 'Gestionar perfiles';

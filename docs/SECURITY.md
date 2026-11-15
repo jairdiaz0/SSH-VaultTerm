@@ -107,8 +107,26 @@ memoria; el contrato de claves está cubierto por tests.
   ruta y `SessionController.createProfile` la rechaza). Solo permite elegir otro
   perfil existente y desbloquearlo (decisión D-008).
 - Reautenticación opcional por perfil (`settings.requireReauthOnEdit`): cuando
-  está activa, los cambios sensibles piden la contraseña. `confirmPassword` no
-  toca los contadores de bloqueo (la sesión ya está autenticada).
+  está activa, los cambios sensibles piden la contraseña. Antes no contaba para el
+  bloqueo; desde la ronda 3 sí (ver §4 bis).
+
+## 4 bis. Reautenticación para acciones sensibles
+
+- **Interruptor «Requerir contraseña al editar»**: activarlo o desactivarlo exige
+  la contraseña del perfil. La comprobación y el cambio ocurren en
+  `SecuritySettingsService.setRequireReauthOnEdit`; si la contraseña es
+  incorrecta, no se escribe nada y el interruptor vuelve a su valor anterior.
+- **Exportar un respaldo**: el orden es (1) advertencia de seguridad, (2)
+  confirmación explícita, (3) contraseña del perfil, (4) solo entonces se leen los
+  secretos de Secure Storage y se escribe el archivo. Si la contraseña falla o se
+  cancela, no se lee ningún secreto y no se crea ningún archivo, ni temporal.
+  `BackupExportService.exportText` verifica antes de construir el documento.
+- **Mismo verificador y mismo bloqueo**: ambas acciones usan Argon2id con el
+  verificador del perfil y el contador persistente de intentos fallidos con
+  retardo progresivo (`AuthenticationService.verifyForSensitiveAction`). Los
+  errores son genéricos y no distinguen perfil inexistente de contraseña errónea.
+- **Sin caché**: la contraseña no se guarda ni se recuerda durante N minutos; el
+  controlador del diálogo se libera al cerrar y nunca se registra en logs.
 
 ## 5. Host keys (TOFU)
 

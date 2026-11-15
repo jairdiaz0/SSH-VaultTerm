@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_icons.dart';
+
+import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/profile.dart';
 import '../data/backup_importer.dart';
@@ -12,7 +14,7 @@ Future<bool> showExportWarning(BuildContext context) async {
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      icon: const Icon(Icons.warning_amber_outlined, color: AppColors.danger),
+      icon: Icon(AppIcons.warning, color: context.colors.error),
       title: Text(l10n.exportWarningTitle),
       content: SizedBox(
         width: 520,
@@ -31,7 +33,7 @@ Future<bool> showExportWarning(BuildContext context) async {
         FilledButton(
           key: const Key('export-confirm'),
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+          style: FilledButton.styleFrom(backgroundColor: context.colors.error),
           child: Text(l10n.exportConfirmAction),
         ),
       ],

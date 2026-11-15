@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ssh_client/app/profile_session.dart';
 
 import 'package:ssh_client/core/database/database_key_store.dart';
 import 'package:ssh_client/core/security/password_hasher.dart';
@@ -88,6 +89,11 @@ class TestContext {
     // Registered as soon as the directory exists: a failing test still cleans up.
     addTearDown(context.dispose);
     return context;
+  }
+
+  Future<ProfileSession> openProfile(String profileId) async {
+    final profile = catalog.profiles.byId(profileId)!;
+    return ProfileSession.open(profile: profile, paths: paths, keys: keys);
   }
 
   bool _disposed = false;

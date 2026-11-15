@@ -11,7 +11,7 @@ TOFU de host keys, terminal real sobre pty, explorador SFTP con cola de
 transferencias, copias de seguridad JSON con importación transaccional y una
 interfaz de escritorio y móvil derivada del espacio disponible.
 
-`flutter analyze` sin incidencias y **204 tests** en verde, incluidos SSH, pty y
+`flutter analyze` sin incidencias y **256 tests** en verde, incluidos SSH, pty y
 SFTP reales contra el servidor de pruebas y un **test de integración sobre la app
 real compilada para Windows** (almacén seguro y SQLCipher reales). Windows compila
 en release (`build\windows\x64\runner\Release\ssh_client.exe`); Android, macOS y
@@ -34,6 +34,9 @@ Linux siguen sin toolchain en este entorno (D-001) y se declaran no verificados.
 | UI Android: drawer, vista única por tipo, breakpoints por espacio | Implementado y probado en widget tests |
 | Backups: exportar con advertencia, importar con 3 modos, rollback | Implementado y probado; selectores nativos sin ejecutar |
 | Gestión de perfiles en Ajustes (crear, cambiar, eliminar con contraseña) | Implementado y probado |
+| Reautenticación de acciones sensibles en servicios (interruptor y exportación) | Implementado y probado |
+| Temas claro/oscuro/sistema persistidos, terminal por tema y siempre oscura | Implementado y probado |
+| Sistema de diseño y iconos Lucide centralizados (`AppIcons`) | Implementado; contraste y layout testeados |
 | Datos aislados por entorno y `tool/reset_dev_data.ps1` | Implementado y probado el script con datos falsos |
 | Entrada de terminal en Windows (letras, símbolos, Ctrl+C, pegar) | Verificado con eventos y con la app real |
 
@@ -71,7 +74,8 @@ Cobertura por área (detalle y evidencia en `docs/TESTING.md`):
 - Widget: gate de sesión, primer inicio, bloqueo, shell, CRUD con credenciales,
   reautenticación, gestión de perfiles, workspace, panel SFTP con ruta editable,
   tamaños de ventana sin overflow, barra de teclas, entrada del terminal, tema y
-  fuentes.
+  fuentes. Matriz completa de pantallas en tema claro y oscuro, 900×600,
+  1280×720 y 1920×1080 con escala de texto 1,3.
 - Integración real (etiqueta `integration`, se omite sin `.env.test`): SSH con
   contraseña y llave, TOFU aceptado y bloqueado, contraseña incorrecta, sesiones
   concurrentes, pérdida de transporte, pty con resize y UTF-8, y SFTP con 2 MiB y
@@ -88,7 +92,8 @@ Cobertura por área (detalle y evidencia en `docs/TESTING.md`):
   verificados en ejecución.
 - **No verificadas en ejecución:** arrastre real del sistema operativo; teclado
   virtual y selección táctil de Android; selectores nativos de archivos; golden
-  tests con las fuentes empaquetadas (los assets y el tema sí se comprueban).
+  tests (omitidos porque `flutter_test` no carga las fuentes de assets por
+  defecto; ver `docs/UI_AUDIT.md`).
 
 ## 7. Limitaciones declaradas
 

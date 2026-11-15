@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -177,6 +178,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Desbloquear'**
   String get unlockAction;
+
+  /// No description provided for @confirmAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar'**
+  String get confirmAction;
+
+  /// No description provided for @confirmPasswordTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirma tu contraseña'**
+  String get confirmPasswordTitle;
+
+  /// No description provided for @confirmPasswordBody.
+  ///
+  /// In es, this message translates to:
+  /// **'El perfil pide tu contraseña para continuar.'**
+  String get confirmPasswordBody;
+
+  /// No description provided for @exportPasswordBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce la contraseña del perfil para leer los secretos y crear el archivo.'**
+  String get exportPasswordBody;
 
   /// No description provided for @switchProfileAction.
   ///
@@ -718,6 +743,36 @@ abstract class AppLocalizations {
   /// **'SFTP · archivos'**
   String get connectionTypeSftp;
 
+  /// No description provided for @refreshAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Refrescar'**
+  String get refreshAction;
+
+  /// No description provided for @backAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrás'**
+  String get backAction;
+
+  /// No description provided for @forwardAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Adelante'**
+  String get forwardAction;
+
+  /// No description provided for @upOneLevelAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Subir un nivel'**
+  String get upOneLevelAction;
+
+  /// No description provided for @moreActions.
+  ///
+  /// In es, this message translates to:
+  /// **'Más acciones'**
+  String get moreActions;
+
   /// No description provided for @sessionEndedTitle.
   ///
   /// In es, this message translates to:
@@ -1161,6 +1216,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Perfil'**
   String get profileSection;
+
+  /// No description provided for @appearanceSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Apariencia'**
+  String get appearanceSection;
+
+  /// No description provided for @themeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tema'**
+  String get themeLabel;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In es, this message translates to:
+  /// **'Sistema'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In es, this message translates to:
+  /// **'Claro'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Oscuro'**
+  String get themeDark;
+
+  /// No description provided for @terminalAlwaysDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Terminal siempre oscura'**
+  String get terminalAlwaysDark;
+
+  /// No description provided for @terminalAlwaysDarkHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Usa la paleta oscura del terminal aunque la interfaz esté en claro.'**
+  String get terminalAlwaysDarkHelp;
 
   /// No description provided for @manageProfilesAction.
   ///

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ssh_client/app/session_gate.dart';
 import 'package:ssh_client/features/authentication/presentation/lock_screen.dart';
 import 'package:ssh_client/features/profiles/presentation/first_run_screen.dart';
@@ -222,8 +222,8 @@ void main() {
       // Favourites appear twice by design: in Favourites and in its collection.
       expect(find.text('web-01'), findsNWidgets(2));
       expect(find.text('deploy@10.0.0.10:22'), findsNWidgets(2));
-      expect(find.text('FAVORITOS'), findsOneWidget);
-      expect(find.text('COLECCIONES'), findsOneWidget);
+      expect(find.text('Favoritos'), findsOneWidget);
+      expect(find.text('Colecciones'), findsOneWidget);
     },
   );
 }

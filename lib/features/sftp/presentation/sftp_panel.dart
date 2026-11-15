@@ -1,11 +1,12 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../app/error_messages.dart';
-import '../../../app/theme/app_spacing.dart';
+import '../../../app/theme/app_icons.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/format/bytes.dart';
@@ -46,7 +47,9 @@ class _SftpPanelState extends State<SftpPanel> {
       },
       child: Container(
         key: const Key('sftp-panel'),
-        color: _dragging ? AppColors.elevated : AppColors.surfaceSecondary,
+        color: _dragging
+            ? context.colors.surfaceContainerHigh
+            : context.colors.surfaceContainerLow,
         child: ListenableBuilder(
           listenable: Listenable.merge([controller, controller.queue]),
           builder: (context, _) => Column(
@@ -93,7 +96,7 @@ class _SftpPanelState extends State<SftpPanel> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.folder_off_outlined, color: AppColors.danger),
+              Icon(AppIcons.folderOff, color: context.colors.error),
               const SizedBox(height: 8),
               Text(
                 describeAppError(l10n, AppException(error)),
@@ -140,33 +143,39 @@ class _Toolbar extends StatelessWidget {
     return Container(
       height: 36,
       padding: const EdgeInsets.only(left: 8, right: 4),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: context.colors.outlineVariant),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.folder_outlined, size: 16),
+          const Icon(AppIcons.folder, size: 16),
           const SizedBox(width: 6),
           Text(l10n.filesTab, style: const TextStyle(fontSize: 12)),
           const Spacer(),
           IconButton(
             key: const Key('sftp-back'),
-            icon: const Icon(Icons.arrow_back, size: 16),
+            tooltip: l10n.backAction,
+            icon: const Icon(AppIcons.back, size: 16),
             onPressed: controller.canGoBack ? controller.back : null,
           ),
           IconButton(
             key: const Key('sftp-forward'),
-            icon: const Icon(Icons.arrow_forward, size: 16),
+            tooltip: l10n.forwardAction,
+            icon: const Icon(AppIcons.forward, size: 16),
             onPressed: controller.canGoForward ? controller.forward : null,
           ),
           IconButton(
             key: const Key('sftp-up'),
-            icon: const Icon(Icons.arrow_upward, size: 16),
+            tooltip: l10n.upOneLevelAction,
+            icon: const Icon(AppIcons.up, size: 16),
             onPressed: controller.up,
           ),
           IconButton(
             key: const Key('sftp-refresh'),
-            icon: const Icon(Icons.refresh, size: 16),
+            tooltip: l10n.refreshAction,
+            icon: const Icon(AppIcons.refresh, size: 16),
             onPressed: controller.refresh,
           ),
           IconButton(
@@ -175,9 +184,7 @@ class _Toolbar extends StatelessWidget {
                 ? l10n.hideHiddenAction
                 : l10n.showHiddenAction,
             icon: Icon(
-              controller.showHidden
-                  ? Icons.visibility_off_outlined
-                  : Icons.visibility_outlined,
+              controller.showHidden ? AppIcons.eyeOff : AppIcons.eye,
               size: 16,
             ),
             onPressed: controller.toggleHidden,
@@ -185,13 +192,13 @@ class _Toolbar extends StatelessWidget {
           IconButton(
             key: const Key('sftp-new-folder'),
             tooltip: l10n.sftpNewFolderTitle,
-            icon: const Icon(Icons.create_new_folder_outlined, size: 16),
+            icon: const Icon(AppIcons.folderPlus, size: 16),
             onPressed: () => _createFolder(context, controller),
           ),
           IconButton(
             key: const Key('sftp-upload'),
             tooltip: l10n.uploadAction,
-            icon: const Icon(Icons.upload_file, size: 16),
+            icon: const Icon(AppIcons.upload, size: 16),
             onPressed: () => _pickAndUpload(controller),
           ),
         ],
@@ -293,7 +300,7 @@ class _BreadcrumbsState extends State<_Breadcrumbs> {
                     key: const Key('sftp-path-field'),
                     controller: _path,
                     autofocus: true,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTheme.monoFamily,
                       fontSize: 12,
                     ),
@@ -380,7 +387,9 @@ class _EntryRowState extends State<_EntryRow> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOut,
-        color: _hovered ? AppColors.elevated : Colors.transparent,
+        color: _hovered
+            ? context.colors.surfaceContainerHigh
+            : Colors.transparent,
         child: InkWell(
           key: Key('sftp-entry-${entry.name}'),
           onTap: entry.isDirectory
@@ -392,13 +401,11 @@ class _EntryRowState extends State<_EntryRow> {
               children: [
                 const SizedBox(width: 10),
                 Icon(
-                  entry.isDirectory
-                      ? Icons.folder_outlined
-                      : Icons.insert_drive_file_outlined,
+                  entry.isDirectory ? AppIcons.folder : AppIcons.file,
                   size: 14,
                   color: entry.isDirectory
-                      ? AppColors.accent
-                      : AppColors.textSecondary,
+                      ? context.colors.primary
+                      : context.colors.onSurfaceVariant,
                 ),
                 const SizedBox(width: 6),
                 Expanded(
@@ -420,7 +427,7 @@ class _EntryRowState extends State<_EntryRow> {
                   width: 84,
                   child: Text(
                     entry.permissions,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTheme.monoFamily,
                       fontSize: 10,
                     ),
@@ -435,7 +442,8 @@ class _EntryRowState extends State<_EntryRow> {
                 ),
                 PopupMenuButton<String>(
                   key: Key('sftp-entry-menu-${entry.name}'),
-                  icon: const Icon(Icons.more_horiz, size: 14),
+                  tooltip: l10n.moreActions,
+                  icon: const Icon(AppIcons.more, size: 14),
                   onSelected: (value) => _onMenu(context, value),
                   itemBuilder: (_) => [
                     if (!entry.isDirectory)
@@ -590,7 +598,7 @@ Future<bool> _confirm(
         FilledButton(
           key: const Key('confirm-delete'),
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+          style: FilledButton.styleFrom(backgroundColor: context.colors.error),
           child: Text(l10n.deleteAction),
         ),
       ],

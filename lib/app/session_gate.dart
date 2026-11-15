@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../features/authentication/presentation/lock_screen.dart';
 import '../features/profiles/presentation/first_run_screen.dart';
