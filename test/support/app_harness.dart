@@ -56,7 +56,7 @@ class AppHarness {
       paths: AppPaths(root.path),
       hasher: PasswordHasher(derive: testKeyDerivation),
     );
-    return AppHarness._(
+    final harness = AppHarness._(
       root: root,
       services: services,
       controller: SessionController(
@@ -64,6 +64,9 @@ class AppHarness {
         createParams: testArgon2Params,
       ),
     );
+    // Registered as soon as the directory exists: a failing test still cleans up.
+    addTearDown(harness.dispose);
+    return harness;
   }
 
   /// A locked-state controller sharing the same encrypted catalog, as after an
@@ -79,7 +82,11 @@ class AppHarness {
     home: child,
   );
 
+  bool _disposed = false;
+
   Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
     controller.dispose();
     services.dispose();
     if (root.existsSync()) root.deleteSync(recursive: true);

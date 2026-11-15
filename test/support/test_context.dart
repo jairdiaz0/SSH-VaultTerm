@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter_test/flutter_test.dart';
+
 import 'package:ssh_client/core/database/database_key_store.dart';
 import 'package:ssh_client/core/security/password_hasher.dart';
 import 'package:ssh_client/core/storage/app_paths.dart';
@@ -62,7 +64,7 @@ class TestContext {
     final catalog = await CatalogStore.open(paths: paths, keys: keys);
     final clock = MutableClock();
 
-    return TestContext._(
+    final context = TestContext._(
       root: root,
       paths: paths,
       secrets: secrets,
@@ -83,9 +85,16 @@ class TestContext {
       ),
       clock: clock,
     );
+    // Registered as soon as the directory exists: a failing test still cleans up.
+    addTearDown(context.dispose);
+    return context;
   }
 
+  bool _disposed = false;
+
   Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
     try {
       catalog.close();
     } catch (_) {

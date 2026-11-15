@@ -88,7 +88,11 @@ class BackupDocument {
     required this.credentials,
   });
 
-  static const currentFormatVersion = 1;
+  static const currentFormatVersion = 2;
+
+  /// Versions this app can read. v1 documents predate `connectionType` and are
+  /// migrated on parse: every connection is SSH, which is what v1 could open.
+  static const supportedFormatVersions = {1, 2};
 
   final int formatVersion;
   final DateTime exportedAt;
@@ -121,7 +125,7 @@ class BackupDocument {
   static BackupDocument fromJson(Map<String, Object?> json) {
     try {
       final version = json['formatVersion']! as int;
-      if (version != currentFormatVersion) {
+      if (!supportedFormatVersions.contains(version)) {
         failWith(AppErrorCode.backupVersionUnsupported, cause: 'v$version');
       }
       final document = BackupDocument(

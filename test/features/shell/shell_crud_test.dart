@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ssh_client/shared/models/connection.dart';
 
 import '../../support/shell_harness.dart';
 
@@ -150,6 +151,38 @@ void main() {
     expect(session.collections.all(), isEmpty);
     expect(session.connections.all().single.collectionId, isNull);
     expect(find.text('web-01'), findsOneWidget);
+  });
+
+  testWidgets('creates an SFTP connection with the type chips', (tester) async {
+    final harness = await pumpShell(tester);
+    addTearDown(harness.dispose);
+
+    await tester.tap(find.byKey(const Key('new-connection-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('connection-name-field')),
+      'files',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-host-field')),
+      '10.0.0.11',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-user-field')),
+      'deploy',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-password-field')),
+      'secret-password',
+    );
+    await tester.tap(find.byKey(const Key('type-sftp-chip')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('connection-save-button')));
+    await tester.pumpAndSettle();
+
+    final connection = harness.controller.session!.connections.all().single;
+    expect(connection.connectionType, ConnectionType.sftp);
+    expect(connection.authType, AuthenticationType.password);
   });
 
   testWidgets('reorders collections from the menu', (tester) async {

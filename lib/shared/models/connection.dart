@@ -13,6 +13,18 @@ enum AuthenticationType {
   };
 }
 
+/// What the connection opens: a terminal or a file explorer.
+enum ConnectionType {
+  ssh,
+  sftp;
+
+  static ConnectionType fromStorage(String? value) => switch (value) {
+    null || '' || 'ssh' => ConnectionType.ssh,
+    'sftp' => ConnectionType.sftp,
+    _ => throw ArgumentError.value(value, 'value', 'unknown connection type'),
+  };
+}
+
 /// One server. Serves both the terminal and the SFTP browser.
 ///
 /// [credentialId] points into the secret store; the SQLite row never contains a
@@ -26,6 +38,7 @@ class Connection {
     required this.port,
     required this.username,
     required this.authType,
+    this.connectionType = ConnectionType.ssh,
     this.credentialId,
     this.description,
     this.tags = const <String>[],
@@ -42,6 +55,9 @@ class Connection {
   final int port;
   final String username;
   final AuthenticationType authType;
+
+  /// Terminal (SSH) or file explorer (SFTP) when opened.
+  final ConnectionType connectionType;
   final String? credentialId;
   final String? description;
   final List<String> tags;
@@ -58,6 +74,7 @@ class Connection {
     'port': port,
     'username': username,
     'auth_type': authType.name,
+    'connection_type': connectionType.name,
     'credential_id': credentialId,
     'description': description,
     'tags': jsonEncode(tags),
@@ -75,6 +92,9 @@ class Connection {
     port: row['port'] as int,
     username: row['username'] as String,
     authType: AuthenticationType.fromStorage(row['auth_type'] as String),
+    connectionType: ConnectionType.fromStorage(
+      row['connection_type'] as String?,
+    ),
     credentialId: row['credential_id'] as String?,
     description: row['description'] as String?,
     tags: (jsonDecode(row['tags'] as String) as List).cast<String>(),
@@ -92,6 +112,7 @@ class Connection {
     'port': port,
     'username': username,
     'authType': authType.name,
+    'connectionType': connectionType.name,
     'credentialId': credentialId,
     'description': description,
     'tags': tags,
@@ -109,6 +130,9 @@ class Connection {
     port: json['port']! as int,
     username: json['username']! as String,
     authType: AuthenticationType.fromStorage(json['authType']! as String),
+    connectionType: ConnectionType.fromStorage(
+      json['connectionType'] as String?,
+    ),
     credentialId: json['credentialId'] as String?,
     description: json['description'] as String?,
     tags: (json['tags']! as List).cast<String>(),
@@ -125,6 +149,7 @@ class Connection {
     int? port,
     String? username,
     AuthenticationType? authType,
+    ConnectionType? connectionType,
     String? credentialId,
     String? description,
     List<String>? tags,
@@ -139,6 +164,7 @@ class Connection {
     port: port ?? this.port,
     username: username ?? this.username,
     authType: authType ?? this.authType,
+    connectionType: connectionType ?? this.connectionType,
     credentialId: credentialId ?? this.credentialId,
     description: description ?? this.description,
     tags: tags ?? this.tags,

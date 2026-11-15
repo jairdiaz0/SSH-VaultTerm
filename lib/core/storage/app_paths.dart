@@ -13,8 +13,26 @@ class AppPaths {
 
   static const appFolderName = 'ssh_client';
 
-  static Future<AppPaths> resolve() async {
-    final base = await getApplicationSupportDirectory();
+  /// Overrides [root] completely. Integration tests and development runs use it
+  /// so they never touch the real profile data.
+  static const dataDirEnvironment = 'SSH_CLIENT_DATA_DIR';
+
+  static Future<AppPaths> resolve() => resolveFrom(
+    environment: Platform.environment,
+    applicationSupport: () async => getApplicationSupportDirectory(),
+  );
+
+  /// Same as [resolve] with injected environment and platform directory, so the
+  /// override can be tested without mutating real process environment.
+  static Future<AppPaths> resolveFrom({
+    required Map<String, String> environment,
+    required Future<Directory> Function() applicationSupport,
+  }) async {
+    final override = environment[dataDirEnvironment]?.trim();
+    if (override != null && override.isNotEmpty) {
+      return AppPaths(p.normalize(p.absolute(override)));
+    }
+    final base = await applicationSupport();
     return AppPaths(p.join(base.path, appFolderName));
   }
 

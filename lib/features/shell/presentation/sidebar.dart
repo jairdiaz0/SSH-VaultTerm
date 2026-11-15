@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/connection.dart';
@@ -33,7 +34,7 @@ class Sidebar extends StatelessWidget {
     return Material(
       color: AppColors.surfaceSecondary,
       child: SizedBox(
-        width: 288,
+        width: AppLayout.sidebarWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -46,7 +47,7 @@ class Sidebar extends StatelessWidget {
             const Divider(),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 children: [
                   if (favorites.isNotEmpty) ...[
                     _SectionHeader(title: l10n.favoritesSection),
@@ -55,7 +56,7 @@ class Sidebar extends StatelessWidget {
                         controller: controller,
                         connection: connection,
                       ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                   ],
                   _SectionHeader(title: l10n.collectionsSection),
                   for (final collection in collections)
@@ -64,7 +65,7 @@ class Sidebar extends StatelessWidget {
                       collection: collection,
                     ),
                   if (ungrouped.isNotEmpty) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     _SectionHeader(title: l10n.sidebarServersSection),
                     for (final connection in ungrouped)
                       _ConnectionTile(
@@ -76,7 +77,7 @@ class Sidebar extends StatelessWidget {
                       collections.isEmpty &&
                       ungrouped.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(AppSpacing.lg),
                       child: Text(
                         l10n.emptySidebarHint,
                         style: Theme.of(context).textTheme.bodySmall,
@@ -87,7 +88,7 @@ class Sidebar extends StatelessWidget {
             ),
             const Divider(),
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(AppSpacing.sm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -100,7 +101,7 @@ class Sidebar extends StatelessWidget {
                     icon: const Icon(Icons.add, size: 16),
                     label: Text(l10n.newConnectionAction),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.sm),
                   TextButton.icon(
                     key: const Key('new-collection-button'),
                     onPressed: () =>
@@ -137,14 +138,14 @@ class _Header extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Container(
       height: 52,
-      padding: const EdgeInsets.only(left: 14, right: 4),
+      padding: const EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.xs),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: AppColors.border)),
       ),
       child: Row(
         children: [
           const Icon(Icons.shield_outlined, size: 18, color: AppColors.accent),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               profileName,
@@ -194,6 +195,10 @@ class _ConnectionIndicator extends StatelessWidget {
         l10n.connectionStatusFailed,
         AppColors.danger,
       ),
+      SshConnectionStatus.sessionEnded => (
+        l10n.sessionEndedTitle,
+        AppColors.warning,
+      ),
       SshConnectionStatus.disconnected ||
       SshConnectionStatus.disconnectedUnexpectedly => (
         l10n.connectionStatusDisconnected,
@@ -201,7 +206,12 @@ class _ConnectionIndicator extends StatelessWidget {
       ),
     };
     return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 10, 14, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.md,
+        0,
+      ),
       child: Row(
         children: [
           Container(
@@ -209,7 +219,7 @@ class _ConnectionIndicator extends StatelessWidget {
             height: 8,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(status, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
@@ -224,7 +234,12 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(14, 10, 14, 6),
+    padding: const EdgeInsets.fromLTRB(
+      AppSpacing.md,
+      AppSpacing.sm,
+      AppSpacing.md,
+      AppSpacing.xs,
+    ),
     child: Text(
       title.toUpperCase(),
       style: const TextStyle(
@@ -254,8 +269,11 @@ class _CollectionTile extends StatelessWidget {
     return ExpansionTile(
       key: Key('collection-tile-${collection.id}'),
       initiallyExpanded: true,
-      tilePadding: const EdgeInsets.only(left: 14, right: 4),
-      childrenPadding: const EdgeInsets.only(left: 8),
+      tilePadding: const EdgeInsets.only(
+        left: AppSpacing.md,
+        right: AppSpacing.xs,
+      ),
+      childrenPadding: const EdgeInsets.only(left: AppSpacing.sm),
       title: Text(collection.name, style: const TextStyle(fontSize: 13)),
       leading: const Icon(Icons.folder_outlined, size: 16),
       trailing: PopupMenuButton<String>(
@@ -302,7 +320,12 @@ class _CollectionTile extends StatelessWidget {
           _ConnectionTile(controller: controller, connection: connection),
         if (connections.isEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(28, 4, 14, 8),
+            padding: const EdgeInsets.fromLTRB(
+              28,
+              AppSpacing.xs,
+              AppSpacing.md,
+              AppSpacing.sm,
+            ),
             child: Text(
               l10n.emptyConnectionsMessage,
               style: Theme.of(context).textTheme.bodySmall,
@@ -327,7 +350,11 @@ class _ConnectionTile extends StatelessWidget {
       dense: true,
       onTap: () => controller.connect(context, connection),
       leading: Icon(
-        connection.favorite ? Icons.star : Icons.terminal,
+        connection.favorite
+            ? Icons.star
+            : connection.connectionType == ConnectionType.sftp
+            ? Icons.folder_outlined
+            : Icons.terminal,
         size: 16,
         color: connection.favorite
             ? AppColors.warning

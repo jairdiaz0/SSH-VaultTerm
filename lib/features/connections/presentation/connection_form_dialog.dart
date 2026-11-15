@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../app/error_messages.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/connection.dart';
@@ -65,6 +66,8 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
 
   late AuthenticationType _authType =
       _existing?.authType ?? AuthenticationType.password;
+  late ConnectionType _connectionType =
+      _existing?.connectionType ?? ConnectionType.ssh;
   late String? _collectionId = _existing?.collectionId;
   late bool _favorite = _existing?.favorite ?? false;
   String? _privateKeyPem;
@@ -230,6 +233,7 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
         port: port,
         username: user,
         authType: _authType,
+        connectionType: _connectionType,
         credentialId: credentialId,
         description: description.isEmpty ? null : description,
         tags: _existing?.tags ?? const [],
@@ -304,6 +308,33 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                 key: 'connection-user-field',
                 controller: _user,
                 label: l10n.connectionUserLabel,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.connectionTypeLabel,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.sm,
+                children: [
+                  ChoiceChip(
+                    key: const Key('type-ssh-chip'),
+                    label: Text(l10n.connectionTypeSsh),
+                    selected: _connectionType == ConnectionType.ssh,
+                    onSelected: (_) => setState(() {
+                      _connectionType = ConnectionType.ssh;
+                    }),
+                  ),
+                  ChoiceChip(
+                    key: const Key('type-sftp-chip'),
+                    label: Text(l10n.connectionTypeSftp),
+                    selected: _connectionType == ConnectionType.sftp,
+                    onSelected: (_) => setState(() {
+                      _connectionType = ConnectionType.sftp;
+                    }),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Text(

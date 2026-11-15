@@ -358,6 +358,29 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo importar el respaldo. No se ha cambiado nada.';
 
   @override
+  String get connectionTypeLabel => 'Tipo de conexión';
+
+  @override
+  String get connectionTypeSsh => 'SSH · terminal';
+
+  @override
+  String get connectionTypeSftp => 'SFTP · archivos';
+
+  @override
+  String get sessionEndedTitle => 'Sesión finalizada';
+
+  @override
+  String get sessionEndedBody =>
+      'El shell remoto ha terminado. Puedes reconectar o cerrar la sesión.';
+
+  @override
+  String get sessionEndedUnexpected =>
+      'La conexión se interrumpió de forma inesperada.';
+
+  @override
+  String get closeWorkspaceAction => 'Cerrar sesión';
+
+  @override
   String get connectionStatusConnected => 'Conectado';
 
   @override

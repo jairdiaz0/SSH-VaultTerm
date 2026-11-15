@@ -700,6 +700,48 @@ abstract class AppLocalizations {
   /// **'No se pudo importar el respaldo. No se ha cambiado nada.'**
   String get importFailed;
 
+  /// No description provided for @connectionTypeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de conexión'**
+  String get connectionTypeLabel;
+
+  /// No description provided for @connectionTypeSsh.
+  ///
+  /// In es, this message translates to:
+  /// **'SSH · terminal'**
+  String get connectionTypeSsh;
+
+  /// No description provided for @connectionTypeSftp.
+  ///
+  /// In es, this message translates to:
+  /// **'SFTP · archivos'**
+  String get connectionTypeSftp;
+
+  /// No description provided for @sessionEndedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sesión finalizada'**
+  String get sessionEndedTitle;
+
+  /// No description provided for @sessionEndedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'El shell remoto ha terminado. Puedes reconectar o cerrar la sesión.'**
+  String get sessionEndedBody;
+
+  /// No description provided for @sessionEndedUnexpected.
+  ///
+  /// In es, this message translates to:
+  /// **'La conexión se interrumpió de forma inesperada.'**
+  String get sessionEndedUnexpected;
+
+  /// No description provided for @closeWorkspaceAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar sesión'**
+  String get closeWorkspaceAction;
+
   /// No description provided for @connectionStatusConnected.
   ///
   /// In es, this message translates to:

@@ -1,12 +1,14 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:xterm/xterm.dart';
 
 import '../../../app/error_messages.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/widgets/compact_tabs.dart';
-import '../../../shared/widgets/resizable_split.dart';
+import '../../../shared/models/connection.dart';
 import '../../sftp/presentation/sftp_panel.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
 import '../../terminal/presentation/terminal_key_bar.dart';
@@ -14,18 +16,12 @@ import '../../terminal/presentation/terminal_style.dart';
 import 'workspace_actions.dart';
 import 'workspace_controller.dart';
 
-/// Right-hand workspace: the terminal of the active session and the SFTP
-/// explorer. On desktop it is resizable and maximizable; on narrow layouts the
-/// two panes become tabs that keep both channels alive.
+/// View of the open connection: terminal for SSH, file explorer for SFTP.
+/// One connection shows one view; there is no split panel.
 class WorkspacePanel extends StatelessWidget {
-  const WorkspacePanel({
-    super.key,
-    required this.controller,
-    this.compact = false,
-  });
+  const WorkspacePanel({super.key, required this.controller});
 
   final WorkspaceController controller;
-  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -37,43 +33,28 @@ class WorkspacePanel extends StatelessWidget {
           return const _EmptyWorkspace();
         }
         final l10n = AppLocalizations.of(context);
-        final files = controller.sftp == null
-            ? const _FilesUnavailable()
-            : SftpPanel(controller: controller.sftp!);
+        final busy = controller.isBusy;
+        final ended = controller.hasEnded;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _WorkspaceHeader(controller: controller),
-            if (controller.isBusy) const LinearProgressIndicator(minHeight: 2),
-            if (!controller.isBusy && controller.errorCode != null)
+            if (busy) const LinearProgressIndicator(minHeight: 2),
+            if (!busy && !ended && controller.errorCode != null)
               _ErrorBanner(code: controller.errorCode!),
             Expanded(
-              child: controller.terminal == null
-                  ? const SizedBox.shrink()
-                  : compact
-                  ? CompactTabs(
-                      firstLabel: l10n.terminalTab,
-                      secondLabel: l10n.filesTab,
-                      first: _TerminalPane(
-                        terminal: controller.terminal!,
-                        onKey: controller.sendTerminal,
-                      ),
-                      second: files,
-                    )
-                  : ResizableSplit(
-                      first: _TerminalPane(
-                        terminal: controller.terminal!,
-                        onKey: controller.sendTerminal,
-                      ),
-                      second: files,
-                    ),
+              child: ended
+                  ? _SessionEnded(controller: controller)
+                  : _content(connection),
             ),
             SizedBox(
-              height: 28,
+              height: AppSpacing.xl,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
                   child: Text(
                     l10n.connectionStatus(label: controller.status),
                     style: Theme.of(context).textTheme.bodySmall,
@@ -86,6 +67,17 @@ class WorkspacePanel extends StatelessWidget {
       },
     );
   }
+
+  Widget _content(Connection connection) {
+    if (connection.connectionType == ConnectionType.sftp) {
+      final sftp = controller.sftp;
+      if (sftp == null) return const _FilesUnavailable();
+      return SftpPanel(controller: sftp);
+    }
+    final terminal = controller.terminal;
+    if (terminal == null) return const SizedBox.shrink();
+    return _TerminalPane(terminal: terminal, onKey: controller.sendTerminal);
+  }
 }
 
 extension on AppLocalizations {
@@ -96,6 +88,7 @@ extension on AppLocalizations {
         SshConnectionStatus.awaitingHostKey ||
         SshConnectionStatus.authenticating => connectionStatusConnecting,
         SshConnectionStatus.disconnectedUnexpectedly ||
+        SshConnectionStatus.sessionEnded ||
         SshConnectionStatus.failed => connectionStatusFailed,
         SshConnectionStatus.disconnected => connectionStatusDisconnected,
       };
@@ -116,14 +109,76 @@ class _EmptyWorkspace extends StatelessWidget {
             size: 40,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           Text(l10n.workspaceEmptyTitle),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             l10n.workspaceEmptyBody,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SessionEnded extends StatelessWidget {
+  const _SessionEnded({required this.controller});
+
+  final WorkspaceController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final connection = controller.connection;
+    final unexpected =
+        controller.status == SshConnectionStatus.disconnectedUnexpectedly;
+    return Center(
+      key: const Key('session-ended'),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              unexpected ? Icons.cloud_off_outlined : Icons.logout,
+              size: 40,
+              color: unexpected ? AppColors.danger : AppColors.textSecondary,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              l10n.sessionEndedTitle,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              unexpected ? l10n.sessionEndedUnexpected : l10n.sessionEndedBody,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FilledButton.icon(
+                  key: const Key('session-reconnect'),
+                  onPressed: connection == null
+                      ? null
+                      : () =>
+                            connectAndExplain(context, controller, connection),
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: Text(l10n.reconnectAction),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                OutlinedButton(
+                  key: const Key('session-close'),
+                  onPressed: controller.dismiss,
+                  child: Text(l10n.closeWorkspaceAction),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -138,10 +193,11 @@ class _WorkspaceHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final connection = controller.connection!;
+    final isSftp = connection.connectionType == ConnectionType.sftp;
     final active = controller.isConnected || controller.isBusy;
     return Container(
       height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 14),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       decoration: const BoxDecoration(
         color: AppColors.surfaceSecondary,
         border: Border(bottom: BorderSide(color: AppColors.border)),
@@ -149,11 +205,13 @@ class _WorkspaceHeader extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            active ? Icons.terminal : Icons.terminal_outlined,
+            isSftp
+                ? (active ? Icons.folder : Icons.folder_outlined)
+                : (active ? Icons.terminal : Icons.terminal_outlined),
             size: 18,
             color: active ? AppColors.accentSecondary : AppColors.textSecondary,
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -172,14 +230,11 @@ class _WorkspaceHeader extends StatelessWidget {
               ],
             ),
           ),
-          if (!active)
+          if (!active && !controller.hasEnded)
             TextButton.icon(
               key: const Key('reconnect-button'),
-              onPressed: () => connectAndExplain(
-                context,
-                controller,
-                controller.connection!,
-              ),
+              onPressed: () =>
+                  connectAndExplain(context, controller, connection),
               icon: const Icon(Icons.refresh, size: 16),
               label: Text(l10n.reconnectAction),
             ),
@@ -208,11 +263,14 @@ class _ErrorBanner extends StatelessWidget {
       key: const Key('workspace-error'),
       width: double.infinity,
       color: AppColors.danger.withValues(alpha: 0.12),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       child: Row(
         children: [
           const Icon(Icons.error_outline, size: 16, color: AppColors.danger),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               describeAppError(l10n, AppException(code)),
@@ -231,6 +289,10 @@ class _TerminalPane extends StatelessWidget {
   final Terminal terminal;
   final void Function(String data) onKey;
 
+  /// The touch key bar is for mobile soft keyboards; desktop keyboards already
+  /// produce every sequence natively.
+  static bool get _showKeyBar => Platform.isAndroid || Platform.isIOS;
+
   @override
   Widget build(BuildContext context) => ColoredBox(
     color: AppColors.background,
@@ -241,11 +303,14 @@ class _TerminalPane extends StatelessWidget {
             terminal,
             theme: appTerminalTheme,
             textStyle: appTerminalStyle,
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             autofocus: true,
+            // Desktop must read raw key events: the IME text path of xterm
+            // 4.0.0 does not deliver printable characters on Windows.
+            hardwareKeyboardOnly: !_showKeyBar,
           ),
         ),
-        TerminalKeyBar(onInput: onKey),
+        if (_showKeyBar) TerminalKeyBar(onInput: onKey),
       ],
     ),
   );
@@ -259,7 +324,7 @@ class _FilesUnavailable extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Container(
       color: AppColors.surfaceSecondary,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       alignment: Alignment.center,
       child: Text(
         l10n.sftpOpenFailed,

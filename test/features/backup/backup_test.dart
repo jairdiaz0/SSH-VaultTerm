@@ -10,6 +10,7 @@ import 'package:ssh_client/features/backup/domain/backup_document.dart';
 import 'package:ssh_client/features/connections/data/credential_service.dart';
 import 'package:ssh_client/shared/models/connection.dart';
 import 'package:ssh_client/shared/models/known_host.dart';
+import 'package:ssh_client/shared/models/profile.dart';
 import 'package:ssh_client/shared/models/server_collection.dart';
 
 import '../../support/in_memory_secret_store.dart';
@@ -162,7 +163,7 @@ void main() {
       final document = await exporter.build();
       final encoded = document.encode();
 
-      expect(document.formatVersion, 1);
+      expect(document.formatVersion, 2);
       expect(document.profiles.single.id, profile.id);
       expect(document.profileData.single.connections.single.name, 'web-s1');
       expect(document.credentials.single.secret.password, 'secret-password');
@@ -370,6 +371,57 @@ void main() {
     // Nothing half-imported: the fresh installation is still empty.
     expect(ctx.catalog.profiles.all(), isEmpty);
     expect(await failing.keysWithPrefix('profile/'), isEmpty);
+  });
+
+  test('a v1 backup migrates: every connection becomes SSH', () {
+    final profile = Profile(
+      id: 'p1',
+      name: 'Work',
+      passwordSalt: const [1, 2, 3],
+      passwordVerifier: const [4, 5, 6],
+      kdf: 'argon2id',
+      kdfParams: jsonEncode(testArgon2Params.toJson()),
+      settings: const {},
+      isLastActive: true,
+      failedAttempts: 0,
+      lockoutUntil: null,
+      createdAt: DateTime.utc(2026, 1, 1),
+      updatedAt: DateTime.utc(2026, 1, 1),
+    );
+    final v1Connection = Connection(
+      id: 'c1',
+      name: 'server',
+      hostname: 'host',
+      port: 22,
+      username: 'root',
+      authType: AuthenticationType.password,
+      position: 0,
+      createdAt: DateTime.utc(2026, 1, 1),
+      updatedAt: DateTime.utc(2026, 1, 1),
+    ).toJson()..remove('connectionType');
+
+    final document = BackupDocument.decode(
+      jsonEncode({
+        'formatVersion': 1,
+        'exportedAt': DateTime.utc(2026, 1, 1).toIso8601String(),
+        'profiles': [profile.toJson()],
+        'profileData': [
+          {
+            'profileId': 'p1',
+            'collections': const <Object?>[],
+            'connections': [v1Connection],
+            'knownHosts': const <Object?>[],
+          },
+        ],
+        'credentials': const <Object?>[],
+      }),
+    );
+
+    expect(document.formatVersion, 1);
+    expect(
+      document.profileData.single.connections.single.connectionType,
+      ConnectionType.ssh,
+    );
   });
 
   test('rejects malformed and future backups with specific codes', () {

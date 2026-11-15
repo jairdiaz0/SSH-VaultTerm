@@ -42,7 +42,7 @@ abstract final class CatalogSchema {
 /// Schema of a per-profile encrypted database. One file per profile, one key
 /// per profile, stored only in the platform secret store.
 abstract final class ProfileSchema {
-  static const runner = MigrationRunner(migrations: [_v1]);
+  static const runner = MigrationRunner(migrations: [_v1, _v2]);
 
   static const _v1 = <String>[
     '''
@@ -98,5 +98,12 @@ abstract final class ProfileSchema {
       value TEXT NOT NULL
     ) STRICT
     ''',
+  ];
+
+  /// v2: each connection declares what it opens (terminal or file explorer).
+  /// Existing rows default to SSH, which is what they were before.
+  static const _v2 = <String>[
+    'ALTER TABLE connections ADD COLUMN connection_type TEXT NOT NULL '
+        "DEFAULT 'ssh' CHECK (connection_type IN ('ssh', 'sftp'))",
   ];
 }

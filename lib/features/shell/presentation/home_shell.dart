@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../app/session_controller.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../settings/presentation/settings_dialog.dart';
@@ -72,10 +73,7 @@ class _HomeShellState extends State<HomeShell> {
     widget.controller.removeListener(_onSessionChanged);
     final shell = _shell;
     _shell = null;
-    if (shell != null) {
-      unawaited(shell.workspace.close());
-      shell.dispose();
-    }
+    shell?.dispose();
     super.dispose();
   }
 
@@ -95,7 +93,7 @@ class _HomeShellState extends State<HomeShell> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 900;
+        final wide = constraints.maxWidth >= AppLayout.minWidth;
         Sidebar sidebar() => Sidebar(
           controller: shell,
           onOpenSettings: () => _openSettings(context, shell),
@@ -133,7 +131,7 @@ class _HomeShellState extends State<HomeShell> {
                       ),
                     ],
                   )
-                : WorkspacePanel(controller: shell.workspace, compact: true),
+                : WorkspacePanel(controller: shell.workspace),
           ),
         );
       },

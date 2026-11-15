@@ -35,4 +35,20 @@ abstract final class SecretKeys {
   static String profilePrefix(String profileId) => 'profile/$profileId/';
 
   static const probeKey = '__probe__/secret_store';
+
+  /// Prefixes [key] with an isolated namespace.
+  ///
+  /// Integration tests and development runs set `SSH_CLIENT_SECRET_NAMESPACE`
+  /// so they never read or delete the user's real secrets. An empty namespace
+  /// keeps the production layout untouched.
+  static String namespaced(String namespace, String key) =>
+      namespace.isEmpty ? key : '$namespace/$key';
+
+  /// Removes [namespace] from a full key, or returns null when it does not
+  /// belong to it.
+  static String? unnamespace(String namespace, String key) {
+    if (namespace.isEmpty) return key;
+    final prefix = '$namespace/';
+    return key.startsWith(prefix) ? key.substring(prefix.length) : null;
+  }
 }

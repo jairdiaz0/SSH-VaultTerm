@@ -61,8 +61,9 @@ class ConnectionRepository {
     _requireCollection(connection.collectionId);
     _db.execute(
       'UPDATE connections SET collection_id = ?, name = ?, hostname = ?, port = ?, '
-      'username = ?, auth_type = ?, credential_id = ?, description = ?, tags = ?, '
-      'favorite = ?, position = ?, updated_at = ? WHERE id = ?',
+      'username = ?, auth_type = ?, connection_type = ?, credential_id = ?, '
+      'description = ?, tags = ?, favorite = ?, position = ?, updated_at = ? '
+      'WHERE id = ?',
       [
         connection.collectionId,
         connection.name,
@@ -70,6 +71,7 @@ class ConnectionRepository {
         connection.port,
         connection.username,
         connection.authType.name,
+        connection.connectionType.name,
         connection.credentialId,
         connection.description,
         connection.toRow()['tags'],

@@ -17,6 +17,10 @@ enum SshConnectionStatus {
   /// The peer or the network closed a connection the user did not close.
   disconnectedUnexpectedly,
 
+  /// The remote shell ended (exit/logout) or its channel closed. The window
+  /// still offers reconnect or close; the SSH client is released.
+  sessionEnded,
+
   /// The attempt failed; nothing is open.
   failed,
 }
@@ -40,6 +44,7 @@ class SshConnectionState {
   bool get isTerminal =>
       status == SshConnectionStatus.disconnected ||
       status == SshConnectionStatus.disconnectedUnexpectedly ||
+      status == SshConnectionStatus.sessionEnded ||
       status == SshConnectionStatus.failed;
 
   SshConnectionState copyWith({
