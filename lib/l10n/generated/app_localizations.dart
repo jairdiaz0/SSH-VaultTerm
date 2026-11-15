@@ -382,6 +382,186 @@ abstract class AppLocalizations {
   /// **'Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.'**
   String get errorPrivateKeyUnsupportedFormat;
 
+  /// No description provided for @errorSftpPermissionDenied.
+  ///
+  /// In es, this message translates to:
+  /// **'El servidor denegó el permiso para esa operación.'**
+  String get errorSftpPermissionDenied;
+
+  /// No description provided for @errorSftpNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'La ruta remota no existe o ya no está disponible.'**
+  String get errorSftpNotFound;
+
+  /// No description provided for @errorSftpFailure.
+  ///
+  /// In es, this message translates to:
+  /// **'El servidor rechazó la operación de archivos.'**
+  String get errorSftpFailure;
+
+  /// No description provided for @errorTransferCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'Transferencia cancelada.'**
+  String get errorTransferCancelled;
+
+  /// No description provided for @errorTransferFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'La transferencia falló.'**
+  String get errorTransferFailed;
+
+  /// No description provided for @sftpEmptyFolder.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta carpeta está vacía.'**
+  String get sftpEmptyFolder;
+
+  /// No description provided for @sftpNewFolderTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva carpeta'**
+  String get sftpNewFolderTitle;
+
+  /// No description provided for @folderNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de la carpeta'**
+  String get folderNameLabel;
+
+  /// No description provided for @uploadAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Subir archivos'**
+  String get uploadAction;
+
+  /// No description provided for @downloadAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Descargar'**
+  String get downloadAction;
+
+  /// No description provided for @showHiddenAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Mostrar archivos ocultos'**
+  String get showHiddenAction;
+
+  /// No description provided for @hideHiddenAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocultar archivos ocultos'**
+  String get hideHiddenAction;
+
+  /// No description provided for @transferQueueTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Transferencias'**
+  String get transferQueueTitle;
+
+  /// No description provided for @transferUploadLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Subida'**
+  String get transferUploadLabel;
+
+  /// No description provided for @transferDownloadLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Descarga'**
+  String get transferDownloadLabel;
+
+  /// No description provided for @transferPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente'**
+  String get transferPending;
+
+  /// No description provided for @transferRunning.
+  ///
+  /// In es, this message translates to:
+  /// **'En curso'**
+  String get transferRunning;
+
+  /// No description provided for @transferCompleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizada'**
+  String get transferCompleted;
+
+  /// No description provided for @transferFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'Fallida'**
+  String get transferFailed;
+
+  /// No description provided for @transferCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelada'**
+  String get transferCancelled;
+
+  /// No description provided for @cancelAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancelAction;
+
+  /// No description provided for @renameTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Renombrar'**
+  String get renameTitle;
+
+  /// No description provided for @newNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo nombre'**
+  String get newNameLabel;
+
+  /// No description provided for @sftpOpenFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo abrir el explorador de archivos del servidor.'**
+  String get sftpOpenFailed;
+
+  /// No description provided for @sftpChooseFolderFirst.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige una carpeta de destino.'**
+  String get sftpChooseFolderFirst;
+
+  /// No description provided for @sftpFolderCreated.
+  ///
+  /// In es, this message translates to:
+  /// **'Carpeta creada.'**
+  String get sftpFolderCreated;
+
+  /// No description provided for @sftpRenamed.
+  ///
+  /// In es, this message translates to:
+  /// **'Elemento renombrado.'**
+  String get sftpRenamed;
+
+  /// No description provided for @sftpDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Elemento eliminado.'**
+  String get sftpDeleted;
+
+  /// No description provided for @sftpUploadStarted.
+  ///
+  /// In es, this message translates to:
+  /// **'Subida en curso.'**
+  String get sftpUploadStarted;
+
+  /// No description provided for @sftpDownloadStarted.
+  ///
+  /// In es, this message translates to:
+  /// **'Descarga en curso.'**
+  String get sftpDownloadStarted;
+
   /// No description provided for @connectionStatusConnected.
   ///
   /// In es, this message translates to:
@@ -765,12 +945,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Restaurar división'**
   String get restoreSplitAction;
-
-  /// No description provided for @filesPanelPending.
-  ///
-  /// In es, this message translates to:
-  /// **'El explorador de archivos se habilita en la siguiente fase.'**
-  String get filesPanelPending;
 
   /// No description provided for @settingsTitle.
   ///

@@ -280,6 +280,49 @@ Con servicios reales (BD cifrada en memoria y almacén de secretos en memoria):
 
 Pendiente (fase 5): panel SFTP real y arrastrar y soltar de entrada.
 
+## 2026-11-15 — Fase 5 (SFTP)
+
+### Estado global
+```text
+flutter analyze   → No issues found!
+flutter test      → +169 All tests passed! (incluye SFTP, SSH y pty reales)
+```
+
+### Rutas remotas — `test/features/sftp/posix_path_test.dart`
+Lógica POSIX propia (no `path` local): normalización de `//`, `.` y `..` sin salir
+de la raíz, `join` con nombre absoluto, `parent` de `/` = `/`, `basename`,
+`segments` para breadcrumbs y `isWithin` para comprobar contención real (no
+prefijos que solo se parecen).
+
+### Entradas remotas — `test/features/sftp/remote_entry_test.dart`
+Tipo por bits `S_IFMT` (directorio, fichero, enlace), permisos estilo `ls`
+(`rw-r--r--`, `rwxr-x--x`) y archivos ocultos por punto inicial.
+
+### Cola — `test/features/sftp/transfer_queue_test.dart`
+Con un gateway falso: subida completa con progreso y velocidad, descarga que
+aprende el tamaño del servidor, cancelación en el siguiente chunk (estado
+`cancelled`, código `transferCancelled`), cancelación de una tarea pendiente que
+no toca el gateway, fallo reportado y reintento que termina bien.
+
+### Servidor real — `test/features/sftp/sftp_integration_test.dart`
+- `home()` absoluto y listado del directorio del usuario.
+- Subida de 2 MiB por chunks; `sha256sum` remoto **igual** al SHA-256 local.
+- Listado con tamaño, permisos y fecha reales.
+- Descarga y comparación de hashes local/descarga: integridad verificada.
+- Renombrado, carpetas anidadas y borrado recursivo comprobado por listado.
+- Ruta inexistente → `sftpNotFound`.
+- Cola completa subiendo y bajando el mismo fichero, con hash igual al original.
+Todo dentro de `~/opencode_sandbox/run_<uuid>/`, borrado al terminar.
+
+### Panel — `test/features/sftp/sftp_panel_test.dart`
+Con un servidor en memoria: listado con tamaños y permisos, ocultos, navegación
+con historial (atrás/adelante/arriba/breadcrumbs), creación de carpeta,
+renombrado, borrado con confirmación, estado de error con reintento, y subida que
+encola, completa y refresca el listado mostrando «Finalizada».
+
+Pendiente: el arrastre real del sistema operativo al panel (`DropTarget` y su
+manejador cableados y probados por código, no por gesto del SO).
+
 ## Pendiente de verificación (bloqueado por el entorno, D-001)
 - `flutter_secure_storage` en ejecución: plugin de plataforma; no hay app
   ejecutable en esta máquina. Marcado `[~]`.

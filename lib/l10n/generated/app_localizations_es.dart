@@ -186,6 +186,100 @@ class AppLocalizationsEs extends AppLocalizations {
       'Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.';
 
   @override
+  String get errorSftpPermissionDenied =>
+      'El servidor denegó el permiso para esa operación.';
+
+  @override
+  String get errorSftpNotFound =>
+      'La ruta remota no existe o ya no está disponible.';
+
+  @override
+  String get errorSftpFailure =>
+      'El servidor rechazó la operación de archivos.';
+
+  @override
+  String get errorTransferCancelled => 'Transferencia cancelada.';
+
+  @override
+  String get errorTransferFailed => 'La transferencia falló.';
+
+  @override
+  String get sftpEmptyFolder => 'Esta carpeta está vacía.';
+
+  @override
+  String get sftpNewFolderTitle => 'Nueva carpeta';
+
+  @override
+  String get folderNameLabel => 'Nombre de la carpeta';
+
+  @override
+  String get uploadAction => 'Subir archivos';
+
+  @override
+  String get downloadAction => 'Descargar';
+
+  @override
+  String get showHiddenAction => 'Mostrar archivos ocultos';
+
+  @override
+  String get hideHiddenAction => 'Ocultar archivos ocultos';
+
+  @override
+  String get transferQueueTitle => 'Transferencias';
+
+  @override
+  String get transferUploadLabel => 'Subida';
+
+  @override
+  String get transferDownloadLabel => 'Descarga';
+
+  @override
+  String get transferPending => 'Pendiente';
+
+  @override
+  String get transferRunning => 'En curso';
+
+  @override
+  String get transferCompleted => 'Finalizada';
+
+  @override
+  String get transferFailed => 'Fallida';
+
+  @override
+  String get transferCancelled => 'Cancelada';
+
+  @override
+  String get cancelAction => 'Cancelar';
+
+  @override
+  String get renameTitle => 'Renombrar';
+
+  @override
+  String get newNameLabel => 'Nuevo nombre';
+
+  @override
+  String get sftpOpenFailed =>
+      'No se pudo abrir el explorador de archivos del servidor.';
+
+  @override
+  String get sftpChooseFolderFirst => 'Elige una carpeta de destino.';
+
+  @override
+  String get sftpFolderCreated => 'Carpeta creada.';
+
+  @override
+  String get sftpRenamed => 'Elemento renombrado.';
+
+  @override
+  String get sftpDeleted => 'Elemento eliminado.';
+
+  @override
+  String get sftpUploadStarted => 'Subida en curso.';
+
+  @override
+  String get sftpDownloadStarted => 'Descarga en curso.';
+
+  @override
   String get connectionStatusConnected => 'Conectado';
 
   @override
@@ -395,10 +489,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get restoreSplitAction => 'Restaurar división';
-
-  @override
-  String get filesPanelPending =>
-      'El explorador de archivos se habilita en la siguiente fase.';
 
   @override
   String get settingsTitle => 'Ajustes';

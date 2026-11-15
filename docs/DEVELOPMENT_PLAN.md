@@ -103,15 +103,16 @@ y `flutter test` (unitarios, widget, golden, FFI).
   (menú Subir/Bajar, accesible por teclado; arrastre de elementos no implementado).
 - [~] Workspace con terminal + SFTP y divisor redimensionable / maximizar panel
   (terminal, divisor y maximización listos y probados; panel SFTP real llega en la fase 5).
-- [ ] Arrastrar y soltar de entrada (SO → SFTP) con `desktop_drop` (depende del explorador SFTP).
+- [~] Arrastrar y soltar de entrada (SO → SFTP) con `desktop_drop` (destino de
+  arrastre y manejador probados; el arrastre real del SO no es ejecutable aquí).
 - [!] Arrastrar y soltar de salida (SFTP → SO): bloqueado por conflicto de dependencias (D-006).
 
 ## Fase 5 — SFTP
-- [ ] Explorador remoto real: breadcrumbs, navegación, refrescar, permisos, ocultos, estados vacío/error/desconexión.
-- [ ] Operaciones: listar, abrir, subir, descargar, crear carpeta, renombrar, eliminar (confirmación; recursivo seguro).
-- [ ] Cola de transferencias por chunks con progreso, velocidad, cancelación, reintento y errores.
-- [ ] Lógica POSIX propia para rutas remotas (sin `path` local).
-- [ ] Integridad por checksum en tests contra el servidor de pruebas.
+- [x] Explorador remoto real: breadcrumbs, navegación, refrescar, permisos, ocultos, estados vacío/error/desconexión.
+- [x] Operaciones: listar, abrir, subir, descargar, crear carpeta, renombrar, eliminar (confirmación; recursivo seguro).
+- [x] Cola de transferencias por chunks con progreso, velocidad, cancelación, reintento y errores.
+- [x] Lógica POSIX propia para rutas remotas (sin `path` local).
+- [x] Integridad por checksum en tests contra el servidor de pruebas.
 
 ## Fase 6 — Backups
 - [ ] Exportación JSON con advertencia bloqueante y confirmación explícita.

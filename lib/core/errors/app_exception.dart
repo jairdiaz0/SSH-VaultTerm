@@ -26,6 +26,11 @@ enum AppErrorCode {
   privateKeyPassphraseRequired,
   privateKeyPassphraseInvalid,
   privateKeyUnsupportedFormat,
+  sftpPermissionDenied,
+  sftpNotFound,
+  sftpFailure,
+  transferCancelled,
+  transferFailed,
   unknown,
 }
 

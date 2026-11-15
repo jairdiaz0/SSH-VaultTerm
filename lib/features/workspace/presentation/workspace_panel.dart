@@ -6,6 +6,7 @@ import '../../../app/theme/app_theme.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/resizable_split.dart';
+import '../../sftp/presentation/sftp_panel.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
 import '../../terminal/presentation/terminal_style.dart';
 import 'workspace_actions.dart';
@@ -40,7 +41,9 @@ class WorkspacePanel extends StatelessWidget {
                   ? const SizedBox.shrink()
                   : ResizableSplit(
                       first: _TerminalPane(terminal: controller.terminal!),
-                      second: const _FilesPane(),
+                      second: controller.sftp == null
+                          ? const _FilesUnavailable()
+                          : SftpPanel(controller: controller.sftp!),
                     ),
             ),
             SizedBox(
@@ -218,38 +221,20 @@ class _TerminalPane extends StatelessWidget {
   );
 }
 
-class _FilesPane extends StatelessWidget {
-  const _FilesPane();
+class _FilesUnavailable extends StatelessWidget {
+  const _FilesUnavailable();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
       color: AppColors.surfaceSecondary,
-      child: Column(
-        children: [
-          Container(
-            height: 36,
-            padding: const EdgeInsets.only(left: 12),
-            alignment: Alignment.centerLeft,
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AppColors.border)),
-            ),
-            child: Text(l10n.filesTab),
-          ),
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  l10n.filesPanelPending,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.all(24),
+      alignment: Alignment.center,
+      child: Text(
+        l10n.sftpOpenFailed,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }

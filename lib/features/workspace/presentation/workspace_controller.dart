@@ -7,6 +7,8 @@ import '../../../app/app_services.dart';
 import '../../../app/profile_session.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../shared/models/connection.dart';
+import '../../sftp/data/sftp_service.dart';
+import '../../sftp/presentation/sftp_controller.dart';
 import '../../ssh/data/ssh_connection.dart';
 import '../../ssh/domain/host_key_verifier.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
@@ -27,15 +29,21 @@ class WorkspaceController extends ChangeNotifier {
   Connection? _connection;
   SshConnection? _ssh;
   RemoteTerminal? _terminal;
+  SftpController? _sftp;
   SshConnectionStatus _status = SshConnectionStatus.disconnected;
   AppErrorCode? _errorCode;
+  AppErrorCode? _sftpErrorCode;
   HostKeyChallenge? _lastChallenge;
 
   Connection? get connection => _connection;
   SshConnection? get ssh => _ssh;
   Terminal? get terminal => _terminal?.terminal;
+  SftpController? get sftp => _sftp;
   SshConnectionStatus get status => _status;
   AppErrorCode? get errorCode => _errorCode;
+
+  /// Set when the SSH connection works but the SFTP subsystem did not open.
+  AppErrorCode? get sftpErrorCode => _sftpErrorCode;
 
   /// Last host key challenge presented, for diagnostics and tests.
   HostKeyChallenge? get lastChallenge => _lastChallenge;
@@ -78,6 +86,17 @@ class WorkspaceController extends ChangeNotifier {
 
       final terminal = await RemoteTerminal.open(ssh);
       _terminal = terminal;
+
+      try {
+        final sftp = SftpController(gateway: await SftpService.open(ssh));
+        await sftp.initialize();
+        _sftp = sftp;
+      } catch (error) {
+        // The terminal must survive a server without the SFTP subsystem.
+        _sftpErrorCode = error is AppException
+            ? error.code
+            : AppErrorCode.sftpFailure;
+      }
       _setStatus(SshConnectionStatus.connected);
     } catch (error) {
       _errorCode = error is AppException ? error.code : mapSshError(error);
@@ -93,9 +112,13 @@ class WorkspaceController extends ChangeNotifier {
     }
   }
 
-  /// Closes the terminal and the SSH session. The selected server stays, so the
-  /// user can reconnect from the same panel.
+  /// Closes the terminal, SFTP and the SSH session. The selected server stays,
+  /// so the user can reconnect from the same panel.
   Future<void> close() async {
+    final sftp = _sftp;
+    _sftp = null;
+    _sftpErrorCode = null;
+    sftp?.dispose();
     final terminal = _terminal;
     _terminal = null;
     if (terminal != null) {

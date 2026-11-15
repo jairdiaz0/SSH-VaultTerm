@@ -41,6 +41,11 @@ String describeAppError(
       l10n.errorPrivateKeyPassphraseInvalid,
     AppErrorCode.privateKeyUnsupportedFormat =>
       l10n.errorPrivateKeyUnsupportedFormat,
+    AppErrorCode.sftpPermissionDenied => l10n.errorSftpPermissionDenied,
+    AppErrorCode.sftpNotFound => l10n.errorSftpNotFound,
+    AppErrorCode.sftpFailure => l10n.errorSftpFailure,
+    AppErrorCode.transferCancelled => l10n.errorTransferCancelled,
+    AppErrorCode.transferFailed => l10n.errorTransferFailed,
     AppErrorCode.notFound ||
     AppErrorCode.secretNotFound ||
     AppErrorCode.unsupported ||
