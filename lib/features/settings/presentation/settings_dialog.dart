@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/session_controller.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../backup/presentation/backup_actions.dart';
+import '../../profiles/presentation/profile_management_dialog.dart';
 import '../../shell/presentation/shell_controller.dart';
 
 /// Settings for the unlocked profile: identity, known host keys and session
@@ -11,23 +13,27 @@ class SettingsDialog extends StatefulWidget {
   const SettingsDialog({
     super.key,
     required this.controller,
+    required this.sessionController,
     required this.onLock,
     required this.onSignOut,
   });
 
   final ShellController controller;
+  final SessionController sessionController;
   final VoidCallback onLock;
   final VoidCallback onSignOut;
 
   static Future<void> show(
     BuildContext context, {
     required ShellController controller,
+    required SessionController sessionController,
     required VoidCallback onLock,
     required VoidCallback onSignOut,
   }) => showDialog<void>(
     context: context,
     builder: (_) => SettingsDialog(
       controller: controller,
+      sessionController: sessionController,
       onLock: onLock,
       onSignOut: onSignOut,
     ),
@@ -62,6 +68,15 @@ class _SettingsDialogState extends State<SettingsDialog> {
             ListTile(
               leading: const Icon(Icons.shield_outlined, size: 18),
               title: Text(controller.profileName),
+            ),
+            ListTile(
+              key: const Key('manage-profiles'),
+              leading: const Icon(Icons.people_outline, size: 18),
+              title: Text(l10n.manageProfilesAction),
+              onTap: () => ProfileManagementDialog.show(
+                context,
+                controller: widget.sessionController,
+              ),
             ),
             const SizedBox(height: 8),
             _SectionHeader(title: l10n.securitySection),

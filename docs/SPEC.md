@@ -72,7 +72,11 @@ Documenta esquema y migraciones en `docs/DATABASE.md`.
 - **Reautenticación**: interruptor por perfil «Requerir contraseña al crear/editar conexiones». Si está activo, pide la contraseña al guardar cambios en datos del servidor o credenciales, no para cambios cosméticos (color, orden).
 
 ## 8. SSH
-Formulario: nombre, host/IP, puerto, usuario, método (contraseña o llave privada), credencial, descripción, colección.
+Formulario: nombre, **tipo de conexión (SSH o SFTP)**, host/IP, puerto, usuario, método (contraseña o llave privada), credencial, descripción, colección.
+
+> Decisión revisada tras la primera prueba manual (D-018): cada conexión declara si abre
+> una **terminal** (SSH) o un **explorador de archivos** (SFTP). Al abrirla se muestra
+> solo esa vista, a pantalla completa. No hay panel dividido terminal + SFTP.
 
 Llaves privadas: importar archivo, soporte de passphrase, validar formato antes de guardar, contenido solo en Secure Storage, nunca en el sistema de archivos de la app, errores comprensibles. Verifica qué tipos soporta la versión instalada de dartssh2 (RSA, ECDSA, Ed25519, formatos OpenSSH/PEM) y documenta los no soportados.
 
@@ -93,12 +97,12 @@ Operaciones: listar, abrir, subir, descargar, crear carpeta, renombrar, eliminar
 Cola de transferencias en segundo plano sin bloquear la UI (streaming por chunks): nombre, dirección, total, transferido, porcentaje, velocidad, estado (pendiente, en curso, finalizada, fallida, cancelada), error, cancelación, reintento seguro, tratamiento de archivos existentes y de errores de permisos o espacio.
 
 ## 11. UI de escritorio
-Barra superior, sidebar (perfil activo, colecciones expandibles, servidores, favoritos, ajustes, gestión de perfiles, indicador de conexión) y espacio de trabajo con terminal a la izquierda y SFTP a la derecha, con divisor redimensionable y posibilidad de maximizar un panel. Sidebar: crear, renombrar, eliminar, reordenar colecciones; crear conexiones; favoritos; menús contextuales.
+Barra superior, sidebar (perfil activo, colecciones expandibles, servidores, favoritos, ajustes, gestión de perfiles, indicador de conexión) y espacio de trabajo que muestra **solo la vista del tipo de la conexión abierta**: terminal para SSH, explorador de archivos para SFTP (D-018). Sidebar: crear, renombrar, eliminar, reordenar colecciones; crear conexiones; favoritos; menús contextuales.
 
 Drag and drop de entrada (SO → panel SFTP, sube al directorio actual) y de salida (lista SFTP → escritorio, descargando a una ubicación temporal que se limpia con seguridad y sin borrar mientras el SO la usa). Elige librerías compatibles y verifica; si una plataforma no lo permite, documenta la limitación sin simularlo.
 
 ## 12. UI de Android
-Diseño propio, no el de escritorio comprimido. Drawer (perfil, colecciones, servidores, favoritos, ajustes, perfiles) y espacio de trabajo con pestañas Terminal y Archivos que conservan la sesión y los canales al alternar. Terminal móvil: teclado virtual, foco, scroll táctil, selección, copia, pegado y barra de teclas Ctrl, Alt, Esc, Tab y flechas. SFTP táctil con selección, menús contextuales, operaciones y transferencias. Selector nativo para subir y selector de destino para guardar, sin permisos generales de almacenamiento. Tablets: aprovechar el espacio con `LayoutBuilder` y breakpoints según espacio disponible, no según tipo de dispositivo.
+Diseño propio, no el de escritorio comprimido. Drawer (perfil, colecciones, servidores, favoritos, ajustes, perfiles) y espacio de trabajo que muestra la vista del tipo de conexión: terminal para SSH, archivos para SFTP (D-018), conservando la sesión al navegar. Terminal móvil: teclado virtual, foco, scroll táctil, selección, copia, pegado y barra de teclas Ctrl, Alt, Esc, Tab y flechas (solo en móvil). SFTP táctil con selección, menús contextuales, operaciones y transferencias. Selector nativo para subir y selector de destino para guardar, sin permisos generales de almacenamiento. Tablets: aprovechar el espacio con `LayoutBuilder` y breakpoints según espacio disponible, no según tipo de dispositivo.
 
 ## 13. Backups JSON
 Exportar desde Ajustes o Gestión de perfiles tras mostrar esta advertencia y requerir confirmación explícita, sin exportar nada antes:

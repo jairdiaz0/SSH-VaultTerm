@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ssh_client/app/profile_session.dart';
 import 'package:ssh_client/features/shell/presentation/home_shell.dart';
 
 import 'app_harness.dart';
 import 'test_context.dart';
 
 /// Mounts the unlocked desktop shell with a real (in-memory) profile database.
-Future<AppHarness> pumpShell(WidgetTester tester) async {
+Future<AppHarness> pumpShell(
+  WidgetTester tester, {
+  Size size = const Size(1400, 1000),
+  void Function(ProfileSession session)? seed,
+}) async {
   // Desktop-sized surface: the real target for this shell.
-  tester.view.physicalSize = const Size(1400, 1000);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
@@ -18,6 +23,7 @@ Future<AppHarness> pumpShell(WidgetTester tester) async {
     password: testPassword,
     passwordConfirmation: testPassword,
   );
+  seed?.call(harness.controller.session!);
   await tester.pumpWidget(
     harness.wrap(HomeShell(controller: harness.controller)),
   );

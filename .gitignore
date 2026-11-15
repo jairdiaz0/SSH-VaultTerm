@@ -49,3 +49,6 @@ ios/Pods/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Agent skill registry cache (local tooling, not project code)
+.atl/

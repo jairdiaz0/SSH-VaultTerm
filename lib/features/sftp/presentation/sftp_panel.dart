@@ -1,8 +1,10 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../app/error_messages.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -51,10 +53,28 @@ class _SftpPanelState extends State<SftpPanel> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _Toolbar(controller: controller),
-              if (controller.isLoading)
-                const LinearProgressIndicator(minHeight: 2),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: controller.isLoading
+                    ? const LinearProgressIndicator(
+                        key: ValueKey('sftp-loading'),
+                        minHeight: 2,
+                      )
+                    : const SizedBox(key: ValueKey('sftp-idle'), height: 2),
+              ),
               _Breadcrumbs(controller: controller),
-              Expanded(child: _body(l10n, controller)),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  switchInCurve: Curves.easeOut,
+                  child: KeyedSubtree(
+                    key: ValueKey(
+                      '${controller.path}|${controller.errorCode?.name}',
+                    ),
+                    child: _body(l10n, controller),
+                  ),
+                ),
+              ),
               TransferList(queue: controller.queue),
             ],
           ),
@@ -205,161 +225,269 @@ class _Toolbar extends StatelessWidget {
   }
 }
 
-class _Breadcrumbs extends StatelessWidget {
+class _Breadcrumbs extends StatefulWidget {
   const _Breadcrumbs({required this.controller});
 
   final SftpController controller;
 
   @override
+  State<_Breadcrumbs> createState() => _BreadcrumbsState();
+}
+
+class _BreadcrumbsState extends State<_Breadcrumbs> {
+  bool _editing = false;
+  final TextEditingController _path = TextEditingController();
+
+  @override
+  void dispose() {
+    _path.dispose();
+    super.dispose();
+  }
+
+  void _beginEdit() {
+    _path.text = widget.controller.path;
+    _path.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: _path.text.length,
+    );
+    setState(() => _editing = true);
+  }
+
+  Future<void> _submit(String value) async {
+    final target = value.trim();
+    setState(() => _editing = false);
+    if (target.isEmpty || target == widget.controller.path) return;
+    await widget.controller.open(target);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final controller = widget.controller;
     final segments = PosixPath.segments(controller.path);
-    return SizedBox(
-      height: 30,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        children: [
-          TextButton(
-            key: const Key('crumb-root'),
-            onPressed: () => controller.open('/'),
-            child: const Text('/'),
-          ),
-          for (var index = 0; index < segments.length; index++)
-            TextButton(
-              key: Key('crumb-${segments[index]}'),
-              onPressed: () => controller.open(
-                '/${segments.sublist(0, index + 1).join('/')}',
-              ),
-              child: Text(
-                index == segments.length - 1
-                    ? segments[index]
-                    : '${segments[index]} /',
-              ),
-            ),
-          Center(
-            child: Text(
-              controller.path,
-              key: const Key('sftp-path'),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-        ],
+    // Ctrl+L focuses the path editor, like OpenSSH clients. The panel owns the
+    // focus while it is visible: there is no terminal behind it.
+    return Focus(
+      autofocus: true,
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            HardwareKeyboard.instance.isControlPressed &&
+            event.logicalKey == LogicalKeyboardKey.keyL) {
+          _beginEdit();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: SizedBox(
+        height: 32,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          switchInCurve: Curves.easeOut,
+          child: _editing
+              ? Padding(
+                  key: const ValueKey('editing'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 2,
+                  ),
+                  child: TextField(
+                    key: const Key('sftp-path-field'),
+                    controller: _path,
+                    autofocus: true,
+                    style: const TextStyle(
+                      fontFamily: AppTheme.monoFamily,
+                      fontSize: 12,
+                    ),
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: AppSpacing.xs,
+                      ),
+                    ),
+                    onSubmitted: _submit,
+                    onTapOutside: (_) => setState(() => _editing = false),
+                  ),
+                )
+              : Row(
+                  key: const ValueKey('breadcrumbs'),
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.xs,
+                        ),
+                        children: [
+                          TextButton(
+                            key: const Key('crumb-root'),
+                            onPressed: () => controller.open('/'),
+                            child: const Text('/'),
+                          ),
+                          for (var index = 0; index < segments.length; index++)
+                            TextButton(
+                              key: Key('crumb-${segments[index]}'),
+                              onPressed: () => controller.open(
+                                '/${segments.sublist(0, index + 1).join('/')}',
+                              ),
+                              child: Text(
+                                index == segments.length - 1
+                                    ? segments[index]
+                                    : '${segments[index]} /',
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    // Free space: clicking it turns the breadcrumbs into an
+                    // editable path. There is no second path label.
+                    Expanded(
+                      child: GestureDetector(
+                        key: const Key('sftp-path-free-space'),
+                        behavior: HitTestBehavior.opaque,
+                        onTap: _beginEdit,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }
 }
 
-class _EntryRow extends StatelessWidget {
+class _EntryRow extends StatefulWidget {
   const _EntryRow({required this.entry, required this.controller});
 
   final RemoteEntry entry;
   final SftpController controller;
 
   @override
+  State<_EntryRow> createState() => _EntryRowState();
+}
+
+class _EntryRowState extends State<_EntryRow> {
+  bool _hovered = false;
+
+  RemoteEntry get entry => widget.entry;
+  SftpController get controller => widget.controller;
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return InkWell(
-      key: Key('sftp-entry-${entry.name}'),
-      onTap: entry.isDirectory
-          ? () => controller.open(entry.path)
-          : () => _download(context, controller, entry),
-      child: SizedBox(
-        height: _rowHeight,
-        child: Row(
-          children: [
-            const SizedBox(width: 10),
-            Icon(
-              entry.isDirectory
-                  ? Icons.folder_outlined
-                  : Icons.insert_drive_file_outlined,
-              size: 14,
-              color: entry.isDirectory
-                  ? AppColors.accent
-                  : AppColors.textSecondary,
-            ),
-            const SizedBox(width: 6),
-            Expanded(
-              child: Text(
-                entry.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12),
-              ),
-            ),
-            SizedBox(
-              width: 80,
-              child: Text(
-                entry.isDirectory ? '—' : formatBytes(entry.size),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-            SizedBox(
-              width: 84,
-              child: Text(
-                entry.permissions,
-                style: const TextStyle(
-                  fontFamily: AppTheme.monoFamily,
-                  fontSize: 10,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+        color: _hovered ? AppColors.elevated : Colors.transparent,
+        child: InkWell(
+          key: Key('sftp-entry-${entry.name}'),
+          onTap: entry.isDirectory
+              ? () => controller.open(entry.path)
+              : () => _download(context, controller, entry),
+          child: SizedBox(
+            height: _rowHeight,
+            child: Row(
+              children: [
+                const SizedBox(width: 10),
+                Icon(
+                  entry.isDirectory
+                      ? Icons.folder_outlined
+                      : Icons.insert_drive_file_outlined,
+                  size: 14,
+                  color: entry.isDirectory
+                      ? AppColors.accent
+                      : AppColors.textSecondary,
                 ),
-              ),
-            ),
-            SizedBox(
-              width: 116,
-              child: Text(
-                formatRemoteDate(entry.modifiedAt),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-            PopupMenuButton<String>(
-              key: Key('sftp-entry-menu-${entry.name}'),
-              icon: const Icon(Icons.more_horiz, size: 14),
-              onSelected: (value) async {
-                switch (value) {
-                  case 'download':
-                    await _download(context, controller, entry);
-                  case 'rename':
-                    final name = await _promptText(
-                      context,
-                      title: l10n.renameTitle,
-                      label: l10n.newNameLabel,
-                      initial: entry.name,
-                    );
-                    if (name == null || name.trim().isEmpty) return;
-                    final renamed = await controller.rename(entry, name);
-                    if (!context.mounted) return;
-                    _snack(
-                      context,
-                      renamed ? l10n.sftpRenamed : l10n.errorSftpFailure,
-                    );
-                  case 'delete':
-                    final confirmed = await _confirm(
-                      context,
-                      l10n.deleteAction,
-                      entry.name,
-                    );
-                    if (!confirmed) return;
-                    final deleted = await controller.deleteEntry(entry);
-                    if (!context.mounted) return;
-                    _snack(
-                      context,
-                      deleted ? l10n.sftpDeleted : l10n.errorSftpFailure,
-                    );
-                }
-              },
-              itemBuilder: (_) => [
-                if (!entry.isDirectory)
-                  PopupMenuItem(
-                    value: 'download',
-                    child: Text(l10n.downloadAction),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    entry.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 12),
                   ),
-                PopupMenuItem(value: 'rename', child: Text(l10n.renameTitle)),
-                PopupMenuItem(value: 'delete', child: Text(l10n.deleteAction)),
+                ),
+                SizedBox(
+                  width: 80,
+                  child: Text(
+                    entry.isDirectory ? '—' : formatBytes(entry.size),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                SizedBox(
+                  width: 84,
+                  child: Text(
+                    entry.permissions,
+                    style: const TextStyle(
+                      fontFamily: AppTheme.monoFamily,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 116,
+                  child: Text(
+                    formatRemoteDate(entry.modifiedAt),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  key: Key('sftp-entry-menu-${entry.name}'),
+                  icon: const Icon(Icons.more_horiz, size: 14),
+                  onSelected: (value) => _onMenu(context, value),
+                  itemBuilder: (_) => [
+                    if (!entry.isDirectory)
+                      PopupMenuItem(
+                        value: 'download',
+                        child: Text(l10n.downloadAction),
+                      ),
+                    PopupMenuItem(
+                      value: 'rename',
+                      child: Text(l10n.renameTitle),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Text(l10n.deleteAction),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _onMenu(BuildContext context, String value) async {
+    final l10n = AppLocalizations.of(context);
+    switch (value) {
+      case 'download':
+        await _download(context, controller, entry);
+      case 'rename':
+        final name = await _promptText(
+          context,
+          title: l10n.renameTitle,
+          label: l10n.newNameLabel,
+          initial: entry.name,
+        );
+        if (name == null || name.trim().isEmpty) return;
+        final renamed = await controller.rename(entry, name);
+        if (!context.mounted) return;
+        _snack(context, renamed ? l10n.sftpRenamed : l10n.errorSftpFailure);
+      case 'delete':
+        final confirmed = await _confirm(
+          context,
+          l10n.deleteAction,
+          entry.name,
+        );
+        if (!confirmed) return;
+        final deleted = await controller.deleteEntry(entry);
+        if (!context.mounted) return;
+        _snack(context, deleted ? l10n.sftpDeleted : l10n.errorSftpFailure);
+    }
   }
 
   Future<void> _download(

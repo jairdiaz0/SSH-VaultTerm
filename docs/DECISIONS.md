@@ -5,33 +5,35 @@ fecha, contexto, decisión, consecuencias y verificación.
 
 ---
 
-## D-001 — Entorno de verificación: sin compilador de escritorio ni Android SDK
-**Fecha:** 2026-11-15
+## D-001 — Entorno de verificación: Windows compilable, Android SDK ausente
+**Fecha:** 2026-11-15 (actualizado el 2026-11-15 tras la primera prueba manual)
 **Contexto:** `flutter doctor -v` en la máquina de desarrollo (Windows 11 26H2):
 - Flutter 3.47.9 stable, Dart 3.13.7, `windows-x64`.
-- **Visual Studio no instalado** → no se puede compilar `windows` desktop.
-- **Android SDK no localizado** → no se puede compilar `android`.
+- **Visual Studio Community 2026 18.12 con el workload de C++ está instalado**:
+  `flutter build windows --release` compila y `flutter test integration_test
+  -d windows` ejecuta la app real (verificado en esta ronda).
+- **Android SDK sigue sin localizarse** → `android` no se puede compilar.
 - Chrome no instalado; Edge sí (web está fuera de alcance).
-- `flutter test` y `flutter analyze` funcionan.
 
-**Decisión:** se implementa y verifica con `dart format`, `flutter analyze`,
-`flutter test` (unitarios, widget, golden y FFI) y tests de integración contra el
-servidor de pruebas. Todo lo que exige ejecutar la app (plugins de plataforma,
-keychain, drag and drop real, teclado virtual) se marca `[~]` o `[!]` con la
-causa, nunca se simula.
+**Decisión:** la verificación primaria es `dart format`, `flutter analyze`,
+`flutter test` y, para lo que exige plataforma, **integración real en Windows**
+(`integration_test` con almacén seguro y SQLCipher reales) más la compilación de
+release. Android/macOS/Linux siguen marcados como no verificados con su causa y
+no se simulan.
 
 **Consecuencias:**
-- `flutter_secure_storage` **no se puede verificar en ejecución aquí**: es un
-  plugin de plataforma y no hay binario ejecutable. Se implementa tras una
-  interfaz `SecretStore` con implementación en memoria para tests.
-- Para cerrar la verificación real, el usuario debe instalar el workload
-  «Desktop development with C++» de Visual Studio (Windows) y/o el Android SDK.
+- `flutter_secure_storage` queda verificado en Windows por el test de integración
+  (probe de escritura/lectura real contra Credential Manager) y por el uso real de
+  credenciales y claves de BD durante el flujo.
+- Los tests de integración usan un directorio temporal (`AppPaths` explícito) y un
+  namespace de secretos desechable; nunca tocan el perfil real del usuario.
+- Sigue pendiente compilar/ejecutar en Android, macOS y Linux.
 - El aviso de `flutter pub get` «Building with plugins requires symlink support»
-  (Developer Mode de Windows desactivado) no bloquea `pub get`, `analyze` ni
-  `test`; sí afectaría a la compilación de plugins de escritorio.
+  (Developer Mode desactivado) no bloquea `pub get`, `analyze`, `test` ni
+  `build windows`.
 
-**Verificación:** salida de `flutter doctor -v` y `flutter test` (ver
-`docs/TESTING.md`).
+**Verificación:** `flutter build windows --release` y `flutter test
+integration_test/app_windows_test.dart -d windows` (ver `docs/TESTING.md`).
 
 ---
 
@@ -323,3 +325,69 @@ grandes; se acepta porque una importación es una operación excepcional. No se
 afirma atomicidad a nivel de disco: se garantiza que un fallo no deja perfiles a
 medias ni credenciales huérfanas, que es el requisito verificable. Si en el futuro
 se añade staging real, esta decisión se revisa con evidencia.
+
+---
+
+## D-018 — Cada conexión es SSH o SFTP; una vista a pantalla completa
+**Fecha:** 2026-11-15 (decisión revisada a petición del usuario tras la primera
+prueba manual)
+**Contexto:** la primera implementación abría terminal y SFTP a la vez en un panel
+dividido. En uso real el explorador ocupaba espacio que el terminal necesitaba y
+la conexión no expresaba qué se quería hacer con el servidor.
+**Decisión:** `Connection` gana `connectionType` (`ssh` | `sftp`), elegido en el
+formulario. Al abrir una conexión se muestra **solo** su vista: terminal a pantalla
+completa para SSH, explorador a pantalla completa para SFTP. Se elimina el panel
+dividido y su divisor; en Android desaparecen las pestañas porque ya no hay dos
+paneles que alternar.
+**Migración:** esquema de perfil v2 añade `connections.connection_type` con
+`DEFAULT 'ssh'` y `CHECK (connection_type IN ('ssh','sftp'))`, así que las filas
+existentes siguen abriendo terminal como antes. Los respaldos pasan a
+`formatVersion: 2`; los documentos v1 se aceptan y se migran a SSH al leerlos.
+**Consecuencias:** una misma conexión ya no sirve para terminal y archivos; el
+usuario crea dos si necesita ambas (verificado en el test de integración de
+Windows). La barra de teclas táctil solo aparece en Android/iOS. La UI de escritorio
+ya no tiene divisor que probar; `ResizableSplit` y `CompactTabs` se eliminaron.
+**Verificación:** migración (`test/core/database/profile_migration_test.dart`),
+respaldo v1 (`backup_test.dart`), formulario y vista
+(`test/features/shell/shell_crud_test.dart`), y flujo real SSH/SFTP en Windows
+(`integration_test/app_windows_test.dart`).
+
+---
+
+## D-019 — Entrada del terminal: eventos de teclado en escritorio, IME en móvil
+**Fecha:** 2026-11-15
+**Contexto:** en la primera prueba manual en Windows las letras no se escribían,
+mientras Enter, flechas y teclas especiales sí. Diagnóstico: esas teclas ya pasan
+por eventos de hardware de Flutter, mientras que xterm 4.0.0 inserta texto
+imprimible a través de su `TextInputClient` (IME), que en Windows no entregaba los
+caracteres.
+**Decisión:** en escritorio `TerminalView` se crea con `hardwareKeyboardOnly:
+true` (eventos de teclado y `character`, sin IME); en Android/iOS se mantiene el
+camino IME y se añade la barra de teclas (que además escribe secuencias ANSI
+directamente en el pty con `RemoteTerminal.send`). La barra no se muestra en
+escritorio.
+**Consecuencias:** letras, mayúsculas, números, símbolos, acentos compuestos por el
+teclado y Ctrl+C llegan al pty en Windows (probado con eventos y con la app real).
+La composición con IME de tildes depende del teclado del sistema en Android, que no
+es verificable aquí. Pegar conserva el texto tal cual (los saltos de línea no se
+traducen).
+**Verificación:** `test/features/terminal/terminal_input_test.dart` (todas las
+letras, dígitos, símbolos con Shift, acentos, Enter/Tab/flechas, Ctrl+C, pegar) y
+`echo INTEGRATION-OK` tecleado en la app real de Windows.
+
+---
+
+## D-020 — Datos de desarrollo aislados por variables de entorno
+**Fecha:** 2026-11-15
+**Contexto:** el usuario borró sus datos de prueba tras una ejecución; los tests no
+debían poder tocar el perfil real.
+**Decisión:** `AppPaths.resolveFrom` acepta `SSH_CLIENT_DATA_DIR` y
+`SecureStorageSecretStore` acepta `SSH_CLIENT_SECRET_NAMESPACE` (o se pasan
+explícitamente). Los tests de integración usan un directorio temporal y un namespace
+desechable, y los borran en `tearDown` incluso si el test falla. Cada `AppHarness` y
+`TestContext` registra su limpieza en el momento de crear el directorio.
+**Consecuencias:** ejecutar tests o la app con esas variables activas es seguro;
+`tool/reset_dev_data.ps1` lista archivos y credenciales de la app antes de pedir
+confirmación (`BORRAR`) y respeta ambas variables.
+**Verificación:** script probado contra un directorio falso; el test de integración
+de Windows crea y elimina su propio namespace y directorio.

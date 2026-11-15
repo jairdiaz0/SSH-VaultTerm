@@ -48,7 +48,7 @@ class WorkspacePanel extends StatelessWidget {
                   : _content(connection),
             ),
             SizedBox(
-              height: AppSpacing.xl,
+              height: AppSpacing.xl + AppSpacing.sm,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(

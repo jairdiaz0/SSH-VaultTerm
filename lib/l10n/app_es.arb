@@ -281,6 +281,28 @@
     }
   },
   "profileSection": "Perfil",
+  "manageProfilesAction": "Gestionar perfiles",
+  "profilesTitle": "Perfiles",
+  "currentProfileLabel": "Perfil activo",
+  "deleteProfileAction": "Eliminar perfil",
+  "confirmDeleteProfile": "¿Eliminar el perfil «{name}»? Se borrarán sus conexiones, huellas y credenciales, y no se puede deshacer.",
+  "@confirmDeleteProfile": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profilePasswordPrompt": "Contraseña del perfil «{name}»",
+  "@profilePasswordPrompt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "Perfil creado.",
+  "profileDeleted": "Perfil eliminado.",
   "requireReauthLabel": "Requerir contraseña al editar",
   "requireReauthHelp": "Pide la contraseña del perfil al guardar conexiones o credenciales.",
   "reauthPromptTitle": "Confirma tu contraseña",

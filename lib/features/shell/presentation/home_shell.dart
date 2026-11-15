@@ -56,7 +56,21 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
-  void _onSessionChanged() => setState(_sync);
+  void _onSessionChanged() {
+    final before = _shell?.session.profile.id;
+    setState(_sync);
+    final after = _shell?.session.profile.id;
+    if (before == after) return;
+    // Creating, switching or deleting a profile invalidates any open dialog
+    // that was bound to the previous session.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).popUntil((route) => route.isFirst);
+    });
+  }
 
   Future<void> _lock() async {
     await _shell?.workspace.close();
@@ -81,6 +95,7 @@ class _HomeShellState extends State<HomeShell> {
       SettingsDialog.show(
         context,
         controller: shell,
+        sessionController: widget.controller,
         onLock: _lock,
         onSignOut: _signOut,
       );

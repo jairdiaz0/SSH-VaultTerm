@@ -612,6 +612,34 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileSection => 'Perfil';
 
   @override
+  String get manageProfilesAction => 'Gestionar perfiles';
+
+  @override
+  String get profilesTitle => 'Perfiles';
+
+  @override
+  String get currentProfileLabel => 'Perfil activo';
+
+  @override
+  String get deleteProfileAction => 'Eliminar perfil';
+
+  @override
+  String confirmDeleteProfile(String name) {
+    return '¿Eliminar el perfil «$name»? Se borrarán sus conexiones, huellas y credenciales, y no se puede deshacer.';
+  }
+
+  @override
+  String profilePasswordPrompt(String name) {
+    return 'Contraseña del perfil «$name»';
+  }
+
+  @override
+  String get profileCreated => 'Perfil creado.';
+
+  @override
+  String get profileDeleted => 'Perfil eliminado.';
+
+  @override
   String get requireReauthLabel => 'Requerir contraseña al editar';
 
   @override

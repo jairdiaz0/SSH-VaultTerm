@@ -356,7 +356,93 @@ flutter test      → +178 All tests passed!
 Pendiente: escritura/lectura real de ficheros vía selector del sistema (no
 ejecutable aquí) y migración de documentos de versiones anteriores (solo existe v1).
 
-## 2026-11-15 — Fase 7 (Android / layouts por espacio)
+## 2026-11-15 — Ronda de correcciones 1 (primera prueba manual en Windows)
+
+### Estado global
+```text
+dart format --set-exit-if-changed lib test integration_test → 0 cambios
+flutter analyze                                             → No issues found!
+flutter test                                                → +204 All tests passed!
+flutter build windows --release                             → ✓ Built build\windows\x64\runner\Release\ssh_client.exe
+flutter test integration_test/app_windows_test.dart -d windows → +1 All tests passed!
+```
+
+### Tipo de conexión — migración y respaldo
+`test/core/database/profile_migration_test.dart`:
+- Una BD con `user_version = 1` y la tabla `connections` sin `connection_type`
+  migra a v2 al abrirla, y la fila existente queda como `ssh`.
+- El `CHECK` rechaza tipos desconocidos (`telnet` → `SqliteException`).
+
+`test/features/backup/backup_test.dart`:
+- Un documento `formatVersion: 1` (sin `connectionType`) se lee y sus conexiones
+  pasan a `ssh`; el export actual escribe v2.
+- El resto del round trip, merge, replace y rollback siguen en verde.
+
+`test/features/shell/shell_crud_test.dart`:
+- El formulario guarda `ConnectionType.sftp` al elegir el chip SFTP.
+
+### Teclado del terminal — `test/features/terminal/terminal_input_test.dart`
+Con `TerminalView(hardwareKeyboardOnly: true)` (escritorio), enviando eventos de
+teclado reales al widget:
+- Todas las letras (a–z, A–Z), dígitos y símbolos `- . / ;` y espacio llegan al pty
+  en el mismo orden.
+- Símbolos con Shift (`_ : ! ? @ $`) llegan con su carácter.
+- `é` y `ñ` se envían como UTF-8 (la composición real por IME queda para Android).
+- Enter (`\r`), Tab (`\t`) y flechas (`ESC[A`, `ESC[D`) envían sus secuencias.
+- Ctrl+C envía `\x03` y no una `c`.
+- Pegar reenvía el texto (los saltos de línea se conservan: `\n`).
+
+Prueba real: en el test de integración de Windows se teclea
+`echo INTEGRATION-OK` con eventos de teclado y el marcador aparece en el búfer del
+terminal de la app.
+
+### Fin de sesión
+En el test de integración de Windows: tras `exit`, la app muestra el overlay
+`session-ended` («Sesión finalizada») con Reconectar/Cerrar, cierra el canal, libera
+el `SSHClient` y «Cerrar» devuelve el workspace vacío. El indicador del sidebar
+pasa a «Sesión finalizada» (`SshConnectionStatus.sessionEnded`).
+
+### Ruta SFTP — `test/features/sftp/sftp_panel_test.dart`
+- Ya no existe la etiqueta de ruta duplicada (`sftp-path` no está en el árbol).
+- Pulsar el espacio libre convierte los breadcrumbs en un campo editable; al
+  confirmar `/home/test/docs` se navega y lista el contenido.
+- Ctrl+L enfoca el mismo campo.
+
+### Layout y overflow — `test/features/shell/layout_sizes_test.dart`
+Con sidebar densa (colección + 8 conexiones de nombres largos, SSH y SFTP):
+900×600, 1280×720 y 1920×1080 montan el shell y abren Ajustes sin ninguna excepción
+de overflow; la lista lateral hace scroll. Tokens `AppSpacing` (4/8/12/16/24) y
+tamaño mínimo 900×600 aplicados también en el runner de Windows
+(`WM_GETMINMAXINFO`).
+
+### Gestión de perfiles — `test/features/profiles/profile_management_test.dart`
+- Crear un perfil desde Ajustes lo añade y entra en él.
+- Cambiar de perfil exige su contraseña; con contraseña incorrecta no cambia y
+  muestra error; con la correcta, la sesión pasa al perfil elegido.
+- Eliminar exige confirmación y contraseña correcta; con la incorrecta el perfil
+  sigue existiendo.
+- La pantalla bloqueada muestra «Cambiar de perfil» y no ofrece crear.
+
+### Datos aislados y limpieza
+- `AppPaths.resolveFrom` acepta `SSH_CLIENT_DATA_DIR`; el almacén seguro acepta
+  `SSH_CLIENT_SECRET_NAMESPACE` (probado en `app_paths_test.dart` y en el uso real
+  del test de integración con namespace desechable).
+- `AppHarness` y `TestContext` registran su limpieza al crear el directorio; un
+  fallo de test ya no deja `ssh_client_app_test_*` en `%TEMP%`.
+- `tool/reset_dev_data.ps1` probado con un directorio falso y el namespace
+  `reset_test_ns`: lista archivos y secretos y solo borra al escribir `BORRAR`.
+- Tras la ronda, `%TEMP%` no conserva ningún directorio `ssh_client*` de tests.
+
+### Integración real en Windows — `integration_test/app_windows_test.dart`
+Ejecutado con `-d windows` (almacén seguro real y SQLCipher reales; directorio
+temporal y namespace propios, borrados al final):
+1. Primer inicio: crea el perfil «Integration».
+2. Crea la conexión SSH `it-ssh` contra `192.168.100.129`, acepta la huella y
+   teclea un comando; el terminal muestra `INTEGRATION-OK`.
+3. `exit` → «Sesión finalizada» → Cerrar.
+4. Crea la conexión SFTP `it-sftp` (tipo SFTP), acepta la huella, el workspace
+   muestra solo el explorador y navega con el campo de ruta a
+   `<home>/opencode_sandbox`.
 
 ### Estado global
 ```text
@@ -364,16 +450,18 @@ flutter analyze   → No issues found!
 flutter test      → +185 All tests passed!
 ```
 
+## 2026-11-15 — Fase 7 (Android / layouts por espacio)
+
 ### Layout responsive — `test/features/shell/mobile_layout_test.dart`
 - Con 700×900 la app usa `Drawer`: la barra lateral no está montada hasta abrir el
   cajón, y al abrirlo aparece el perfil.
 - Con 1400×1000 no hay `Drawer` y la barra lateral está siempre visible.
 - El breakpoint depende del ancho disponible (`LayoutBuilder`), no del SO.
 
-### Pestañas — `test/shared/compact_tabs_test.dart`
-`IndexedStack` mantiene las dos pestañas montadas: cambiar de Terminal a Archivos
-no reconstruye el terminal ni el canal SFTP. Se comprueba que el contenido de la
-pestaña oculta sigue en el árbol (`skipOffstage: false`).
+### Pestañas (retiradas en la ronda 1)
+La decisión D-018 eliminó el panel doble: cada conexión muestra su única vista, así
+que `CompactTabs` y su test se retiraron. El drawer móvil se conserva y se prueba en
+`mobile_layout_test.dart`.
 
 ### Barra de teclas — `test/features/terminal/terminal_key_bar_test.dart`
 Esc, Tab y flechas envían sus secuencias ANSI; Ctrl+C/D/L envían los caracteres de
@@ -385,8 +473,11 @@ scroll y selección táctil, y selectores nativos. Todo eso exige dispositivo o
 emulador Android, que este entorno no tiene (D-001).
 
 ## Pendiente de verificación (bloqueado por el entorno, D-001)
-- `flutter_secure_storage` en ejecución: plugin de plataforma; no hay app
-  ejecutable en esta máquina. Marcado `[~]`.
-- Compilación Windows/Linux/macOS/Android y ejecución real de la app.
-- Drag and drop real, teclado virtual, terminal y SFTP: dependen de ejecución.
-- Golden tests con tipografías reales: pendiente de empaquetar los assets (fase 4).
+- **Android, macOS y Linux**: sin toolchain aquí; no compilados ni ejecutados.
+  Windows sí: `flutter build windows --release` y el test de integración real.
+- Teclado virtual, scroll/selección táctil y selectores nativos de Android: exigen
+  dispositivo o emulador.
+- Arrastrar y soltar real del sistema operativo: sin gesto automatizable.
+- Drag and drop de salida: bloqueado por dependencias (D-006), no simulado.
+- Golden tests con tipografías reales: los assets existen y el tema los aplica,
+  pero no se ha fijado un golden por plataforma.

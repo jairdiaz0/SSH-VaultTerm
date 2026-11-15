@@ -120,10 +120,17 @@ class _TransferRow extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          LinearProgressIndicator(
-            key: Key('transfer-progress-${task.id}'),
-            value: task.status == TransferStatus.completed ? 1 : task.progress,
-            minHeight: 3,
+          TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            tween: Tween<double>(
+              end: task.status == TransferStatus.completed ? 1 : task.progress,
+            ),
+            builder: (context, value, _) => LinearProgressIndicator(
+              key: Key('transfer-progress-${task.id}'),
+              value: value,
+              minHeight: 3,
+            ),
           ),
           const SizedBox(height: 2),
           Text(

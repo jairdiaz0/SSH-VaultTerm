@@ -11,11 +11,11 @@ TOFU de host keys, terminal real sobre pty, explorador SFTP con cola de
 transferencias, copias de seguridad JSON con importación transaccional y una
 interfaz de escritorio y móvil derivada del espacio disponible.
 
-`flutter analyze` sin incidencias y **187 tests** en verde, incluidos SSH, pty y
-SFTP reales contra el servidor de pruebas. La aplicación **no se ha podido
-compilar ni ejecutar** en este entorno: no hay Visual Studio C++ ni Android SDK
-(D-001). Todo lo que depende de un binario en ejecución se declara abajo como no
-verificado, no se simula.
+`flutter analyze` sin incidencias y **204 tests** en verde, incluidos SSH, pty y
+SFTP reales contra el servidor de pruebas y un **test de integración sobre la app
+real compilada para Windows** (almacén seguro y SQLCipher reales). Windows compila
+en release (`build\windows\x64\runner\Release\ssh_client.exe`); Android, macOS y
+Linux siguen sin toolchain en este entorno (D-001) y se declaran no verificados.
 
 ## 2. Funcionalidades implementadas
 
@@ -30,9 +30,12 @@ verificado, no se simula.
 | SSH: contraseña y llave privada, TOFU SHA-256, estados, timeouts, keep-alive, cierre ordenado | Implementado y probado contra servidor real |
 | Terminal: pty real, UTF-8, colores ANSI, scrollback, resize, barra de teclas | Motor y barra probados; teclado/scroll/selección táctil sin dispositivo |
 | SFTP: navegación, operaciones, cola con progreso/cancelación/reintento, checksum | Implementado y probado contra servidor real |
-| UI escritorio: sidebar, CRUD, workspace con split/maximizar, drag-in | Implementado y probado (salvo gesto real del SO) |
-| UI Android: drawer, pestañas con sesión viva, breakpoints por espacio | Implementado y probado en widget tests |
+| UI escritorio: sidebar, CRUD, workspace con divisores | Implementado y probado; sustituido por vista única SSH/SFTP (D-018) |
+| UI Android: drawer, vista única por tipo, breakpoints por espacio | Implementado y probado en widget tests |
 | Backups: exportar con advertencia, importar con 3 modos, rollback | Implementado y probado; selectores nativos sin ejecutar |
+| Gestión de perfiles en Ajustes (crear, cambiar, eliminar con contraseña) | Implementado y probado |
+| Datos aislados por entorno y `tool/reset_dev_data.ps1` | Implementado y probado el script con datos falsos |
+| Entrada de terminal en Windows (letras, símbolos, Ctrl+C, pegar) | Verificado con eventos y con la app real |
 
 ## 3. Arquitectura
 
@@ -66,23 +69,26 @@ Cobertura por área (detalle y evidencia en `docs/TESTING.md`):
   credenciales, logger, reglas POSIX, entradas remotas, cola de transferencias,
   documento de respaldo y su rollback.
 - Widget: gate de sesión, primer inicio, bloqueo, shell, CRUD con credenciales,
-  reautenticación, workspace, divisor, panel SFTP, pestañas compactas, barra de
-  teclas, tema y fuentes.
+  reautenticación, gestión de perfiles, workspace, panel SFTP con ruta editable,
+  tamaños de ventana sin overflow, barra de teclas, entrada del terminal, tema y
+  fuentes.
 - Integración real (etiqueta `integration`, se omite sin `.env.test`): SSH con
   contraseña y llave, TOFU aceptado y bloqueado, contraseña incorrecta, sesiones
   concurrentes, pérdida de transporte, pty con resize y UTF-8, y SFTP con 2 MiB y
   SHA-256 coincidente, borrado recursivo y cola completa.
+- Integración de la app real en Windows: perfil, conexión SSH tecleada, `exit`,
+  «Sesión finalizada», y conexión SFTP separada con navegación.
 
 ## 6. Plataformas compiladas de verdad y no verificadas
 
-- **Compiladas: ninguna.** Este entorno no tiene Visual Studio C++ (Windows
-  desktop), ni Android SDK, ni macOS/Linux con GTK para compilar. `flutter test`
-  usa `flutter_tester`, que no requiere toolchain de plataforma.
-- **No verificadas en ejecución:** Windows, macOS, Linux, Android; el almacén
-  real `flutter_secure_storage` en cada plataforma; arrastre real del sistema
-  operativo; teclado virtual y selección táctil; selectores nativos de archivos;
-  renderizado con las fuentes empaquetadas (los tests comprueban los assets, no
-  el rasterizado).
+- **Windows**: compilado en release y ejecutado por
+  `integration_test/app_windows_test.dart -d windows` (perfil, SSH real con tecleo,
+  fin de sesión, SFTP real). Almacén seguro verificado con Credential Manager.
+- **Android, macOS y Linux**: no compilados aquí (sin SDK toolchains). No
+  verificados en ejecución.
+- **No verificadas en ejecución:** arrastre real del sistema operativo; teclado
+  virtual y selección táctil de Android; selectores nativos de archivos; golden
+  tests con las fuentes empaquetadas (los assets y el tema sí se comprueban).
 
 ## 7. Limitaciones declaradas
 
@@ -102,15 +108,14 @@ Cobertura por área (detalle y evidencia en `docs/TESTING.md`):
 
 ## 8. Pendientes concretos
 
-1. Compilar y ejecutar en Windows/macOS/Linux/Android en una máquina con los
-   toolchains; validar almacén seguro, arrastre del SO, teclado virtual, selectores
-   nativos y golden tests con las fuentes reales.
-2. Añadir la pantalla de Ajustes → Seguridad completa (hoy: interruptor de
-   reautenticación y huellas conocidas) con gestión de perfiles y apariencia del
-   terminal (fase 4/14 del SPEC).
-3. Migración de documentos de respaldo cuando exista una v2.
-4. Evaluar `xterm2` si se permite configurar scrollback por debajo de la altura
+1. Compilar y ejecutar en Android, macOS y Linux; validar teclado virtual,
+   selección táctil, selectores nativos y almacén seguro en cada plataforma.
+2. Arrastrar y soltar de salida: bloqueado por dependencias (D-006).
+3. Composición de tildes mediante IME en Android: depende del teclado del sistema.
+4. Migración de documentos de respaldo cuando exista una v3.
+5. Evaluar `xterm2` si se permite configurar scrollback por debajo de la altura
    visible (límite documentado de `xterm` 4.0.0).
+6. Golden tests con las fuentes reales por plataforma.
 
 ## 9. Comandos exactos
 
@@ -121,7 +126,9 @@ dart format .
 flutter analyze
 flutter test              # incluye integración si existe .env.test
 flutter test -x integration   # sin red
-flutter build windows     # requiere Visual Studio C++ (no disponible aquí)
+flutter build windows --release   # verificado en esta máquina
+flutter test integration_test/app_windows_test.dart -d windows   # app real en Windows
+powershell -File tool/reset_dev_data.ps1   # borra datos de desarrollo (pide BORRAR)
 flutter build apk         # requiere Android SDK (no disponible aquí)
 ```
 

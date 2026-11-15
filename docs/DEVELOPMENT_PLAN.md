@@ -102,8 +102,8 @@ y `flutter test` (unitarios, widget, golden, FFI).
 - [x] Sidebar con perfil, colecciones expandibles, servidores, favoritos, ajustes, indicador de conexión.
 - [x] CRUD de colecciones y conexiones desde UI con menús contextuales y reordenación
   (menú Subir/Bajar, accesible por teclado; arrastre de elementos no implementado).
-- [~] Workspace con terminal + SFTP y divisor redimensionable / maximizar panel
-  (terminal, divisor y maximización listos y probados; panel SFTP real llega en la fase 5).
+- [x] Workspace que muestra solo la vista del tipo de conexión: terminal a pantalla
+  completa (SSH) o explorador a pantalla completa (SFTP); sin panel dividido (D-018).
 - [~] Arrastrar y soltar de entrada (SO → SFTP) con `desktop_drop` (destino de
   arrastre y manejador probados; el arrastre real del SO no es ejecutable aquí).
 - [!] Arrastrar y soltar de salida (SFTP → SO): bloqueado por conflicto de dependencias (D-006).
@@ -124,8 +124,8 @@ y `flutter test` (unitarios, widget, golden, FFI).
   snapshot + compensación en vez de staging de ficheros; ver D-017).
 
 ## Fase 7 — Android
-- [x] Drawer y workspace con pestañas Terminal/Archivos que conservan la sesión
-  (`IndexedStack`: ambos canales siguen montados al cambiar de pestaña).
+- [x] Drawer y workspace que muestra la vista del tipo de conexión (terminal o
+  archivos), conservando la sesión al navegar (D-018: ya no hay pestañas dobles).
 - [~] Terminal móvil: teclado virtual, foco, scroll, selección, barra de teclas
   (barra de teclas implementada y probada; teclado, scroll y selección requieren
   dispositivo real).
@@ -133,6 +133,26 @@ y `flutter test` (unitarios, widget, golden, FFI).
   compartidos y probados; selectores nativos no ejecutables aquí).
 - [x] Tablets con `LayoutBuilder` y breakpoints por espacio, no por tipo de dispositivo.
 - [!] Verificación en dispositivo: imposible aquí (sin Android SDK, D-001).
+
+## Ronda de correcciones 1 (tras la primera prueba manual en Windows)
+
+- [x] Tipo de conexión SSH/SFTP con migración v2, formulario, respaldos v2 (lee v1) y
+  vista única por tipo (D-018).
+- [x] Teclado del terminal en Windows: letras, mayúsculas, números, símbolos, tildes,
+  Ctrl+C y pegar llegan al pty; la barra táctil solo aparece en Android/iOS (D-019).
+- [x] Fin de sesión: overlay «Sesión finalizada» con Reconectar y Cerrar, canal cerrado
+  y `SSHClient` liberado; estado del sidebar actualizado.
+- [x] Ruta SFTP: una sola barra de breadcrumbs editable al pulsar el espacio libre o
+  Ctrl+L; animaciones de 150–250 ms en cambio de carpeta, filas y progreso.
+- [x] Layout: tokens de espaciado (4/8/12/16/24), padding del pie corregido, tamaño
+  mínimo de ventana (900×600) y tests de overflow a 900×600, 1280×720 y 1920×1080.
+- [x] Gestión de perfiles en Ajustes: crear, cambiar y eliminar con contraseña; la
+  pantalla bloqueada mantiene «Cambiar de perfil» sin crear.
+- [x] Datos aislados: `SSH_CLIENT_DATA_DIR` y `SSH_CLIENT_SECRET_NAMESPACE`, limpieza
+  garantizada de directorios temporales y `tool/reset_dev_data.ps1` con confirmación.
+- [x] Verificación real en Windows: `flutter build windows --release` y
+  `flutter test integration_test -d windows` con almacén seguro y BD cifrada reales.
+- [!] Android/macOS/Linux: sin toolchain aquí (D-001). Sin verificar en ejecución.
 
 ## Fase 8 — Revisión final
 - [x] `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` limpios.

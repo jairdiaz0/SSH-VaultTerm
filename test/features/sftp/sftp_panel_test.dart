@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ssh_client/app/theme/app_theme.dart';
 import 'package:ssh_client/features/sftp/domain/transfer.dart';
@@ -144,6 +145,39 @@ void main() {
 
     expect(find.byKey(const Key('sftp-entry-docs')), findsOneWidget);
     expect(controller.errorCode, isNull);
+  });
+
+  testWidgets('shows one path bar and turns it into an editor', (tester) async {
+    final controller = await pumpPanel(tester, populatedGateway());
+
+    // Only breadcrumbs: no duplicated raw path next to them.
+    expect(find.byKey(const Key('sftp-path')), findsNothing);
+    expect(find.byKey(const Key('crumb-root')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('sftp-path-free-space')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('sftp-path-field')), findsOneWidget);
+
+    await tester.enterText(
+      find.byKey(const Key('sftp-path-field')),
+      '/home/test/docs',
+    );
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+
+    expect(controller.path, '/home/test/docs');
+    expect(find.byKey(const Key('sftp-entry-readme.md')), findsOneWidget);
+  });
+
+  testWidgets('Ctrl+L focuses the path editor', (tester) async {
+    await pumpPanel(tester, populatedGateway());
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyL);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('sftp-path-field')), findsOneWidget);
   });
 
   testWidgets('an upload queues, completes and refreshes the listing', (

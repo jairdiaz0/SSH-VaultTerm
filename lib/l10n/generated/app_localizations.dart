@@ -1162,6 +1162,54 @@ abstract class AppLocalizations {
   /// **'Perfil'**
   String get profileSection;
 
+  /// No description provided for @manageProfilesAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestionar perfiles'**
+  String get manageProfilesAction;
+
+  /// No description provided for @profilesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfiles'**
+  String get profilesTitle;
+
+  /// No description provided for @currentProfileLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil activo'**
+  String get currentProfileLabel;
+
+  /// No description provided for @deleteProfileAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar perfil'**
+  String get deleteProfileAction;
+
+  /// No description provided for @confirmDeleteProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar el perfil «{name}»? Se borrarán sus conexiones, huellas y credenciales, y no se puede deshacer.'**
+  String confirmDeleteProfile(String name);
+
+  /// No description provided for @profilePasswordPrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña del perfil «{name}»'**
+  String profilePasswordPrompt(String name);
+
+  /// No description provided for @profileCreated.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil creado.'**
+  String get profileCreated;
+
+  /// No description provided for @profileDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil eliminado.'**
+  String get profileDeleted;
+
   /// No description provided for @requireReauthLabel.
   ///
   /// In es, this message translates to:
