@@ -28,10 +28,16 @@ keep-alive y cierre ordenado, con tests unitarios y tests de integración reales
 contra el servidor de pruebas.
 
 Fase 3 (terminal) tiene su motor listo y verificado: emulador `xterm` conectado a
-un pty real (bidireccional, redimensionado, UTF-8 y scrollback acotado), con 127
-tests en total, incluido un pty real. La selección, copia/pegado y el workspace
-visual llegan con la fase 4. Los widget tests nunca sustituyen la verificación
-real: ver `docs/TESTING.md`. Consulta el plan para el detalle.
+un pty real (bidireccional, redimensionado, UTF-8 y scrollback acotado).
+
+Fase 4 (UI de escritorio) implementada: sidebar real (perfil, favoritos,
+colecciones expandibles, servidores, indicador de conexión), CRUD de colecciones
+y conexiones con credenciales en el almacén del sistema, workspace con terminal,
+divisor redimensionable y maximización, y fuentes Inter/JetBrains Mono
+empaquetadas. **141 tests**, incluidos SSH y pty reales. Falta el explorador SFTP
+(fase 5), del que depende el arrastrar y soltar de entrada. Los widget tests nunca
+sustituyen la verificación real: ver `docs/TESTING.md`. Consulta el plan para el
+detalle.
 
 ## Requisitos para desarrollar
 

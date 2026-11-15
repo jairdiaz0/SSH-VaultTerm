@@ -32,6 +32,12 @@ abstract final class AppShape {
 }
 
 abstract final class AppTheme {
+  /// Bundled UI font family (assets/fonts/Inter-*.ttf).
+  static const fontFamily = 'Inter';
+
+  /// Bundled monospace family for the terminal (assets/fonts/JetBrainsMono-*).
+  static const monoFamily = 'JetBrainsMono';
+
   static ThemeData dark() {
     const scheme = ColorScheme.dark(
       primary: AppColors.accent,
@@ -56,7 +62,11 @@ abstract final class AppTheme {
       surfaceTint: Colors.transparent,
     );
 
-    final base = ThemeData(brightness: Brightness.dark, useMaterial3: true);
+    final base = ThemeData(
+      brightness: Brightness.dark,
+      useMaterial3: true,
+      fontFamily: fontFamily,
+    );
 
     return base.copyWith(
       colorScheme: scheme,
@@ -192,7 +202,9 @@ abstract final class AppTheme {
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-      );
+      )
+      // The copyWith styles above replace the family, so it is applied last.
+      .apply(fontFamily: fontFamily);
 
   static InputDecorationThemeData _inputTheme() => InputDecorationThemeData(
     filled: true,

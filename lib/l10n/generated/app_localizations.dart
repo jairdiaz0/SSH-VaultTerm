@@ -382,6 +382,432 @@ abstract class AppLocalizations {
   /// **'Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.'**
   String get errorPrivateKeyUnsupportedFormat;
 
+  /// No description provided for @connectionStatusConnected.
+  ///
+  /// In es, this message translates to:
+  /// **'Conectado'**
+  String get connectionStatusConnected;
+
+  /// No description provided for @connectionStatusConnecting.
+  ///
+  /// In es, this message translates to:
+  /// **'Conectando…'**
+  String get connectionStatusConnecting;
+
+  /// No description provided for @connectionStatusDisconnected.
+  ///
+  /// In es, this message translates to:
+  /// **'Desconectado'**
+  String get connectionStatusDisconnected;
+
+  /// No description provided for @connectionStatusFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'Error de conexión'**
+  String get connectionStatusFailed;
+
+  /// No description provided for @newConnectionAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva conexión'**
+  String get newConnectionAction;
+
+  /// No description provided for @newCollectionAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva colección'**
+  String get newCollectionAction;
+
+  /// No description provided for @editAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar'**
+  String get editAction;
+
+  /// No description provided for @deleteAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get deleteAction;
+
+  /// No description provided for @renameAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Renombrar'**
+  String get renameAction;
+
+  /// No description provided for @moveUpAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Subir'**
+  String get moveUpAction;
+
+  /// No description provided for @moveDownAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Bajar'**
+  String get moveDownAction;
+
+  /// No description provided for @addToFavoritesAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir a favoritos'**
+  String get addToFavoritesAction;
+
+  /// No description provided for @removeFromFavoritesAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar de favoritos'**
+  String get removeFromFavoritesAction;
+
+  /// No description provided for @emptySidebarHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea una colección y añade tu primer servidor.'**
+  String get emptySidebarHint;
+
+  /// No description provided for @sidebarServersSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Servidores'**
+  String get sidebarServersSection;
+
+  /// No description provided for @connectionFormNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva conexión'**
+  String get connectionFormNewTitle;
+
+  /// No description provided for @connectionFormEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar conexión'**
+  String get connectionFormEditTitle;
+
+  /// No description provided for @connectionNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get connectionNameLabel;
+
+  /// No description provided for @connectionHostLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Host o IP'**
+  String get connectionHostLabel;
+
+  /// No description provided for @connectionPortLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Puerto'**
+  String get connectionPortLabel;
+
+  /// No description provided for @connectionUserLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuario'**
+  String get connectionUserLabel;
+
+  /// No description provided for @authMethodLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Método de acceso'**
+  String get authMethodLabel;
+
+  /// No description provided for @authPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get authPasswordLabel;
+
+  /// No description provided for @authPrivateKeyLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Llave privada'**
+  String get authPrivateKeyLabel;
+
+  /// No description provided for @privateKeyImportAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Importar llave…'**
+  String get privateKeyImportAction;
+
+  /// No description provided for @privateKeyLoaded.
+  ///
+  /// In es, this message translates to:
+  /// **'Llave {type} cargada.'**
+  String privateKeyLoaded(String type);
+
+  /// No description provided for @privateKeyLoadedEncrypted.
+  ///
+  /// In es, this message translates to:
+  /// **'Llave {type} cifrada cargada.'**
+  String privateKeyLoadedEncrypted(String type);
+
+  /// No description provided for @passphraseLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Frase de contraseña de la llave'**
+  String get passphraseLabel;
+
+  /// No description provided for @passphraseOptionalHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Déjala vacía si la llave no está protegida.'**
+  String get passphraseOptionalHint;
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Descripción'**
+  String get descriptionLabel;
+
+  /// No description provided for @collectionLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Colección'**
+  String get collectionLabel;
+
+  /// No description provided for @noCollectionOption.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin colección'**
+  String get noCollectionOption;
+
+  /// No description provided for @favoriteLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Favorito'**
+  String get favoriteLabel;
+
+  /// No description provided for @saveAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveAction;
+
+  /// No description provided for @passwordKeepHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Déjala vacía para conservar la guardada.'**
+  String get passwordKeepHint;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Este campo es obligatorio.'**
+  String get fieldRequired;
+
+  /// No description provided for @invalidHost.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe un host o una dirección IP, sin esquema ni barras.'**
+  String get invalidHost;
+
+  /// No description provided for @invalidPort.
+  ///
+  /// In es, this message translates to:
+  /// **'El puerto debe estar entre 1 y 65535.'**
+  String get invalidPort;
+
+  /// No description provided for @credentialRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce una contraseña o importa una llave.'**
+  String get credentialRequired;
+
+  /// No description provided for @connectionSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Conexión guardada.'**
+  String get connectionSaved;
+
+  /// No description provided for @connectionDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Conexión eliminada.'**
+  String get connectionDeleted;
+
+  /// No description provided for @collectionNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre de la colección'**
+  String get collectionNameLabel;
+
+  /// No description provided for @collectionFormNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva colección'**
+  String get collectionFormNewTitle;
+
+  /// No description provided for @collectionFormEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Renombrar colección'**
+  String get collectionFormEditTitle;
+
+  /// No description provided for @collectionDeletedConnectionsKept.
+  ///
+  /// In es, this message translates to:
+  /// **'Colección eliminada. Sus conexiones siguen disponibles sin colección.'**
+  String get collectionDeletedConnectionsKept;
+
+  /// No description provided for @confirmDeleteConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar «{name}»? También se borrará su credencial guardada.'**
+  String confirmDeleteConnection(String name);
+
+  /// No description provided for @confirmDeleteCollection.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar «{name}»? Las conexiones no se borran.'**
+  String confirmDeleteCollection(String name);
+
+  /// No description provided for @hostKeyDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Huella del servidor'**
+  String get hostKeyDialogTitle;
+
+  /// No description provided for @hostKeyUnknownBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Es la primera conexión a {host}. Comprueba que la huella coincide con la del servidor antes de aceptar.'**
+  String hostKeyUnknownBody(String host);
+
+  /// No description provided for @hostKeyFingerprintLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Huella SHA-256'**
+  String get hostKeyFingerprintLabel;
+
+  /// No description provided for @hostKeyKeyTypeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de clave'**
+  String get hostKeyKeyTypeLabel;
+
+  /// No description provided for @hostKeyAcceptAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Confiar y conectar'**
+  String get hostKeyAcceptAction;
+
+  /// No description provided for @hostKeyChangedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'La huella del servidor ha cambiado'**
+  String get hostKeyChangedTitle;
+
+  /// No description provided for @hostKeyChangedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'La huella guardada para {host} no coincide con la que presenta ahora. Puede ser un ataque de intermediario, así que la conexión se ha bloqueado.'**
+  String hostKeyChangedBody(String host);
+
+  /// No description provided for @hostKeyForgetAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar huella guardada'**
+  String get hostKeyForgetAction;
+
+  /// No description provided for @hostKeyForgotten.
+  ///
+  /// In es, this message translates to:
+  /// **'Huella borrada. Vuelve a conectar para confirmar la nueva.'**
+  String get hostKeyForgotten;
+
+  /// No description provided for @workspaceEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin sesión'**
+  String get workspaceEmptyTitle;
+
+  /// No description provided for @workspaceEmptyBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige un servidor en la barra lateral para abrir una terminal.'**
+  String get workspaceEmptyBody;
+
+  /// No description provided for @terminalTab.
+  ///
+  /// In es, this message translates to:
+  /// **'Terminal'**
+  String get terminalTab;
+
+  /// No description provided for @filesTab.
+  ///
+  /// In es, this message translates to:
+  /// **'Archivos'**
+  String get filesTab;
+
+  /// No description provided for @disconnectAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Desconectar'**
+  String get disconnectAction;
+
+  /// No description provided for @reconnectAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Reconectar'**
+  String get reconnectAction;
+
+  /// No description provided for @maximizePanelAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Maximizar panel'**
+  String get maximizePanelAction;
+
+  /// No description provided for @restoreSplitAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Restaurar división'**
+  String get restoreSplitAction;
+
+  /// No description provided for @filesPanelPending.
+  ///
+  /// In es, this message translates to:
+  /// **'El explorador de archivos se habilita en la siguiente fase.'**
+  String get filesPanelPending;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get settingsTitle;
+
+  /// No description provided for @securitySection.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguridad'**
+  String get securitySection;
+
+  /// No description provided for @knownHostsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Huellas conocidas'**
+  String get knownHostsTitle;
+
+  /// No description provided for @knownHostsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay huellas guardadas en este perfil.'**
+  String get knownHostsEmpty;
+
+  /// No description provided for @knownHostsEntry.
+  ///
+  /// In es, this message translates to:
+  /// **'{host}:{port} · {type}'**
+  String knownHostsEntry(String host, int port, String type);
+
+  /// No description provided for @profileSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil'**
+  String get profileSection;
+
   /// No description provided for @errorUnknown.
   ///
   /// In es, this message translates to:

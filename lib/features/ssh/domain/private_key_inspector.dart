@@ -85,6 +85,24 @@ abstract final class PrivateKeyInspector {
     return keys;
   }
 
+  /// True when [pemText] is a supported, passphrase-protected key.
+  ///
+  /// Used by the import UI to ask for a passphrase before validating; returns
+  /// false for anything it cannot classify (the save path reports the error).
+  static bool requiresPassphrase(String pemText) {
+    final pem = pemText.trim();
+    if (pem.isEmpty) return false;
+    try {
+      return SSHKeyPair.isEncryptedPem(pem);
+    } on FormatException {
+      return false;
+    } on UnsupportedError {
+      return false;
+    } on SSHKeyDecodeError {
+      return false;
+    }
+  }
+
   static bool _isEncrypted(String pem) {
     try {
       return SSHKeyPair.isEncryptedPem(pem);

@@ -16,7 +16,6 @@ permisivas (MIT, BSD-2, BSD-3, Apache-2.0, OFL-1.1).
 | `flutter_secure_storage` | 11.2.0 | BSD-3-Clause | Almacén de secretos del sistema (Credential Manager/DPAPI, Keychain, libsecret). |
 | `cryptography` | 2.9.0 | Apache-2.0 | Argon2id para el verificador de contraseña de perfil y utilidades criptográficas. |
 | `sqlite3` | 3.9.1 | MIT | Enlaces FFI a SQLite. Compilado con **SQLCipher 4.20.0 community** mediante el hook `source: sqlcipher`. |
-| `flutter_riverpod` | 3.5.0 | MIT | Gestión de estado e inyección de dependencias. |
 | `path_provider` | 2.1.6 | BSD-3-Clause | Directorios de datos de la aplicación. |
 | `path` | 1.9.1 | BSD-3-Clause | Manipulación de rutas **locales**. Las rutas remotas usan lógica POSIX propia. |
 | `uuid` | 4.6.0 | MIT | Identificadores UUID v4 de perfiles, colecciones, conexiones y credenciales. |
@@ -43,11 +42,16 @@ permisivas (MIT, BSD-2, BSD-3, Apache-2.0, OFL-1.1).
 | SQLite (base de SQLCipher) | 3.54.x | Public Domain | Incluida dentro de SQLCipher. |
 | OpenSSL (usado por SQLCipher) | 4.0.3 | Apache-2.0 | Vinculado dentro del binario de SQLCipher que publica `sqlite3.dart`. |
 
-## Fuentes (a empaquetar como assets, no descargar en ejecución)
+## Fuentes empaquetadas (assets, nunca descargadas en ejecución)
 
-Pendiente de añadir en la fase de escritorio: Inter y JetBrains Mono bajo SIL
-Open Font License 1.1. No se usa `google_fonts` ni ninguna descarga en tiempo de
-ejecución.
+| Fuente | Versión | Licencia | Ficheros |
+|---|---|---|---|
+| Inter | 4.1 | SIL Open Font License 1.1 | `assets/fonts/Inter-{Regular,Medium,SemiBold,Bold}.ttf` |
+| JetBrains Mono | 2.304 | SIL Open Font License 1.1 | `assets/fonts/JetBrainsMono-{Regular,Bold}.ttf` |
+
+Los textos completos de ambas licencias están junto a los ficheros
+(`assets/fonts/LICENSE-Inter.txt`, `assets/fonts/LICENSE-JetBrainsMono.txt`).
+No se usa `google_fonts` ni ninguna descarga en tiempo de ejecución.
 
 ## Dependencias evaluadas y descartadas
 

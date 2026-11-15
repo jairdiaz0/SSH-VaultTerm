@@ -96,12 +96,14 @@ y `flutter test` (unitarios, widget, golden, FFI).
 - [x] Tests de widget del terminal; interactividad real marcada `[~]` si no se puede ejecutar.
 
 ## Fase 4 — UI de escritorio
-- [ ] Tema completo y componentes reutilizables del SPEC.
-- [ ] Fuentes Inter y JetBrains Mono empaquetadas como assets (OFL) + avisos.
-- [ ] Sidebar con perfil, colecciones expandibles, servidores, favoritos, ajustes, indicador de conexión.
-- [ ] CRUD de colecciones y conexiones desde UI con menús contextuales y reordenación.
-- [ ] Workspace con terminal + SFTP y divisor redimensionable / maximizar panel.
-- [ ] Arrastrar y soltar de entrada (SO → SFTP) con `desktop_drop`.
+- [x] Tema completo y componentes reutilizables del SPEC.
+- [x] Fuentes Inter y JetBrains Mono empaquetadas como assets (OFL) + avisos.
+- [x] Sidebar con perfil, colecciones expandibles, servidores, favoritos, ajustes, indicador de conexión.
+- [x] CRUD de colecciones y conexiones desde UI con menús contextuales y reordenación
+  (menú Subir/Bajar, accesible por teclado; arrastre de elementos no implementado).
+- [~] Workspace con terminal + SFTP y divisor redimensionable / maximizar panel
+  (terminal, divisor y maximización listos y probados; panel SFTP real llega en la fase 5).
+- [ ] Arrastrar y soltar de entrada (SO → SFTP) con `desktop_drop` (depende del explorador SFTP).
 - [!] Arrastrar y soltar de salida (SFTP → SO): bloqueado por conflicto de dependencias (D-006).
 
 ## Fase 5 — SFTP

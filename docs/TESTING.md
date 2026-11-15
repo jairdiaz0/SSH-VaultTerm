@@ -239,6 +239,47 @@ Contra el servidor de pruebas:
 Pendiente (fase 4): selección, copia/pegado desde la UI, barra de teclas en
 Android y medición de rendimiento con volúmenes grandes.
 
+## 2026-11-15 — Fase 4 (UI de escritorio)
+
+### Estado global
+```text
+flutter analyze   → No issues found!
+flutter test      → +141 All tests passed! (incluye pty y SSH reales)
+```
+
+### Fuentes empaquetadas
+`assets/fonts/Inter-*.ttf` (400/500/600/700) y `assets/fonts/JetBrainsMono-*.ttf`
+(400/700), con sus licencias OFL al lado. Test de assets en
+`test/app/theme_test.dart`: los seis ficheros existen y el tema aplica la familia
+`Inter` (también tras los `copyWith`, que la perdían). El terminal usa
+`JetBrainsMono` (`appTerminalStyle`).
+
+### CRUD real — `test/features/shell/shell_crud_test.dart`
+Con servicios reales (BD cifrada en memoria y almacén de secretos en memoria):
+- Crear colección desde el diálogo y verla en la barra lateral.
+- Crear conexión con contraseña: aparece con `usuario@host:puerto`; la credencial
+  queda **solo** en el almacén secreto y se recupera con su `credentialId`.
+- Validación: sin host no se guarda y se muestra el error.
+- Editar el nombre conserva el `credentialId` y la contraseña guardada.
+- Favorito: aparece dos veces (Favoritos + colección), como en el diseño.
+- Eliminar conexión borra su credencial; eliminar colección deja la conexión sin
+  colección (ON DELETE SET NULL verificado desde la UI).
+- Reordenar colecciones con el menú Subir/Bajar y posiciones persistidas.
+
+### Workspace — `test/features/workspace/workspace_test.dart`
+- `WorkspaceController` contra `127.0.0.1:1` (puerto cerrado, sin servidor):
+  estado `failed` y código `networkUnreachable`.
+- Panel: banner de error localizado, botón Reconectar y nombre del servidor.
+- Ajustes: lista una huella conocida real, muestra su `SHA256:…` y la borra
+  (persistida en la BD del perfil, contador a 0).
+
+### Divisor — `test/shared/resizable_split_test.dart`
+- Arrastrar el divisor cambia los anchos y conserva los 8 px del asa.
+- Maximizar terminal oculta el panel de archivos (y al revés); restaurar devuelve
+  la división. El estado de la sesión no se toca al cambiar de modo.
+
+Pendiente (fase 5): panel SFTP real y arrastrar y soltar de entrada.
+
 ## Pendiente de verificación (bloqueado por el entorno, D-001)
 - `flutter_secure_storage` en ejecución: plugin de plataforma; no hay app
   ejecutable en esta máquina. Marcado `[~]`.

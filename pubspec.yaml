@@ -63,3 +63,21 @@ hooks:
 flutter:
   uses-material-design: true
   generate: true
+
+  fonts:
+    # Inter (SIL OFL 1.1) and JetBrains Mono (SIL OFL 1.1) are bundled as
+    # assets: nothing is downloaded at runtime. Licences in assets/fonts/.
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700

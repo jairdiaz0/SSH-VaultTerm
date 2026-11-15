@@ -186,5 +186,240 @@ class AppLocalizationsEs extends AppLocalizations {
       'Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.';
 
   @override
+  String get connectionStatusConnected => 'Conectado';
+
+  @override
+  String get connectionStatusConnecting => 'Conectando…';
+
+  @override
+  String get connectionStatusDisconnected => 'Desconectado';
+
+  @override
+  String get connectionStatusFailed => 'Error de conexión';
+
+  @override
+  String get newConnectionAction => 'Nueva conexión';
+
+  @override
+  String get newCollectionAction => 'Nueva colección';
+
+  @override
+  String get editAction => 'Editar';
+
+  @override
+  String get deleteAction => 'Eliminar';
+
+  @override
+  String get renameAction => 'Renombrar';
+
+  @override
+  String get moveUpAction => 'Subir';
+
+  @override
+  String get moveDownAction => 'Bajar';
+
+  @override
+  String get addToFavoritesAction => 'Añadir a favoritos';
+
+  @override
+  String get removeFromFavoritesAction => 'Quitar de favoritos';
+
+  @override
+  String get emptySidebarHint =>
+      'Crea una colección y añade tu primer servidor.';
+
+  @override
+  String get sidebarServersSection => 'Servidores';
+
+  @override
+  String get connectionFormNewTitle => 'Nueva conexión';
+
+  @override
+  String get connectionFormEditTitle => 'Editar conexión';
+
+  @override
+  String get connectionNameLabel => 'Nombre';
+
+  @override
+  String get connectionHostLabel => 'Host o IP';
+
+  @override
+  String get connectionPortLabel => 'Puerto';
+
+  @override
+  String get connectionUserLabel => 'Usuario';
+
+  @override
+  String get authMethodLabel => 'Método de acceso';
+
+  @override
+  String get authPasswordLabel => 'Contraseña';
+
+  @override
+  String get authPrivateKeyLabel => 'Llave privada';
+
+  @override
+  String get privateKeyImportAction => 'Importar llave…';
+
+  @override
+  String privateKeyLoaded(String type) {
+    return 'Llave $type cargada.';
+  }
+
+  @override
+  String privateKeyLoadedEncrypted(String type) {
+    return 'Llave $type cifrada cargada.';
+  }
+
+  @override
+  String get passphraseLabel => 'Frase de contraseña de la llave';
+
+  @override
+  String get passphraseOptionalHint =>
+      'Déjala vacía si la llave no está protegida.';
+
+  @override
+  String get descriptionLabel => 'Descripción';
+
+  @override
+  String get collectionLabel => 'Colección';
+
+  @override
+  String get noCollectionOption => 'Sin colección';
+
+  @override
+  String get favoriteLabel => 'Favorito';
+
+  @override
+  String get saveAction => 'Guardar';
+
+  @override
+  String get passwordKeepHint => 'Déjala vacía para conservar la guardada.';
+
+  @override
+  String get fieldRequired => 'Este campo es obligatorio.';
+
+  @override
+  String get invalidHost =>
+      'Escribe un host o una dirección IP, sin esquema ni barras.';
+
+  @override
+  String get invalidPort => 'El puerto debe estar entre 1 y 65535.';
+
+  @override
+  String get credentialRequired =>
+      'Introduce una contraseña o importa una llave.';
+
+  @override
+  String get connectionSaved => 'Conexión guardada.';
+
+  @override
+  String get connectionDeleted => 'Conexión eliminada.';
+
+  @override
+  String get collectionNameLabel => 'Nombre de la colección';
+
+  @override
+  String get collectionFormNewTitle => 'Nueva colección';
+
+  @override
+  String get collectionFormEditTitle => 'Renombrar colección';
+
+  @override
+  String get collectionDeletedConnectionsKept =>
+      'Colección eliminada. Sus conexiones siguen disponibles sin colección.';
+
+  @override
+  String confirmDeleteConnection(String name) {
+    return '¿Eliminar «$name»? También se borrará su credencial guardada.';
+  }
+
+  @override
+  String confirmDeleteCollection(String name) {
+    return '¿Eliminar «$name»? Las conexiones no se borran.';
+  }
+
+  @override
+  String get hostKeyDialogTitle => 'Huella del servidor';
+
+  @override
+  String hostKeyUnknownBody(String host) {
+    return 'Es la primera conexión a $host. Comprueba que la huella coincide con la del servidor antes de aceptar.';
+  }
+
+  @override
+  String get hostKeyFingerprintLabel => 'Huella SHA-256';
+
+  @override
+  String get hostKeyKeyTypeLabel => 'Tipo de clave';
+
+  @override
+  String get hostKeyAcceptAction => 'Confiar y conectar';
+
+  @override
+  String get hostKeyChangedTitle => 'La huella del servidor ha cambiado';
+
+  @override
+  String hostKeyChangedBody(String host) {
+    return 'La huella guardada para $host no coincide con la que presenta ahora. Puede ser un ataque de intermediario, así que la conexión se ha bloqueado.';
+  }
+
+  @override
+  String get hostKeyForgetAction => 'Borrar huella guardada';
+
+  @override
+  String get hostKeyForgotten =>
+      'Huella borrada. Vuelve a conectar para confirmar la nueva.';
+
+  @override
+  String get workspaceEmptyTitle => 'Sin sesión';
+
+  @override
+  String get workspaceEmptyBody =>
+      'Elige un servidor en la barra lateral para abrir una terminal.';
+
+  @override
+  String get terminalTab => 'Terminal';
+
+  @override
+  String get filesTab => 'Archivos';
+
+  @override
+  String get disconnectAction => 'Desconectar';
+
+  @override
+  String get reconnectAction => 'Reconectar';
+
+  @override
+  String get maximizePanelAction => 'Maximizar panel';
+
+  @override
+  String get restoreSplitAction => 'Restaurar división';
+
+  @override
+  String get filesPanelPending =>
+      'El explorador de archivos se habilita en la siguiente fase.';
+
+  @override
+  String get settingsTitle => 'Ajustes';
+
+  @override
+  String get securitySection => 'Seguridad';
+
+  @override
+  String get knownHostsTitle => 'Huellas conocidas';
+
+  @override
+  String get knownHostsEmpty => 'No hay huellas guardadas en este perfil.';
+
+  @override
+  String knownHostsEntry(String host, int port, String type) {
+    return '$host:$port · $type';
+  }
+
+  @override
+  String get profileSection => 'Perfil';
+
+  @override
   String get errorUnknown => 'Ha ocurrido un error inesperado.';
 }

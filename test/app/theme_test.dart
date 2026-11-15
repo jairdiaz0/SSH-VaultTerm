@@ -1,8 +1,29 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ssh_client/app/theme/app_theme.dart';
 
 void main() {
+  test('the bundled fonts exist as assets', () {
+    for (final file in [
+      'Inter-Regular.ttf',
+      'Inter-Medium.ttf',
+      'Inter-SemiBold.ttf',
+      'Inter-Bold.ttf',
+      'JetBrainsMono-Regular.ttf',
+      'JetBrainsMono-Bold.ttf',
+    ]) {
+      expect(
+        File('assets/fonts/$file').existsSync(),
+        isTrue,
+        reason: '$file must be bundled: nothing is downloaded at runtime',
+      );
+    }
+    expect(AppTheme.fontFamily, 'Inter');
+    expect(AppTheme.monoFamily, 'JetBrainsMono');
+  });
+
   test('palette matches the SPEC values', () {
     expect(AppColors.background, const Color(0xFF0E1113));
     expect(AppColors.surfaceSecondary, const Color(0xFF121619));
@@ -44,5 +65,7 @@ void main() {
     expect(theme.appBarTheme.elevation, 0);
     expect(theme.appBarTheme.backgroundColor, AppColors.surfaceSecondary);
     expect(theme.filledButtonTheme.style?.backgroundColor, isNotNull);
+    expect(theme.textTheme.bodyMedium?.fontFamily, 'Inter');
+    expect(theme.textTheme.bodyMedium?.color, AppColors.textPrimary);
   });
 }

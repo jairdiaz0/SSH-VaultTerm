@@ -83,5 +83,131 @@
   "errorPrivateKeyPassphraseRequired": "Esta llave privada está protegida con una frase de contraseña.",
   "errorPrivateKeyPassphraseInvalid": "La frase de contraseña de la llave no es correcta.",
   "errorPrivateKeyUnsupportedFormat": "Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.",
+  "connectionStatusConnected": "Conectado",
+  "connectionStatusConnecting": "Conectando…",
+  "connectionStatusDisconnected": "Desconectado",
+  "connectionStatusFailed": "Error de conexión",
+  "newConnectionAction": "Nueva conexión",
+  "newCollectionAction": "Nueva colección",
+  "editAction": "Editar",
+  "deleteAction": "Eliminar",
+  "renameAction": "Renombrar",
+  "moveUpAction": "Subir",
+  "moveDownAction": "Bajar",
+  "addToFavoritesAction": "Añadir a favoritos",
+  "removeFromFavoritesAction": "Quitar de favoritos",
+  "emptySidebarHint": "Crea una colección y añade tu primer servidor.",
+  "sidebarServersSection": "Servidores",
+  "connectionFormNewTitle": "Nueva conexión",
+  "connectionFormEditTitle": "Editar conexión",
+  "connectionNameLabel": "Nombre",
+  "connectionHostLabel": "Host o IP",
+  "connectionPortLabel": "Puerto",
+  "connectionUserLabel": "Usuario",
+  "authMethodLabel": "Método de acceso",
+  "authPasswordLabel": "Contraseña",
+  "authPrivateKeyLabel": "Llave privada",
+  "privateKeyImportAction": "Importar llave…",
+  "privateKeyLoaded": "Llave {type} cargada.",
+  "@privateKeyLoaded": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "privateKeyLoadedEncrypted": "Llave {type} cifrada cargada.",
+  "@privateKeyLoadedEncrypted": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "passphraseLabel": "Frase de contraseña de la llave",
+  "passphraseOptionalHint": "Déjala vacía si la llave no está protegida.",
+  "descriptionLabel": "Descripción",
+  "collectionLabel": "Colección",
+  "noCollectionOption": "Sin colección",
+  "favoriteLabel": "Favorito",
+  "saveAction": "Guardar",
+  "passwordKeepHint": "Déjala vacía para conservar la guardada.",
+  "fieldRequired": "Este campo es obligatorio.",
+  "invalidHost": "Escribe un host o una dirección IP, sin esquema ni barras.",
+  "invalidPort": "El puerto debe estar entre 1 y 65535.",
+  "credentialRequired": "Introduce una contraseña o importa una llave.",
+  "connectionSaved": "Conexión guardada.",
+  "connectionDeleted": "Conexión eliminada.",
+  "collectionNameLabel": "Nombre de la colección",
+  "collectionFormNewTitle": "Nueva colección",
+  "collectionFormEditTitle": "Renombrar colección",
+  "collectionDeletedConnectionsKept": "Colección eliminada. Sus conexiones siguen disponibles sin colección.",
+  "confirmDeleteConnection": "¿Eliminar «{name}»? También se borrará su credencial guardada.",
+  "@confirmDeleteConnection": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteCollection": "¿Eliminar «{name}»? Las conexiones no se borran.",
+  "@confirmDeleteCollection": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "hostKeyDialogTitle": "Huella del servidor",
+  "hostKeyUnknownBody": "Es la primera conexión a {host}. Comprueba que la huella coincide con la del servidor antes de aceptar.",
+  "@hostKeyUnknownBody": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "hostKeyFingerprintLabel": "Huella SHA-256",
+  "hostKeyKeyTypeLabel": "Tipo de clave",
+  "hostKeyAcceptAction": "Confiar y conectar",
+  "hostKeyChangedTitle": "La huella del servidor ha cambiado",
+  "hostKeyChangedBody": "La huella guardada para {host} no coincide con la que presenta ahora. Puede ser un ataque de intermediario, así que la conexión se ha bloqueado.",
+  "@hostKeyChangedBody": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "hostKeyForgetAction": "Borrar huella guardada",
+  "hostKeyForgotten": "Huella borrada. Vuelve a conectar para confirmar la nueva.",
+  "workspaceEmptyTitle": "Sin sesión",
+  "workspaceEmptyBody": "Elige un servidor en la barra lateral para abrir una terminal.",
+  "terminalTab": "Terminal",
+  "filesTab": "Archivos",
+  "disconnectAction": "Desconectar",
+  "reconnectAction": "Reconectar",
+  "maximizePanelAction": "Maximizar panel",
+  "restoreSplitAction": "Restaurar división",
+  "filesPanelPending": "El explorador de archivos se habilita en la siguiente fase.",
+  "settingsTitle": "Ajustes",
+  "securitySection": "Seguridad",
+  "knownHostsTitle": "Huellas conocidas",
+  "knownHostsEmpty": "No hay huellas guardadas en este perfil.",
+  "knownHostsEntry": "{host}:{port} · {type}",
+  "@knownHostsEntry": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      },
+      "port": {
+        "type": "int"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSection": "Perfil",
   "errorUnknown": "Ha ocurrido un error inesperado."
 }
