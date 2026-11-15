@@ -412,6 +412,30 @@ abstract class AppLocalizations {
   /// **'La transferencia falló.'**
   String get errorTransferFailed;
 
+  /// No description provided for @errorBackupInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El archivo de respaldo no es válido o está incompleto.'**
+  String get errorBackupInvalid;
+
+  /// No description provided for @errorBackupVersionUnsupported.
+  ///
+  /// In es, this message translates to:
+  /// **'Este respaldo se creó con una versión más reciente de la aplicación.'**
+  String get errorBackupVersionUnsupported;
+
+  /// No description provided for @errorBackupReadFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo leer el archivo de respaldo.'**
+  String get errorBackupReadFailed;
+
+  /// No description provided for @errorBackupWriteFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo escribir el archivo de respaldo.'**
+  String get errorBackupWriteFailed;
+
   /// No description provided for @sftpEmptyFolder.
   ///
   /// In es, this message translates to:
@@ -561,6 +585,120 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Descarga en curso.'**
   String get sftpDownloadStarted;
+
+  /// No description provided for @backupSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Respaldos'**
+  String get backupSection;
+
+  /// No description provided for @exportBackupAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Exportar respaldo'**
+  String get exportBackupAction;
+
+  /// No description provided for @importBackupAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Importar respaldo'**
+  String get importBackupAction;
+
+  /// No description provided for @exportWarningTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Advertencia de seguridad'**
+  String get exportWarningTitle;
+
+  /// No description provided for @exportWarningBody.
+  ///
+  /// In es, this message translates to:
+  /// **'ADVERTENCIA DE SEGURIDAD. El archivo de respaldo contendrá información sensible, incluidas contraseñas SSH, llaves privadas y frases de contraseña. El archivo JSON NO estará cifrado ni protegido por la aplicación. Cualquier persona con acceso al archivo podría conectarse a tus servidores. Guárdalo en un lugar seguro y no lo compartas. Además incluye el verificador de la contraseña de perfil, que podría someterse a fuerza bruta.'**
+  String get exportWarningBody;
+
+  /// No description provided for @exportConfirmAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Entiendo los riesgos y quiero exportar'**
+  String get exportConfirmAction;
+
+  /// No description provided for @exportDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Respaldo exportado.'**
+  String get exportDone;
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo exportar el respaldo.'**
+  String get exportFailed;
+
+  /// No description provided for @importTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Importar respaldo'**
+  String get importTitle;
+
+  /// No description provided for @importSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'{profiles} perfiles · {connections} conexiones · {credentials} credenciales'**
+  String importSummary(int profiles, int connections, int credentials);
+
+  /// No description provided for @importModeMerge.
+  ///
+  /// In es, this message translates to:
+  /// **'Fusionar'**
+  String get importModeMerge;
+
+  /// No description provided for @importModeMergeHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea lo que falta y actualiza por identificador. Conserva los datos locales que no estén en el respaldo.'**
+  String get importModeMergeHelp;
+
+  /// No description provided for @importModeReplaceProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Reemplazar un perfil'**
+  String get importModeReplaceProfile;
+
+  /// No description provided for @importModeReplaceAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Reemplazar todos'**
+  String get importModeReplaceAll;
+
+  /// No description provided for @importReplaceWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Se borrarán los perfiles actuales antes de importar. La sesión se bloqueará.'**
+  String get importReplaceWarning;
+
+  /// No description provided for @importTargetProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil a reemplazar'**
+  String get importTargetProfile;
+
+  /// No description provided for @importConfirmAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Importar'**
+  String get importConfirmAction;
+
+  /// No description provided for @importDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Respaldo importado.'**
+  String get importDone;
+
+  /// No description provided for @importFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo importar el respaldo. No se ha cambiado nada.'**
+  String get importFailed;
 
   /// No description provided for @connectionStatusConnected.
   ///

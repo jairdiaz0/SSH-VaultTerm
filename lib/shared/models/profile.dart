@@ -78,6 +78,40 @@ class Profile {
     updatedAt: DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int),
   );
 
+  /// Serialization used by JSON backups (never contains the profile password:
+  /// only its salt and verifier, as the database stores them).
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'name': name,
+    'passwordSalt': base64Encode(passwordSalt),
+    'passwordVerifier': base64Encode(passwordVerifier),
+    'kdf': kdf,
+    'kdfParams': kdfParams,
+    'settings': settings,
+    'isLastActive': isLastActive,
+    'failedAttempts': failedAttempts,
+    'lockoutUntil': lockoutUntil?.toIso8601String(),
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+  };
+
+  static Profile fromJson(Map<String, Object?> json) => Profile(
+    id: json['id']! as String,
+    name: json['name']! as String,
+    passwordSalt: base64Decode(json['passwordSalt']! as String),
+    passwordVerifier: base64Decode(json['passwordVerifier']! as String),
+    kdf: json['kdf']! as String,
+    kdfParams: json['kdfParams']! as String,
+    settings: (json['settings']! as Map).cast<String, Object?>(),
+    isLastActive: json['isLastActive']! as bool,
+    failedAttempts: json['failedAttempts']! as int,
+    lockoutUntil: json['lockoutUntil'] == null
+        ? null
+        : DateTime.parse(json['lockoutUntil']! as String),
+    createdAt: DateTime.parse(json['createdAt']! as String),
+    updatedAt: DateTime.parse(json['updatedAt']! as String),
+  );
+
   Profile copyWith({
     String? name,
     Map<String, Object?>? settings,

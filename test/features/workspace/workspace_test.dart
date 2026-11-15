@@ -94,6 +94,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SettingsDialog), findsOneWidget);
+    expect(find.byKey(const Key('export-backup-button')), findsOneWidget);
+    expect(find.byKey(const Key('import-backup-button')), findsOneWidget);
     expect(
       find.text('SHA256:abcdefghijklmnop'),
       findsOneWidget,

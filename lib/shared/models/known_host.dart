@@ -44,6 +44,26 @@ class KnownHost {
     createdAt: DateTime.fromMillisecondsSinceEpoch(row['created_at'] as int),
   );
 
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'connectionId': connectionId,
+    'hostname': hostname,
+    'port': port,
+    'keyType': keyType,
+    'fingerprint': fingerprint,
+    'createdAt': createdAt.toIso8601String(),
+  };
+
+  static KnownHost fromJson(Map<String, Object?> json) => KnownHost(
+    id: json['id']! as String,
+    connectionId: json['connectionId']! as String,
+    hostname: json['hostname']! as String,
+    port: json['port']! as int,
+    keyType: json['keyType']! as String,
+    fingerprint: json['fingerprint']! as String,
+    createdAt: DateTime.parse(json['createdAt']! as String),
+  );
+
   /// True when [presented] is the stored fingerprint.
   bool matches(String presented) => fingerprint == presented;
 }

@@ -84,6 +84,40 @@ class Connection {
     updatedAt: DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int),
   );
 
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'collectionId': collectionId,
+    'name': name,
+    'hostname': hostname,
+    'port': port,
+    'username': username,
+    'authType': authType.name,
+    'credentialId': credentialId,
+    'description': description,
+    'tags': tags,
+    'favorite': favorite,
+    'position': position,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+  };
+
+  static Connection fromJson(Map<String, Object?> json) => Connection(
+    id: json['id']! as String,
+    collectionId: json['collectionId'] as String?,
+    name: json['name']! as String,
+    hostname: json['hostname']! as String,
+    port: json['port']! as int,
+    username: json['username']! as String,
+    authType: AuthenticationType.fromStorage(json['authType']! as String),
+    credentialId: json['credentialId'] as String?,
+    description: json['description'] as String?,
+    tags: (json['tags']! as List).cast<String>(),
+    favorite: json['favorite']! as bool,
+    position: json['position']! as int,
+    createdAt: DateTime.parse(json['createdAt']! as String),
+    updatedAt: DateTime.parse(json['updatedAt']! as String),
+  );
+
   Connection copyWith({
     String? collectionId,
     String? name,

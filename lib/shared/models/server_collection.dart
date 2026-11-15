@@ -44,6 +44,29 @@ class ServerCollection {
     updatedAt: DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int),
   );
 
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'name': name,
+    'description': description,
+    'icon': icon,
+    'color': color,
+    'position': position,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt.toIso8601String(),
+  };
+
+  static ServerCollection fromJson(Map<String, Object?> json) =>
+      ServerCollection(
+        id: json['id']! as String,
+        name: json['name']! as String,
+        description: json['description'] as String?,
+        icon: json['icon'] as String?,
+        color: json['color'] as String?,
+        position: json['position']! as int,
+        createdAt: DateTime.parse(json['createdAt']! as String),
+        updatedAt: DateTime.parse(json['updatedAt']! as String),
+      );
+
   ServerCollection copyWith({
     String? name,
     String? description,

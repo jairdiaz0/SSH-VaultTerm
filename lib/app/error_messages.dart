@@ -46,6 +46,10 @@ String describeAppError(
     AppErrorCode.sftpFailure => l10n.errorSftpFailure,
     AppErrorCode.transferCancelled => l10n.errorTransferCancelled,
     AppErrorCode.transferFailed => l10n.errorTransferFailed,
+    AppErrorCode.backupInvalid => l10n.errorBackupInvalid,
+    AppErrorCode.backupVersionUnsupported => l10n.errorBackupVersionUnsupported,
+    AppErrorCode.backupReadFailed => l10n.errorBackupReadFailed,
+    AppErrorCode.backupWriteFailed => l10n.errorBackupWriteFailed,
     AppErrorCode.notFound ||
     AppErrorCode.secretNotFound ||
     AppErrorCode.unsupported ||

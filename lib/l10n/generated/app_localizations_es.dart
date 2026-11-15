@@ -204,6 +204,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get errorTransferFailed => 'La transferencia falló.';
 
   @override
+  String get errorBackupInvalid =>
+      'El archivo de respaldo no es válido o está incompleto.';
+
+  @override
+  String get errorBackupVersionUnsupported =>
+      'Este respaldo se creó con una versión más reciente de la aplicación.';
+
+  @override
+  String get errorBackupReadFailed => 'No se pudo leer el archivo de respaldo.';
+
+  @override
+  String get errorBackupWriteFailed =>
+      'No se pudo escribir el archivo de respaldo.';
+
+  @override
   String get sftpEmptyFolder => 'Esta carpeta está vacía.';
 
   @override
@@ -278,6 +293,69 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sftpDownloadStarted => 'Descarga en curso.';
+
+  @override
+  String get backupSection => 'Respaldos';
+
+  @override
+  String get exportBackupAction => 'Exportar respaldo';
+
+  @override
+  String get importBackupAction => 'Importar respaldo';
+
+  @override
+  String get exportWarningTitle => 'Advertencia de seguridad';
+
+  @override
+  String get exportWarningBody =>
+      'ADVERTENCIA DE SEGURIDAD. El archivo de respaldo contendrá información sensible, incluidas contraseñas SSH, llaves privadas y frases de contraseña. El archivo JSON NO estará cifrado ni protegido por la aplicación. Cualquier persona con acceso al archivo podría conectarse a tus servidores. Guárdalo en un lugar seguro y no lo compartas. Además incluye el verificador de la contraseña de perfil, que podría someterse a fuerza bruta.';
+
+  @override
+  String get exportConfirmAction => 'Entiendo los riesgos y quiero exportar';
+
+  @override
+  String get exportDone => 'Respaldo exportado.';
+
+  @override
+  String get exportFailed => 'No se pudo exportar el respaldo.';
+
+  @override
+  String get importTitle => 'Importar respaldo';
+
+  @override
+  String importSummary(int profiles, int connections, int credentials) {
+    return '$profiles perfiles · $connections conexiones · $credentials credenciales';
+  }
+
+  @override
+  String get importModeMerge => 'Fusionar';
+
+  @override
+  String get importModeMergeHelp =>
+      'Crea lo que falta y actualiza por identificador. Conserva los datos locales que no estén en el respaldo.';
+
+  @override
+  String get importModeReplaceProfile => 'Reemplazar un perfil';
+
+  @override
+  String get importModeReplaceAll => 'Reemplazar todos';
+
+  @override
+  String get importReplaceWarning =>
+      'Se borrarán los perfiles actuales antes de importar. La sesión se bloqueará.';
+
+  @override
+  String get importTargetProfile => 'Perfil a reemplazar';
+
+  @override
+  String get importConfirmAction => 'Importar';
+
+  @override
+  String get importDone => 'Respaldo importado.';
+
+  @override
+  String get importFailed =>
+      'No se pudo importar el respaldo. No se ha cambiado nada.';
 
   @override
   String get connectionStatusConnected => 'Conectado';

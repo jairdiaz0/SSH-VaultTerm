@@ -31,6 +31,10 @@ enum AppErrorCode {
   sftpFailure,
   transferCancelled,
   transferFailed,
+  backupInvalid,
+  backupVersionUnsupported,
+  backupReadFailed,
+  backupWriteFailed,
   unknown,
 }
 

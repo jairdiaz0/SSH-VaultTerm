@@ -88,6 +88,10 @@
   "errorSftpFailure": "El servidor rechazó la operación de archivos.",
   "errorTransferCancelled": "Transferencia cancelada.",
   "errorTransferFailed": "La transferencia falló.",
+  "errorBackupInvalid": "El archivo de respaldo no es válido o está incompleto.",
+  "errorBackupVersionUnsupported": "Este respaldo se creó con una versión más reciente de la aplicación.",
+  "errorBackupReadFailed": "No se pudo leer el archivo de respaldo.",
+  "errorBackupWriteFailed": "No se pudo escribir el archivo de respaldo.",
   "sftpEmptyFolder": "Esta carpeta está vacía.",
   "sftpNewFolderTitle": "Nueva carpeta",
   "folderNameLabel": "Nombre de la carpeta",
@@ -113,6 +117,38 @@
   "sftpDeleted": "Elemento eliminado.",
   "sftpUploadStarted": "Subida en curso.",
   "sftpDownloadStarted": "Descarga en curso.",
+  "backupSection": "Respaldos",
+  "exportBackupAction": "Exportar respaldo",
+  "importBackupAction": "Importar respaldo",
+  "exportWarningTitle": "Advertencia de seguridad",
+  "exportWarningBody": "ADVERTENCIA DE SEGURIDAD. El archivo de respaldo contendrá información sensible, incluidas contraseñas SSH, llaves privadas y frases de contraseña. El archivo JSON NO estará cifrado ni protegido por la aplicación. Cualquier persona con acceso al archivo podría conectarse a tus servidores. Guárdalo en un lugar seguro y no lo compartas. Además incluye el verificador de la contraseña de perfil, que podría someterse a fuerza bruta.",
+  "exportConfirmAction": "Entiendo los riesgos y quiero exportar",
+  "exportDone": "Respaldo exportado.",
+  "exportFailed": "No se pudo exportar el respaldo.",
+  "importTitle": "Importar respaldo",
+  "importSummary": "{profiles} perfiles · {connections} conexiones · {credentials} credenciales",
+  "@importSummary": {
+    "placeholders": {
+      "profiles": {
+        "type": "int"
+      },
+      "connections": {
+        "type": "int"
+      },
+      "credentials": {
+        "type": "int"
+      }
+    }
+  },
+  "importModeMerge": "Fusionar",
+  "importModeMergeHelp": "Crea lo que falta y actualiza por identificador. Conserva los datos locales que no estén en el respaldo.",
+  "importModeReplaceProfile": "Reemplazar un perfil",
+  "importModeReplaceAll": "Reemplazar todos",
+  "importReplaceWarning": "Se borrarán los perfiles actuales antes de importar. La sesión se bloqueará.",
+  "importTargetProfile": "Perfil a reemplazar",
+  "importConfirmAction": "Importar",
+  "importDone": "Respaldo importado.",
+  "importFailed": "No se pudo importar el respaldo. No se ha cambiado nada.",
   "connectionStatusConnected": "Conectado",
   "connectionStatusConnecting": "Conectando…",
   "connectionStatusDisconnected": "Desconectado",

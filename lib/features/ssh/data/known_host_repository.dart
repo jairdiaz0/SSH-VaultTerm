@@ -17,6 +17,11 @@ class KnownHostRepository {
       .map(KnownHost.fromRow)
       .toList();
 
+  List<KnownHost> all() => _db
+      .select('SELECT * FROM known_hosts ORDER BY created_at')
+      .map(KnownHost.fromRow)
+      .toList();
+
   KnownHost? find({
     required String connectionId,
     required String hostname,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../backup/presentation/backup_actions.dart';
 import '../../shell/presentation/shell_controller.dart';
 
 /// Settings for the unlocked profile: identity, known host keys and session
@@ -37,6 +38,13 @@ class SettingsDialog extends StatefulWidget {
 }
 
 class _SettingsDialogState extends State<SettingsDialog> {
+  /// Closes this dialog, then locks: used when an import replaces the open
+  /// profile and its database handle must be released first.
+  Future<void> _lockAndClose() async {
+    Navigator.of(context).pop();
+    widget.onLock();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -98,6 +106,35 @@ class _SettingsDialogState extends State<SettingsDialog> {
                     },
                   ),
                 ),
+            const SizedBox(height: 8),
+            _SectionHeader(title: l10n.backupSection),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  OutlinedButton.icon(
+                    key: const Key('export-backup-button'),
+                    onPressed: () => BackupActions(
+                      services: controller.services,
+                      controller: controller,
+                    ).export(context),
+                    icon: const Icon(Icons.download_outlined, size: 16),
+                    label: Text(l10n.exportBackupAction),
+                  ),
+                  const SizedBox(height: 6),
+                  OutlinedButton.icon(
+                    key: const Key('import-backup-button'),
+                    onPressed: () => BackupActions(
+                      services: controller.services,
+                      controller: controller,
+                    ).import(context, onLock: _lockAndClose),
+                    icon: const Icon(Icons.upload_outlined, size: 16),
+                    label: Text(l10n.importBackupAction),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
