@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../app/session_controller.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/widgets/confirm_password_dialog.dart';
 import '../../backup/presentation/backup_actions.dart';
 import '../../profiles/presentation/profile_management_dialog.dart';
 import '../../shell/presentation/shell_controller.dart';
@@ -83,9 +84,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
             SwitchListTile(
               key: const Key('reauth-switch'),
               value: controller.requireReauthOnEdit,
-              onChanged: (value) {
-                controller.setRequireReauthOnEdit(value);
-                setState(() {});
+              onChanged: (value) async {
+                final confirmed = await showConfirmPasswordDialog(
+                  context,
+                  title: l10n.confirmPasswordTitle,
+                  body: l10n.requireReauthHelp,
+                  onConfirm: (password) => controller.setRequireReauthOnEdit(
+                    value: value,
+                    password: password,
+                  ),
+                );
+                if (confirmed && mounted) setState(() {});
               },
               title: Text(l10n.requireReauthLabel),
               subtitle: Text(l10n.requireReauthHelp),

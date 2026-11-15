@@ -28,6 +28,10 @@
     }
   },
   "unlockAction": "Desbloquear",
+  "confirmAction": "Confirmar",
+  "confirmPasswordTitle": "Confirma tu contraseña",
+  "confirmPasswordBody": "El perfil pide tu contraseña para continuar.",
+  "exportPasswordBody": "Introduce la contraseña del perfil para leer los secretos y crear el archivo.",
   "switchProfileAction": "Cambiar de perfil",
   "profileSwitcherTitle": "Elige un perfil",
   "homeTitle": "Sesión desbloqueada",

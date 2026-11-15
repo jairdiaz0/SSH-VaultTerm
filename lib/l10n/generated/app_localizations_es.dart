@@ -59,6 +59,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unlockAction => 'Desbloquear';
 
   @override
+  String get confirmAction => 'Confirmar';
+
+  @override
+  String get confirmPasswordTitle => 'Confirma tu contraseña';
+
+  @override
+  String get confirmPasswordBody =>
+      'El perfil pide tu contraseña para continuar.';
+
+  @override
+  String get exportPasswordBody =>
+      'Introduce la contraseña del perfil para leer los secretos y crear el archivo.';
+
+  @override
   String get switchProfileAction => 'Cambiar de perfil';
 
   @override

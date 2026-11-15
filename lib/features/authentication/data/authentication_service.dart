@@ -34,6 +34,29 @@ class AuthenticationService {
     required String profileId,
     required String password,
   }) async {
+    final profile = await _verifyWithLockout(
+      profileId: profileId,
+      password: password,
+    );
+    catalog.profiles.setLastActive(profile.id, now: now());
+    return catalog.profiles.byId(profile.id)!;
+  }
+
+  /// Re-checks the password for a sensitive action (changing a security setting,
+  /// exporting a backup) with the same persistent progressive lockout as unlock.
+  ///
+  /// Throws [AppErrorCode.invalidCredentials] on a wrong password and
+  /// [AppErrorCode.accountLocked] while a delay is in force. Never caches the
+  /// password and never unlocks the session again.
+  Future<void> verifyForSensitiveAction({
+    required String profileId,
+    required String password,
+  }) => _verifyWithLockout(profileId: profileId, password: password);
+
+  Future<Profile> _verifyWithLockout({
+    required String profileId,
+    required String password,
+  }) async {
     final profile = catalog.profiles.byId(profileId);
     if (profile == null) {
       failWith(AppErrorCode.notFound, cause: 'profile not found');
@@ -57,7 +80,6 @@ class AuthenticationService {
     }
 
     catalog.profiles.clearFailures(profile.id, now: at);
-    catalog.profiles.setLastActive(profile.id, now: at);
     return catalog.profiles.byId(profile.id)!;
   }
 
@@ -68,16 +90,5 @@ class AuthenticationService {
     if (until == null) return Duration.zero;
     final remaining = until.difference(now());
     return remaining.isNegative ? Duration.zero : remaining;
-  }
-
-  /// Re-checks the password for a sensitive action without unlocking again and
-  /// without touching lockout counters (the session is already authenticated).
-  Future<bool> confirmPassword({
-    required String profileId,
-    required String password,
-  }) async {
-    final profile = catalog.profiles.byId(profileId);
-    if (profile == null) return false;
-    return hasher.verify(password, profile.toPasswordVerifier());
   }
 }

@@ -100,15 +100,17 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
       l10n.profilePasswordPrompt(profile.name),
     );
     if (password == null || !mounted) return;
-    final valid = await controller.auth.confirmPassword(
-      profileId: profile.id,
-      password: password,
-    );
-    if (!mounted) return;
-    if (!valid) {
-      setState(() => _error = l10n.errorInvalidCredentials);
+    try {
+      await controller.auth.verifyForSensitiveAction(
+        profileId: profile.id,
+        password: password,
+      );
+    } on AppException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = describeAppError(l10n, error));
       return;
     }
+    if (!mounted) return;
     await controller.deleteProfile(profile);
     if (!mounted) return;
     ScaffoldMessenger.of(context)

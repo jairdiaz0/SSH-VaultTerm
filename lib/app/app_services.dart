@@ -6,6 +6,9 @@ import '../core/storage/secret_store.dart';
 import '../core/storage/secure_storage_secret_store.dart';
 import '../core/utils/app_logger.dart';
 import '../features/authentication/data/authentication_service.dart';
+import '../features/authentication/data/security_settings_service.dart';
+import '../features/backup/data/backup_export_service.dart';
+import '../features/backup/data/backup_exporter.dart';
 import '../features/connections/data/credential_service.dart';
 import '../features/profiles/data/catalog_store.dart';
 import '../features/profiles/data/profile_service.dart';
@@ -27,6 +30,8 @@ class AppServices {
     required this.profiles,
     required this.auth,
     required this.credentials,
+    required this.securitySettings,
+    required this.backupExport,
     AppLogger? logger,
   }) : logger = logger ?? AppLogger();
 
@@ -38,6 +43,8 @@ class AppServices {
   final ProfileService profiles;
   final AuthenticationService auth;
   final CredentialService credentials;
+  final SecuritySettingsService securitySettings;
+  final BackupExportService backupExport;
   final AppLogger logger;
 
   /// SSH engine for the open [session].
@@ -73,6 +80,11 @@ class AppServices {
     final keys = DatabaseKeyStore(secrets: secrets);
     final catalog = await CatalogStore.open(paths: paths, keys: keys);
     final effectiveHasher = hasher ?? PasswordHasher();
+    final auth = AuthenticationService(
+      catalog: catalog,
+      hasher: effectiveHasher,
+    );
+    final credentials = CredentialService(secrets: secrets);
     return AppServices(
       paths: paths,
       secrets: secrets,
@@ -85,8 +97,18 @@ class AppServices {
         hasher: effectiveHasher,
         paths: paths,
       ),
-      auth: AuthenticationService(catalog: catalog, hasher: effectiveHasher),
-      credentials: CredentialService(secrets: secrets),
+      auth: auth,
+      credentials: credentials,
+      securitySettings: SecuritySettingsService(catalog: catalog, auth: auth),
+      backupExport: BackupExportService(
+        exporter: BackupExporter(
+          catalog: catalog,
+          paths: paths,
+          keys: keys,
+          credentials: credentials,
+        ),
+        auth: auth,
+      ),
       logger: logger,
     );
   }

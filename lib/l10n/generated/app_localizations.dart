@@ -179,6 +179,30 @@ abstract class AppLocalizations {
   /// **'Desbloquear'**
   String get unlockAction;
 
+  /// No description provided for @confirmAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar'**
+  String get confirmAction;
+
+  /// No description provided for @confirmPasswordTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirma tu contraseña'**
+  String get confirmPasswordTitle;
+
+  /// No description provided for @confirmPasswordBody.
+  ///
+  /// In es, this message translates to:
+  /// **'El perfil pide tu contraseña para continuar.'**
+  String get confirmPasswordBody;
+
+  /// No description provided for @exportPasswordBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce la contraseña del perfil para leer los secretos y crear el archivo.'**
+  String get exportPasswordBody;
+
   /// No description provided for @switchProfileAction.
   ///
   /// In es, this message translates to:

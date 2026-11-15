@@ -165,18 +165,53 @@ void main() {
       expect(remaining, const Duration(seconds: 4));
     });
 
-    test('confirmPassword does not touch lockout counters', () async {
+    test('sensitive actions verify the password and count failures', () async {
       final id = await createProfile();
 
-      expect(
-        await ctx.auth.confirmPassword(profileId: id, password: testPassword),
-        isTrue,
-      );
-      expect(
-        await ctx.auth.confirmPassword(profileId: id, password: 'bad'),
-        isFalse,
+      await ctx.auth.verifyForSensitiveAction(
+        profileId: id,
+        password: testPassword,
       );
       expect(ctx.catalog.profiles.byId(id)!.failedAttempts, 0);
+
+      await expectLater(
+        ctx.auth.verifyForSensitiveAction(profileId: id, password: 'bad'),
+        throwsA(
+          isA<AppException>().having(
+            (e) => e.code,
+            'code',
+            AppErrorCode.invalidCredentials,
+          ),
+        ),
+      );
+      expect(ctx.catalog.profiles.byId(id)!.failedAttempts, 1);
+
+      // Three failures in a row trigger the same progressive lockout as unlock.
+      for (var attempt = 0; attempt < 2; attempt++) {
+        await expectLater(
+          ctx.auth.verifyForSensitiveAction(profileId: id, password: 'bad'),
+          throwsA(
+            isA<AppException>().having(
+              (e) => e.code,
+              'code',
+              AppErrorCode.invalidCredentials,
+            ),
+          ),
+        );
+      }
+      await expectLater(
+        ctx.auth.verifyForSensitiveAction(
+          profileId: id,
+          password: testPassword,
+        ),
+        throwsA(
+          isA<AppException>().having(
+            (e) => e.code,
+            'code',
+            AppErrorCode.accountLocked,
+          ),
+        ),
+      );
     });
 
     test('unknown profile ids are not found, not unlocked', () async {
