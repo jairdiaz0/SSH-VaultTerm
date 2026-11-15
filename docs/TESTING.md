@@ -5,11 +5,82 @@ Registro de verificaciones ejecutadas, con comando y resultado resumido. Un
 
 ## Entorno
 - SO: Windows 11 26H2 (10.0.26300), shell PowerShell.
-- Flutter 3.47.9 stable · Dart 3.13.7 · `windows-x64`.
-- Sin Visual Studio C++ → sin compilación Windows. Sin Android SDK → sin
-  compilación Android. Ver `docs/DECISIONS.md` D-001.
+- Flutter 3.50.0 stable · Dart 3.13.7 · `windows-x64`.
+- Visual Studio 2026 con C++ instalado: `build windows` e integración real
+  disponibles. Android SDK sigue ausente. Ver `docs/DECISIONS.md` D-001.
 
-## 2026-11-15 — Fase 0
+## 2026-11-15 — Ronda 4 (integridad de almacenamiento)
+
+### Línea base de la ronda
+```text
+flutter analyze → No issues found!
+flutter test    → +256 All tests passed!
+```
+
+### Bug de importación: qué se reprodujo y qué se corrigió
+No se reprodujo el fallo completo de importación + reinicio: los tests de reinicio
+en frío con almacén en memoria y con `flutter_secure_storage` real en Windows
+pasaban antes y después. Sí se demostró el **mecanismo** que produce el síntoma
+(`hmac check failed for pgno=1`, `error decrypting page 1`): `DatabaseKeyStore` usaba
+get-or-create al abrir, así que un archivo existente sin su clave (namespace
+distinto, restauración a medias, borrado parcial) recibía una clave nueva y
+SQLCipher rechazaba la página 1 en cada apertura. Antes de la corrección ese caso
+generaba clave; ahora falla con `databaseKeyMissing` y **no** la genera (test).
+
+Además, la importación anterior no construía staging ni verificaba en frío; un
+fallo durante el snapshot/restauración podía dejar archivo y clave desalineados.
+
+### Política de claves — `test/core/database/key_policy_test.dart`
+- Archivo sin clave → `databaseKeyMissing`; `hasProfileKey` sigue `false`. Catálogo
+  igual.
+- Clave sin archivo → `databaseKeyOrphan`.
+- Clave de longitud inválida → `databaseKeyInvalid`.
+- Clave distinta → `databaseKeyMismatch`, el archivo no se toca.
+- Creación de perfil todo-o-nada: clave, archivo cifrado y fila; recrear el mismo id
+  falla sin borrar lo existente.
+- `cipher_compatibility = 4` y `cipher_page_size = 4096` fijados antes de la clave.
+
+### Importación con staging — `backup_restart_test.dart`, `backup_rollback_steps_test.dart`, `backup_test.dart`
+- Reinicio en frío real: mismos secretos, servicios nuevos, catálogo y perfiles
+  reabiertos desde disco en los tres modos.
+- Fallo inyectado al escribir credenciales de staging y al promover la clave
+  definitiva → rollback restaura filas, archivos y claves; el arranque en frío lee
+  los datos antiguos; staging/backup limpios.
+- JSON malformado/truncado no toca el estado.
+- Integración Windows con secreto real: exportar → reemplazar todo → reinicio →
+  datos legibles → reset → arranque nuevo sin perfiles.
+
+### Reset y ubicación de datos
+- `reset_service_test.dart`: borra catálogo, sidecars `-wal`/`-shm`, perfiles,
+  staging y backup; borra solo claves con prefijos propios y respeta claves ajenas;
+  tras el reset el siguiente arranque no tiene perfiles.
+- `app_paths_test.dart`: Windows usa `LOCALAPPDATA`, nunca Roaming;
+  `SSH_CLIENT_DATA_DIR` gana.
+- `reset_ui_test.dart`: exige escribir RESTABLECER y después la contraseña; el botón
+  está deshabilitado sin la palabra; el estado del almacenamiento no muestra
+  secretos.
+- Android: `allowBackup=false`, `backup_rules.xml` y `data_extraction_rules.xml`
+  excluyen bases, preferencias y ficheros (no compilable aquí).
+
+### Terminal: color
+- Contraste ANSI ≥4,5:1 y negro brillante ≥3:1 en ambos temas.
+- `terminal_colors_test.dart`: SGR de 16 colores, 256 y true color se renderizan y
+  el texto no cambia; `dartssh2` ya usa `xterm-256color` en el pty.
+
+### Estado al cierre de la ronda
+```text
+flutter analyze → No issues found!
+flutter test    → +277 All tests passed!
+flutter build windows --release → ✓
+flutter test integration_test -d windows → +2 All tests passed!
+```
+
+### Pendiente de esta ronda
+- «Activar colores en esta sesión», resaltado inteligente, rediseño visual de la
+  Parte 3, pestañas multi-sesión, estrés SFTP, fuzz adicional, autobloqueo y pantalla
+  de huellas en la navegación: **no implementados en esta ronda** (ver el plan).
+
+## 2026-11-15 - Fase 0
 
 ### Toolchain
 ```text
@@ -356,7 +427,7 @@ flutter test      → +178 All tests passed!
 Pendiente: escritura/lectura real de ficheros vía selector del sistema (no
 ejecutable aquí) y migración de documentos de versiones anteriores (solo existe v1).
 
-## 2026-11-15 — Ronda 3: línea base
+## 2026-11-15 - Ronda 3: línea base
 
 Flutter se actualizó a **3.50.0** (Dart 3.13.7), donde `package:flutter/material.dart`
 está deprecado en favor de `package:material_ui/material_ui.dart` (y Cupertino en

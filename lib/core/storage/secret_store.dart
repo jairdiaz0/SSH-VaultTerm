@@ -36,6 +36,21 @@ abstract final class SecretKeys {
 
   static const probeKey = '__probe__/secret_store';
 
+  /// Temporary namespace used while an import is being built.
+  static String stagingPrefix(String stagingId) => 'staging/$stagingId/';
+
+  /// Copy of the previous keys/credentials while an import can still fail.
+  static String backupPrefix(String backupId) => 'backup/$backupId/';
+
+  static String profileKeyIn(String prefix, String profileId) =>
+      '${prefix}profile/$profileId/dbKey';
+
+  static String credentialIn(
+    String prefix,
+    String profileId,
+    String credentialId,
+  ) => '${prefix}profile/$profileId/credential/$credentialId';
+
   /// Prefixes [key] with an isolated namespace.
   ///
   /// Integration tests and development runs set `SSH_CLIENT_SECRET_NAMESPACE`

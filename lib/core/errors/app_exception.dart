@@ -8,6 +8,8 @@ enum AppErrorCode {
   databaseFailure,
   databaseKeyMissing,
   databaseKeyInvalid,
+  databaseKeyMismatch,
+  databaseKeyOrphan,
   schemaTooNew,
   notFound,
   conflict,

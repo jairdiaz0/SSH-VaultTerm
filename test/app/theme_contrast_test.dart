@@ -106,6 +106,7 @@ void main() {
             .extension<AppTokens>()!;
         final theme = tokens.terminalTheme;
         expectContrast(theme.foreground, theme.background, 4.5, 'terminal fg');
+        expectContrast(theme.brightBlack, theme.background, 3, 'bright black');
         for (final entry in {
           'red': theme.red,
           'green': theme.green,
@@ -115,7 +116,7 @@ void main() {
           'cyan': theme.cyan,
           'white': theme.white,
         }.entries) {
-          expectContrast(entry.value, theme.background, 3, entry.key);
+          expectContrast(entry.value, theme.background, 4.5, entry.key);
         }
       });
     });

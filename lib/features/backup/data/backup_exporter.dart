@@ -85,7 +85,7 @@ class BackupExporter {
     paths.ensureProfileDirectory(profile.id);
     return EncryptedDatabase.open(
       path: paths.profileDatabase(profile.id),
-      key: await keys.profileKey(profile.id),
+      key: await keys.loadProfileKey(profile.id),
       migrations: ProfileSchema.runner,
     );
   }

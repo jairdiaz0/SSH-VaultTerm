@@ -11,7 +11,7 @@ TOFU de host keys, terminal real sobre pty, explorador SFTP con cola de
 transferencias, copias de seguridad JSON con importación transaccional y una
 interfaz de escritorio y móvil derivada del espacio disponible.
 
-`flutter analyze` sin incidencias y **256 tests** en verde, incluidos SSH, pty y
+`flutter analyze` sin incidencias y **277 tests** en verde, incluidos SSH, pty y
 SFTP reales contra el servidor de pruebas y un **test de integración sobre la app
 real compilada para Windows** (almacén seguro y SQLCipher reales). Windows compila
 en release (`build\windows\x64\runner\Release\ssh_client.exe`); Android, macOS y

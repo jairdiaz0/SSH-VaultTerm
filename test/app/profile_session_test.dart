@@ -41,8 +41,8 @@ void main() {
       isNot(ctx.paths.profileDatabase(b.profile.id)),
     );
 
-    final keyA = await ctx.keys.profileKey(a.profile.id);
-    final keyB = await ctx.keys.profileKey(b.profile.id);
+    final keyA = await ctx.keys.loadProfileKey(a.profile.id);
+    final keyB = await ctx.keys.loadProfileKey(b.profile.id);
     expect(keyA, isNot(equals(keyB)));
 
     final now = ctx.clock.value;
@@ -118,13 +118,13 @@ void main() {
 
   test('DatabaseKeyStore creates keys once and keeps them stable', () async {
     final store = DatabaseKeyStore(secrets: ctx.secrets);
-    final first = await store.profileKey('p');
-    final second = await store.profileKey('p');
+    final first = await store.createProfileKey('p');
+    final second = await store.loadProfileKey('p');
     expect(first, equals(second));
     expect(first.length, 32);
 
     await store.forgetProfile('p');
-    final recreated = await store.profileKey('p');
+    final recreated = await store.createProfileKey('p');
     expect(recreated, isNot(equals(first)));
   });
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:sqlite3/sqlite3.dart';
 
 import '../core/database/database_key_store.dart';
@@ -42,7 +44,11 @@ class ProfileSession {
     required DatabaseKeyStore keys,
   }) async {
     paths.ensureProfileDirectory(profile.id);
-    final key = await keys.profileKey(profile.id);
+    final exists = File(paths.profileDatabase(profile.id)).existsSync();
+    // A file without its key is reported, never silently rekeyed.
+    final key = exists
+        ? await keys.loadProfileKey(profile.id)
+        : await keys.createProfileKey(profile.id);
     final db = EncryptedDatabase.open(
       path: paths.profileDatabase(profile.id),
       key: key,

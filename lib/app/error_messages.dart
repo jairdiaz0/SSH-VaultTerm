@@ -39,6 +39,8 @@ String describeAppError(
       l10n.errorPrivateKeyPassphraseRequired,
     AppErrorCode.privateKeyPassphraseInvalid =>
       l10n.errorPrivateKeyPassphraseInvalid,
+    AppErrorCode.databaseKeyMismatch => l10n.errorDatabaseKeyMismatch,
+    AppErrorCode.databaseKeyOrphan => l10n.errorDatabaseKeyOrphan,
     AppErrorCode.privateKeyUnsupportedFormat =>
       l10n.errorPrivateKeyUnsupportedFormat,
     AppErrorCode.sftpPermissionDenied => l10n.errorSftpPermissionDenied,

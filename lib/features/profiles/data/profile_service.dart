@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/database/database_key_store.dart';
+import '../../../core/database/encrypted_database.dart';
+import '../../../core/database/schemas.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/security/password_hasher.dart';
 import '../../../core/storage/app_paths.dart';
@@ -73,11 +75,24 @@ class ProfileService {
       updatedAt: createdAt,
     );
 
-    catalog.profiles.insert(profile);
-    // Materialize the key now so a freshly created profile is immediately
-    // usable and so deletion always has something to remove.
-    await keys.profileKey(profile.id);
-    return profile;
+    // Key, encrypted file and row are created together; a partial failure
+    // removes the pieces so no orphan key or file survives.
+    try {
+      final key = await keys.createProfileKey(profile.id);
+      paths.ensureProfileDirectory(profile.id);
+      final db = EncryptedDatabase.open(
+        path: paths.profileDatabase(profile.id),
+        key: key,
+        migrations: ProfileSchema.runner,
+      );
+      db.close();
+      catalog.profiles.insert(profile);
+      return profile;
+    } catch (_) {
+      await keys.forgetProfile(profile.id);
+      paths.deleteProfileFiles(profile.id);
+      rethrow;
+    }
   }
 
   void markLastActive(Profile profile) {

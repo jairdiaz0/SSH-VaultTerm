@@ -169,8 +169,10 @@ void main() {
       expect(document.credentials.single.secret.password, 'secret-password');
       expect(encoded, isNot(contains(testPassword)));
 
-      final catalogKey = base64Encode(await ctx.keys.catalogKey());
-      final profileKey = base64Encode(await ctx.keys.profileKey(profile.id));
+      final catalogKey = base64Encode(await ctx.keys.loadCatalogKey());
+      final profileKey = base64Encode(
+        await ctx.keys.loadProfileKey(profile.id),
+      );
       expect(encoded, isNot(contains(catalogKey)));
       expect(encoded, isNot(contains(profileKey)));
     },
@@ -187,7 +189,7 @@ void main() {
     await seedConnection(profileId: profile.id, id: 's1');
     final encoded = (await exporter.build()).encode();
 
-    final originalKey = await ctx.keys.profileKey(profile.id);
+    final originalKey = await ctx.keys.loadProfileKey(profile.id);
     await ctx.dispose();
 
     await newContext();
@@ -213,7 +215,7 @@ void main() {
     expect(secret?.password, 'secret-password');
 
     // The database key was regenerated: it is not the exported one.
-    final newKey = await ctx.keys.profileKey(imported.id);
+    final newKey = await ctx.keys.loadProfileKey(imported.id);
     expect(base64Encode(newKey), isNot(base64Encode(originalKey)));
 
     // The original profile password still unlocks the restored profile.

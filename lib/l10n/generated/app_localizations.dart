@@ -335,6 +335,18 @@ abstract class AppLocalizations {
   /// **'No se pudo abrir la base de datos cifrada del perfil.'**
   String get errorDatabaseFailure;
 
+  /// No description provided for @errorDatabaseKeyMismatch.
+  ///
+  /// In es, this message translates to:
+  /// **'La clave guardada no corresponde a estos datos cifrados. Si no necesitas recuperarlos, restablece la aplicación.'**
+  String get errorDatabaseKeyMismatch;
+
+  /// No description provided for @errorDatabaseKeyOrphan.
+  ///
+  /// In es, this message translates to:
+  /// **'Hay una clave guardada sin base de datos asociada. Restablece la aplicación para empezar de cero.'**
+  String get errorDatabaseKeyOrphan;
+
   /// No description provided for @errorHostKeyRejected.
   ///
   /// In es, this message translates to:
@@ -610,6 +622,120 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Descarga en curso.'**
   String get sftpDownloadStarted;
+
+  /// No description provided for @advancedSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Avanzado'**
+  String get advancedSection;
+
+  /// No description provided for @storageStatusAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Estado del almacenamiento'**
+  String get storageStatusAction;
+
+  /// No description provided for @storageStatusTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Estado del almacenamiento'**
+  String get storageStatusTitle;
+
+  /// No description provided for @storageCatalogLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Catálogo cifrado'**
+  String get storageCatalogLabel;
+
+  /// No description provided for @storageCatalogOk.
+  ///
+  /// In es, this message translates to:
+  /// **'abre correctamente'**
+  String get storageCatalogOk;
+
+  /// No description provided for @storageCatalogKeyMissing.
+  ///
+  /// In es, this message translates to:
+  /// **'clave ausente'**
+  String get storageCatalogKeyMissing;
+
+  /// No description provided for @storageCatalogError.
+  ///
+  /// In es, this message translates to:
+  /// **'error: {code}'**
+  String storageCatalogError(String code);
+
+  /// No description provided for @storageProfileLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'{id} · archivo {file} · clave {key} · {state}'**
+  String storageProfileLabel(String id, String file, String key, String state);
+
+  /// No description provided for @storagePresent.
+  ///
+  /// In es, this message translates to:
+  /// **'sí'**
+  String get storagePresent;
+
+  /// No description provided for @storageAbsent.
+  ///
+  /// In es, this message translates to:
+  /// **'no'**
+  String get storageAbsent;
+
+  /// No description provided for @storagePendingReset.
+  ///
+  /// In es, this message translates to:
+  /// **'Hay un restablecimiento pendiente; se completará al reiniciar.'**
+  String get storagePendingReset;
+
+  /// No description provided for @storageLegacy.
+  ///
+  /// In es, this message translates to:
+  /// **'Se detectaron datos antiguos en Roaming. No se abren; usa Restablecer para limpiarlos.'**
+  String get storageLegacy;
+
+  /// No description provided for @resetApplicationAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Restablecer la aplicación'**
+  String get resetApplicationAction;
+
+  /// No description provided for @resetWarningTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Restablecer la aplicación'**
+  String get resetWarningTitle;
+
+  /// No description provided for @resetWarningBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se borrarán TODOS los perfiles, conexiones, credenciales, huellas y las claves de las bases de datos. La aplicación volverá a mostrarse como recién instalada. Esta acción no se puede deshacer.'**
+  String get resetWarningBody;
+
+  /// No description provided for @resetTypeWord.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe RESTABLECER para continuar'**
+  String get resetTypeWord;
+
+  /// No description provided for @resetWord.
+  ///
+  /// In es, this message translates to:
+  /// **'RESTABLECER'**
+  String get resetWord;
+
+  /// No description provided for @resetConfirmAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Restablecer'**
+  String get resetConfirmAction;
+
+  /// No description provided for @resetFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo restablecer por completo. Cierra la aplicación y vuelve a abrirla; si el problema continúa, usa tool/reset_dev_data.ps1.'**
+  String get resetFailed;
 
   /// No description provided for @backupSection.
   ///

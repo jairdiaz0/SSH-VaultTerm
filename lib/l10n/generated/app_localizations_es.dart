@@ -156,6 +156,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo abrir la base de datos cifrada del perfil.';
 
   @override
+  String get errorDatabaseKeyMismatch =>
+      'La clave guardada no corresponde a estos datos cifrados. Si no necesitas recuperarlos, restablece la aplicación.';
+
+  @override
+  String get errorDatabaseKeyOrphan =>
+      'Hay una clave guardada sin base de datos asociada. Restablece la aplicación para empezar de cero.';
+
+  @override
   String get errorHostKeyRejected =>
       'No has aceptado la huella del servidor. La conexión se ha cancelado.';
 
@@ -309,6 +317,71 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sftpDownloadStarted => 'Descarga en curso.';
+
+  @override
+  String get advancedSection => 'Avanzado';
+
+  @override
+  String get storageStatusAction => 'Estado del almacenamiento';
+
+  @override
+  String get storageStatusTitle => 'Estado del almacenamiento';
+
+  @override
+  String get storageCatalogLabel => 'Catálogo cifrado';
+
+  @override
+  String get storageCatalogOk => 'abre correctamente';
+
+  @override
+  String get storageCatalogKeyMissing => 'clave ausente';
+
+  @override
+  String storageCatalogError(String code) {
+    return 'error: $code';
+  }
+
+  @override
+  String storageProfileLabel(String id, String file, String key, String state) {
+    return '$id · archivo $file · clave $key · $state';
+  }
+
+  @override
+  String get storagePresent => 'sí';
+
+  @override
+  String get storageAbsent => 'no';
+
+  @override
+  String get storagePendingReset =>
+      'Hay un restablecimiento pendiente; se completará al reiniciar.';
+
+  @override
+  String get storageLegacy =>
+      'Se detectaron datos antiguos en Roaming. No se abren; usa Restablecer para limpiarlos.';
+
+  @override
+  String get resetApplicationAction => 'Restablecer la aplicación';
+
+  @override
+  String get resetWarningTitle => 'Restablecer la aplicación';
+
+  @override
+  String get resetWarningBody =>
+      'Se borrarán TODOS los perfiles, conexiones, credenciales, huellas y las claves de las bases de datos. La aplicación volverá a mostrarse como recién instalada. Esta acción no se puede deshacer.';
+
+  @override
+  String get resetTypeWord => 'Escribe RESTABLECER para continuar';
+
+  @override
+  String get resetWord => 'RESTABLECER';
+
+  @override
+  String get resetConfirmAction => 'Restablecer';
+
+  @override
+  String get resetFailed =>
+      'No se pudo restablecer por completo. Cierra la aplicación y vuelve a abrirla; si el problema continúa, usa tool/reset_dev_data.ps1.';
 
   @override
   String get backupSection => 'Respaldos';
