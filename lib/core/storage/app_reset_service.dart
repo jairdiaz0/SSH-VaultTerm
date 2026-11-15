@@ -155,7 +155,10 @@ class AppResetService {
 
   /// Removes databases, sidecars, staging/backup directories and this app's
   /// secrets. Call it with every database handle already closed.
-  Future<void> reset() async {
+  Future<void> reset({List<String> extraFiles = const []}) async {
+    for (final file in extraFiles) {
+      _deleteFile(file);
+    }
     _deleteFile(paths.catalogDatabase);
     _deleteFile('${paths.catalogDatabase}-wal');
     _deleteFile('${paths.catalogDatabase}-shm');
@@ -170,10 +173,19 @@ class AppResetService {
   /// Deletes only keys that match this app's own prefixes. Enumerates exact
   /// keys (never a bare prefix delete of the whole store).
   Future<void> _deleteOwnSecrets() async {
-    final keysInNamespace = await keys.secrets.keysWithPrefix('');
+    List<String> keysInNamespace;
+    try {
+      keysInNamespace = await keys.secrets.keysWithPrefix('');
+    } catch (_) {
+      // A corrupted platform store must not abort the file cleanup.
+      return;
+    }
     for (final key in keysInNamespace) {
-      if (_isOurs(key)) {
+      if (!_isOurs(key)) continue;
+      try {
         await keys.secrets.delete(key);
+      } catch (_) {
+        // Best effort per key; the storage stays consistent for files.
       }
     }
   }

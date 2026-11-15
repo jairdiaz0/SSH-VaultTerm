@@ -9,9 +9,7 @@ Registro de verificaciones ejecutadas, con comando y resultado resumido. Un
 - Visual Studio 2026 con C++ instalado: `build windows` e integración real
   disponibles. Android SDK sigue ausente. Ver `docs/DECISIONS.md` D-001.
 
-## 2026-11-15 — Ronda 6 (reset y alcance de GUI)
-
-### Línea base
+## 2026-11-15 — Ronda 6 (reset y alcance de GUI)### Línea base
 ```text
 flutter analyze → No issues found!
 flutter test    → +277 All tests passed!
@@ -38,6 +36,24 @@ detalle de lo pendiente está en `docs/DEVELOPMENT_PLAN.md` (Ronda 6) y
 flutter analyze → No issues found!
 flutter test    → +280 All tests passed!
 ```
+
+### Incidencia real: script y almacén de claves (2026-11-15)
+- `tool/reset_dev_data.ps1` miraba en `%APPDATA%\dev.sshclient\ssh_client\ssh_client`
+  (ubicación antigua), pero desde la ronda 4 los datos están en
+  `%LOCALAPPDATA%\dev.sshclient\ssh_client`. Además, `flutter_secure_storage` en
+  Windows guarda las claves en `%APPDATA%\dev.sshclient\ssh_client\flutter_secure_storage.dat`
+  (DPAPI), **no** en Credential Manager: el script no veía secretos y no los borraba.
+  Resultado: quedó un `catalog.db` sin su clave y el arranque mostraba el mensaje
+  genérico «No se pudo abrir la base de datos cifrada del perfil».
+- Corregido el script (ruta LOCALAPPDATA, .dat, sidecars, staging/backup,
+  preferencias, namespace respetado) y probado: borró catálogo y almacén; al
+  arrancar de nuevo la app creó catálogo (4 KiB + WAL) y almacén DPAPI nuevos, es
+  decir, primer inicio limpio.
+- El reset in-app ahora borra también el `.dat` cuando no hay namespace de pruebas
+  y tolera un almacén corrupto al enumerar claves. Test añadido para `extraFiles`.
+- Integración contra el servidor de pruebas: **no ejecutada al cierre de esta
+  incidencia** porque `192.168.100.129:22` no era alcanzable en ese momento; la
+  suite offline (`flutter test -x integration`) pasa con 270 tests.
 
 ## 2026-11-15 - Ronda 4 (integridad de almacenamiento)
 

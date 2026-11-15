@@ -527,3 +527,22 @@ idempotente y `SshClientApp.dispose` cierra el catálogo que posee.
 **Consecuencias:** el reset con sesión abierta funciona y está cubierto por un widget
 test; ningún widget toca una base cerrada durante la operación. La UI de la fase 1 de
 esta ronda no se implementó (ver `ROADMAP.md`).
+
+---
+
+## D-029 — Almacén de claves en Windows y reset real
+**Fecha:** 2026-11-15
+**Contexto:** el reset de desarrollo no borraba nada y la app mostraba «No se pudo
+abrir la base de datos cifrada del perfil». Diagnóstico con evidencia: los datos
+viven en `%LOCALAPPDATA%\dev.sshclient\ssh_client` (desde D-026), mientras el script
+miraba `%APPDATA%...\ssh_client`; y `flutter_secure_storage_windows` 4.x guarda los
+secretos cifrados con DPAPI en `%APPDATA%\dev.sshclient\ssh_client\flutter_secure_storage.dat`,
+no en Credential Manager. El catálogo existente se quedó sin su clave y el error
+tipado se mostraba como mensaje genérico.
+**Decisión:** el script de desarrollo usa LOCALAPPDATA, borra el `.dat` cuando no hay
+namespace, y lista sidecars/staging/backup/preferencias. El reset in-app borra el
+`.dat` solo si el namespace está vacío (en tests con namespace no se toca el archivo
+compartido) y tolera errores del almacén al enumerar/borrar claves.
+**Consecuencias:** un almacén corrupto ya no impide limpiar las bases; los tests con
+namespace siguen aislados. Las credenciales del Credential Manager se siguen borrando
+como respaldo para versiones antiguas del plugin.

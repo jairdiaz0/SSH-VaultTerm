@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ssh_client/app/app_services.dart';
 import 'package:ssh_client/app/profile_session.dart';
+import 'package:ssh_client/core/database/database_key_store.dart';
 import 'package:ssh_client/core/security/password_hasher.dart';
 import 'package:ssh_client/core/storage/app_paths.dart';
 import 'package:ssh_client/core/storage/app_reset_service.dart';
@@ -123,5 +124,25 @@ void main() {
     ).reset();
     // The in-memory store has no namespace here, so `ns_a/...` is not ours.
     expect(await secrets.read('ns_a/profile/x/dbKey'), 'aa');
+  });
+
+  test('extra platform files (secure storage) are deleted by reset', () async {
+    final root = Directory.systemTemp.createTempSync('reset_extra_');
+    addTearDown(() {
+      if (root.existsSync()) root.deleteSync(recursive: true);
+    });
+    final paths = AppPaths(root.path);
+    final secrets = InMemorySecretStore();
+    final keys = DatabaseKeyStore(secrets: secrets);
+    final platformFile = File('${root.path}/flutter_secure_storage.dat')
+      ..writeAsStringSync('dpapi');
+
+    await AppResetService(
+      paths: paths,
+      keys: keys,
+      environment: const {},
+    ).reset(extraFiles: [platformFile.path]);
+
+    expect(platformFile.existsSync(), isFalse);
   });
 }

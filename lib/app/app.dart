@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:material_ui/material_ui.dart';
 
 import '../core/storage/app_reset_service.dart';
+import '../core/storage/secure_storage_secret_store.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'app_runtime.dart';
 import 'app_services.dart';
@@ -63,11 +64,16 @@ class _SshClientAppState extends State<SshClientApp> {
     await WidgetsBinding.instance.endOfFrame;
     _controller.dispose();
     _services.dispose();
+    final secrets = _services.secrets;
+    final secureStorageFile =
+        secrets is SecureStorageSecretStore && secrets.namespace.isEmpty
+        ? _windowsSecureStorageFile()
+        : null;
     await AppResetService(
       paths: paths,
       keys: keys,
       environment: Platform.environment,
-    ).reset();
+    ).reset(extraFiles: [?secureStorageFile]);
     await _theme.resetPreferences();
     final fresh = await rebuild();
     if (!mounted) {
@@ -79,6 +85,13 @@ class _SshClientAppState extends State<SshClientApp> {
       _controller = SessionController(services: fresh);
       _resetting = false;
     });
+  }
+
+  static String? _windowsSecureStorageFile() {
+    if (!Platform.isWindows) return null;
+    final roaming = Platform.environment['APPDATA'];
+    if (roaming == null || roaming.isEmpty) return null;
+    return '\\\\dev.sshclient\\\\ssh_client\\\\flutter_secure_storage.dat';
   }
 
   @override
