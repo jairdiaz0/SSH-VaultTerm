@@ -1,0 +1,66 @@
+name: ssh_client
+description: "Minimalist, local-first SSH and SFTP client built with Flutter."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Localization / formatting
+  intl: any
+
+  # State management
+  flutter_riverpod: ^3.5.0
+
+  # SSH / SFTP (phase 2-3)
+  dartssh2: ^4.1.0
+
+  # Terminal emulator (phase 3)
+  xterm: ^4.0.0
+
+  # Secure storage for credentials and database keys
+  flutter_secure_storage: ^11.2.0
+
+  # Argon2id / cryptographic primitives
+  cryptography: ^2.9.0
+
+  # Encrypted SQLite. The `hooks` section below selects SQLCipher as the
+  # compiled-in SQLite variant; never run this app against plain SQLite.
+  sqlite3: ^3.9.1
+
+  # Paths, ids, misc
+  path_provider: ^2.1.6
+  path: ^1.9.1
+  uuid: ^4.6.0
+
+  # Native file pickers and drag-and-drop IN (phase 4-7).
+  # file_picker: pickers for key import and SFTP uploads.
+  # desktop_drop 0.8.4: receives OS drops on desktop and mobile. Pinned to the
+  # 0.8.x line because 0.9.x requires cross_file ^0.4.0 while every maintained
+  # picker still resolves cross_file ^0.3.x.
+  # Drag-OUT (SFTP list -> OS) needs super_drag_and_drop, which does not resolve
+  # today (its win32 pin blocks Flutter Secure Storage 11.x). Tracked in
+  # docs/DECISIONS.md as a blocked capability, not simulated.
+  file_picker: ^13.3.3
+  desktop_drop: ^0.8.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlcipher
+
+flutter:
+  uses-material-design: true

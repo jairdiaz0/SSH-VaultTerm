@@ -1,0 +1,51 @@
+# Test secrets — never commit
+.env.test
+.env.*
+!.env.example
+
+# Working prompt that contains test credentials
+prompt.md
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+pubspec.lock.bak
+*.iml
+.idea/
+.vscode/
+coverage/
+doc/api/
+
+# Generated code is committed by decision (docs/DECISIONS.md), but build runner
+# caches are not.
+*.g.dart.bak
+
+# Local databases and artifacts (never commit app data)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+/tmp/
+scratch/
+
+# Platform build output
+android/.gradle/
+android/local.properties
+android/key.properties
+*.jks
+*.keystore
+windows/flutter/ephemeral/
+linux/flutter/ephemeral/
+macos/Flutter/ephemeral/
+macos/Pods/
+ios/Pods/
+
+# OS noise
+Thumbs.db
+Desktop.ini
+.DS_Store
