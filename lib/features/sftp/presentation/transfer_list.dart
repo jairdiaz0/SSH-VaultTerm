@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../app/theme/app_icons.dart';
+
 import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/format/bytes.dart';
@@ -74,8 +76,8 @@ class _TransferRow extends StatelessWidget {
             children: [
               Icon(
                 task.direction == TransferDirection.upload
-                    ? Icons.arrow_upward
-                    : Icons.arrow_downward,
+                    ? AppIcons.up
+                    : AppIcons.down,
                 size: 14,
                 color: context.colors.onSurfaceVariant,
               ),
@@ -103,7 +105,7 @@ class _TransferRow extends StatelessWidget {
                 IconButton(
                   key: Key('transfer-cancel-${task.id}'),
                   tooltip: l10n.cancelAction,
-                  icon: const Icon(Icons.close, size: 14),
+                  icon: const Icon(AppIcons.close, size: 14),
                   onPressed: () => queue.cancel(task.id),
                 )
               else if (task.status == TransferStatus.failed ||
@@ -111,7 +113,7 @@ class _TransferRow extends StatelessWidget {
                 IconButton(
                   key: Key('transfer-retry-${task.id}'),
                   tooltip: l10n.commonRetry,
-                  icon: const Icon(Icons.refresh, size: 14),
+                  icon: const Icon(AppIcons.refresh, size: 14),
                   onPressed: () {
                     queue.retry(task.id);
                     queue.start();

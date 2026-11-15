@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../app/error_messages.dart';
 import '../../../app/session_controller.dart';
+import '../../../app/theme/app_icons.dart';
 import '../../../app/theme/app_tokens.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -155,8 +156,8 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                       key: Key('profile-row-${profile.id}'),
                       leading: Icon(
                         profile.id == currentId
-                            ? Icons.radio_button_checked
-                            : Icons.radio_button_unchecked,
+                            ? AppIcons.radioOn
+                            : AppIcons.radioOff,
                         size: 18,
                         color: profile.id == currentId
                             ? context.colors.primary
@@ -173,14 +174,14 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                             IconButton(
                               key: Key('switch-profile-${profile.id}'),
                               tooltip: l10n.switchProfileAction,
-                              icon: const Icon(Icons.login, size: 18),
+                              icon: const Icon(AppIcons.login, size: 18),
                               onPressed: () => _switch(profile),
                             ),
                           IconButton(
                             key: Key('delete-profile-${profile.id}'),
                             tooltip: l10n.deleteProfileAction,
                             icon: Icon(
-                              Icons.delete_outline,
+                              AppIcons.delete,
                               size: 18,
                               color: context.colors.error,
                             ),
@@ -196,7 +197,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
             FilledButton.icon(
               key: const Key('create-profile-button'),
               onPressed: _create,
-              icon: const Icon(Icons.person_add_alt, size: 16),
+              icon: const Icon(AppIcons.userAdd, size: 16),
               label: Text(l10n.createProfileAction),
             ),
           ],

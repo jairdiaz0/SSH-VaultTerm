@@ -10,6 +10,7 @@ import 'test_context.dart';
 Future<AppHarness> pumpShell(
   WidgetTester tester, {
   Size size = const Size(1400, 1000),
+  ThemeMode mode = ThemeMode.dark,
   void Function(ProfileSession session)? seed,
 }) async {
   // Desktop-sized surface: the real target for this shell.
@@ -17,7 +18,7 @@ Future<AppHarness> pumpShell(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
-  final harness = await AppHarness.create();
+  final harness = await AppHarness.create(mode: mode);
   await harness.controller.createFirstProfile(
     name: 'Work',
     password: testPassword,

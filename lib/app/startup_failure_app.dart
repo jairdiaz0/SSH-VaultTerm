@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../app/theme/app_icons.dart';
+
 import '../core/errors/app_exception.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'error_messages.dart';
@@ -37,7 +39,7 @@ class StartupFailureApp extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
-                          Icons.lock_outline,
+                          AppIcons.lock,
                           color: Theme.of(context).colorScheme.error,
                         ),
                         const SizedBox(height: 12),

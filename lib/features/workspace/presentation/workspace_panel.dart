@@ -4,10 +4,12 @@ import 'package:material_ui/material_ui.dart';
 import 'package:xterm/xterm.dart';
 
 import '../../../app/error_messages.dart';
+import '../../../app/theme/app_icons.dart';
 import '../../../app/theme/app_tokens.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/connection.dart';
+import '../../../shared/widgets/empty_state.dart';
 import '../../sftp/presentation/sftp_panel.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
 import '../../terminal/presentation/terminal_key_bar.dart';
@@ -98,24 +100,10 @@ class _EmptyWorkspace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.terminal_outlined,
-            size: 40,
-            color: context.colors.onSurfaceVariant,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(l10n.workspaceEmptyTitle),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            l10n.workspaceEmptyBody,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: AppIcons.terminal,
+      title: l10n.workspaceEmptyTitle,
+      message: l10n.workspaceEmptyBody,
     );
   }
 }
@@ -139,7 +127,7 @@ class _SessionEnded extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              unexpected ? Icons.cloud_off_outlined : Icons.logout,
+              unexpected ? AppIcons.offline : AppIcons.logout,
               size: 40,
               color: unexpected
                   ? context.colors.error
@@ -166,7 +154,7 @@ class _SessionEnded extends StatelessWidget {
                       ? null
                       : () =>
                             connectAndExplain(context, controller, connection),
-                  icon: const Icon(Icons.refresh, size: 16),
+                  icon: const Icon(AppIcons.refresh, size: 16),
                   label: Text(l10n.reconnectAction),
                 ),
                 const SizedBox(width: AppSpacing.sm),
@@ -208,8 +196,8 @@ class _WorkspaceHeader extends StatelessWidget {
         children: [
           Icon(
             isSftp
-                ? (active ? Icons.folder : Icons.folder_outlined)
-                : (active ? Icons.terminal : Icons.terminal_outlined),
+                ? (active ? Icons.folder : AppIcons.folder)
+                : (active ? AppIcons.terminal : AppIcons.terminal),
             size: 18,
             color: active
                 ? context.colors.secondary
@@ -239,14 +227,14 @@ class _WorkspaceHeader extends StatelessWidget {
               key: const Key('reconnect-button'),
               onPressed: () =>
                   connectAndExplain(context, controller, connection),
-              icon: const Icon(Icons.refresh, size: 16),
+              icon: const Icon(AppIcons.refresh, size: 16),
               label: Text(l10n.reconnectAction),
             ),
           if (active)
             TextButton.icon(
               key: const Key('disconnect-button'),
               onPressed: controller.close,
-              icon: const Icon(Icons.link_off, size: 16),
+              icon: const Icon(AppIcons.linkOff, size: 16),
               label: Text(l10n.disconnectAction),
             ),
         ],
@@ -273,7 +261,7 @@ class _ErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, size: 16, color: context.colors.error),
+          Icon(AppIcons.error, size: 16, color: context.colors.error),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
@@ -326,15 +314,9 @@ class _FilesUnavailable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Container(
+    return ColoredBox(
       color: context.colors.surfaceContainerLow,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      alignment: Alignment.center,
-      child: Text(
-        l10n.sftpOpenFailed,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
+      child: EmptyState(icon: AppIcons.folderOff, title: l10n.sftpOpenFailed),
     );
   }
 }

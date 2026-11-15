@@ -103,7 +103,7 @@ abstract final class AppTheme {
           disabledBackgroundColor: palette.disabled.withValues(alpha: 0.28),
           disabledForegroundColor: palette.disabled,
           elevation: 0,
-          minimumSize: const Size(0, 44),
+          minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(tokens.buttonRadius),
@@ -115,7 +115,7 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: palette.textPrimary,
           side: BorderSide(color: palette.border),
-          minimumSize: const Size(0, 44),
+          minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(tokens.buttonRadius),
@@ -126,7 +126,7 @@ abstract final class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: palette.accent,
-          minimumSize: const Size(0, 44),
+          minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(tokens.buttonRadius),

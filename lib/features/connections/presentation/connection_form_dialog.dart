@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../app/error_messages.dart';
+import '../../../app/theme/app_icons.dart';
 import '../../../app/theme/app_tokens.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -372,7 +373,7 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                     OutlinedButton.icon(
                       key: const Key('connection-import-key'),
                       onPressed: _saving ? null : _importKey,
-                      icon: const Icon(Icons.upload_file, size: 16),
+                      icon: const Icon(AppIcons.upload, size: 16),
                       label: Text(l10n.privateKeyImportAction),
                     ),
                     const SizedBox(width: 12),

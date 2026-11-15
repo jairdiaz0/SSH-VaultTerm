@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../app/theme/app_icons.dart';
+
 import '../../app/theme/app_tokens.dart';
 
 enum MessageTone { error, warning, info, success }
@@ -25,10 +27,10 @@ class InlineMessage extends StatelessWidget {
       MessageTone.info => context.colors.onSurfaceVariant,
     };
     final icon = switch (tone) {
-      MessageTone.error => Icons.error_outline,
-      MessageTone.warning => Icons.warning_amber_outlined,
-      MessageTone.success => Icons.check_circle_outline,
-      MessageTone.info => Icons.info_outline,
+      MessageTone.error => AppIcons.error,
+      MessageTone.warning => AppIcons.warning,
+      MessageTone.success => AppIcons.success,
+      MessageTone.info => AppIcons.info,
     };
     return Container(
       width: double.infinity,

@@ -364,12 +364,73 @@ está deprecado en favor de `package:material_ui/material_ui.dart` (y Cupertino 
 (`lib/app/localizations.dart`), con `material_ui 1.11.0` y `cupertino_ui 1.1.6`.
 
 ```text
-flake analizar   → No issues found!
-flutter test     → +204 All tests passed!
+flutter analyze   → No issues found!
+flutter test      → +204 All tests passed!
 ```
 
 Esta es la línea base de la etiqueta `pre-ui-modernization`. Rama de trabajo:
 `ui-modernization`.
+
+## 2026-11-15 — Ronda 3 (seguridad y modernización de UI)
+
+### Estado global al cierre
+```text
+dart format --set-exit-if-changed lib test integration_test → 0 cambios
+flutter analyze                                             → No issues found!
+flutter test                                                → +256 All tests passed!
+flutter build windows --release                             → ✓ Built build\windows\x64\runner\Release\ssh_client.exe
+flutter test integration_test/app_windows_test.dart -d windows → +1 All tests passed!
+```
+
+### Reautenticación (servicios, no solo UI)
+- `AuthenticationService.verifyForSensitiveAction` reutiliza Argon2id y el
+  contador persistente: contraseña correcta, incorrecta (cuenta 1 intento) y
+  bloqueo tras tres fallos (incluida la contraseña correcta mientras dura).
+- `SecuritySettingsService.setRequireReauthOnEdit`: con contraseña incorrecta el
+  ajuste no cambia y el intento cuenta; con la correcta activa y desactiva.
+- `BackupExportService.exportText`: con contraseña incorrecta lanza y **no lee
+  ninguna credencial** (almacén envolvente con contador: 0 lecturas); con la
+  correcta exporta y el documento contiene la credencial.
+- `ConfirmPasswordDialog` reutilizable: error genérico, limpia el campo, no cierra
+  con contraseña incorrecta y devuelve `false` al cancelar.
+- Widget tests: interruptor con contraseña incorrecta (no guarda), correcta
+  (activa/desactiva), crear/editar conexión siguen pidiendo contraseña y
+  guardando; sin reautenticación el flujo de conexiones sigue igual.
+
+### Sistema de diseño y contraste
+- `test/app/theme_test.dart`: paletas claras/oscuras con los valores acordados,
+  tokens (radios 18/22/14/12/10, duraciones 150/200/250), fuentes Inter y
+  JetBrains Mono, terminal por tema y opción siempre oscura.
+- `test/app/theme_contrast_test.dart`: texto 4,5:1 y componentes 3:1 en ambos
+  temas; incluye `onAccent`, estados y 7 colores ANSI sobre el fondo del terminal.
+- Sin `Color(0x...)` ni `Colors.white|black|grey` fuera de `lib/app/theme/`.
+
+### Tema y persistencia
+- `test/app/theme_mode_test.dart`: sin preferencia → sistema; guardar claro y
+  terminal siempre oscura y recargar; volver a sistema; modo sistema sigue
+  `platformBrightness` (oscuro y claro); selector de Ajustes cambia el tema al
+  instante; switch de terminal siempre oscura persistido.
+
+### Matriz de pantallas
+`test/app/ui_matrix_test.dart`: tema claro y oscuro × 900×600, 1280×720 y
+1920×1080 × escala de texto 1,3 para primera ejecución, bloqueo, shell con sidebar
+densa, ajustes, formulario de conexión, diálogo de huella y panel SFTP (32 tests,
+sin overflow).
+
+### Iconos
+`AppIcons` centraliza los iconos Lucide; ningún widget importa la librería. Los
+tests existentes siguen localizando controles por Key/semántica.
+
+### Verificación real en Windows
+- Compilación release correcta.
+- Integración real repetida tras la modernización: perfil, SSH tecleado, `exit`,
+  «Sesión finalizada» y conexión SFTP con navegación. Almacén seguro y SQLCipher
+  reales; directorio y namespace temporales borrados al final.
+
+### Golden tests
+Omitidos con motivo documentado en `docs/UI_AUDIT.md`: en `flutter_test` las
+fuentes de assets no se cargan por defecto (Ahem), así que un golden no
+representaría la tipografía real. Se cubren layout, contraste y ambos temas.
 
 ## 2026-11-15 — Ronda de correcciones 1 (primera prueba manual en Windows)
 

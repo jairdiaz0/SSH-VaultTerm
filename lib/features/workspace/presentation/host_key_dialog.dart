@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../app/theme/app_icons.dart';
+
 import '../../../app/theme/app_theme.dart';
 import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -31,7 +33,7 @@ Future<void> showHostKeyChangedDialog(
   builder: (context) {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      icon: Icon(Icons.gpp_bad_outlined, color: context.colors.error),
+      icon: Icon(AppIcons.shieldAlert, color: context.colors.error),
       title: Text(l10n.hostKeyChangedTitle),
       content: Text(l10n.hostKeyChangedBody(hostname)),
       actions: [
@@ -54,7 +56,7 @@ class _HostKeyDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      icon: Icon(Icons.fingerprint, color: context.colors.primary),
+      icon: Icon(AppIcons.fingerprint, color: context.colors.primary),
       title: Text(l10n.hostKeyDialogTitle),
       content: SizedBox(
         width: 460,

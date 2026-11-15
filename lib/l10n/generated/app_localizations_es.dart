@@ -383,6 +383,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get connectionTypeSftp => 'SFTP · archivos';
 
   @override
+  String get refreshAction => 'Refrescar';
+
+  @override
+  String get backAction => 'Atrás';
+
+  @override
+  String get forwardAction => 'Adelante';
+
+  @override
+  String get upOneLevelAction => 'Subir un nivel';
+
+  @override
+  String get moreActions => 'Más acciones';
+
+  @override
   String get sessionEndedTitle => 'Sesión finalizada';
 
   @override
@@ -626,6 +641,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileSection => 'Perfil';
+
+  @override
+  String get appearanceSection => 'Apariencia';
+
+  @override
+  String get themeLabel => 'Tema';
+
+  @override
+  String get themeSystem => 'Sistema';
+
+  @override
+  String get themeLight => 'Claro';
+
+  @override
+  String get themeDark => 'Oscuro';
+
+  @override
+  String get terminalAlwaysDark => 'Terminal siempre oscura';
+
+  @override
+  String get terminalAlwaysDarkHelp =>
+      'Usa la paleta oscura del terminal aunque la interfaz esté en claro.';
 
   @override
   String get manageProfilesAction => 'Gestionar perfiles';

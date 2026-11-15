@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../app/theme/app_icons.dart';
+
 import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/profile.dart';
@@ -12,7 +14,7 @@ Future<bool> showExportWarning(BuildContext context) async {
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
-      icon: Icon(Icons.warning_amber_outlined, color: context.colors.error),
+      icon: Icon(AppIcons.warning, color: context.colors.error),
       title: Text(l10n.exportWarningTitle),
       content: SizedBox(
         width: 520,

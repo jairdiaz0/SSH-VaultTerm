@@ -391,3 +391,54 @@ desechable, y los borran en `tearDown` incluso si el test falla. Cada `AppHarnes
 confirmación (`BORRAR`) y respeta ambas variables.
 **Verificación:** script probado contra un directorio falso; el test de integración
 de Windows crea y elimina su propio namespace y directorio.
+
+---
+
+## D-021 — Iconos Lucide centralizados en `AppIcons`
+**Fecha:** 2026-11-15
+**Contexto:** los iconos Material eran inconsistentes en trazo y tamaño, y cambiar
+de librería obligaba a tocar decenas de widgets. Se evaluaron Lucide
+(`lucide_icons_flutter` 4.0.3, MIT) y Phosphor (`phosphor_flutter` 2.1.0, MIT):
+ambas empaquetadas como fuente, sin descargas en ejecución. Lucide tiene un solo
+estilo coherente y un set suficiente para este producto.
+**Decisión:** Lucide, con todos los iconos expuestos desde
+`lib/app/theme/app_icons.dart` (`AppIcons`) y tamaños en `AppIconSize`. Ningún
+widget importa la librería directamente.
+**Consecuencias:** cambiar de set significa editar un archivo. Se añadió
+`lucide_icons_flutter` a `THIRD_PARTY_NOTICES.md`. Los iconos decorativos siguen
+usando `Semantics`/tooltips para su etiqueta.
+
+---
+
+## D-022 — Tema claro/oscuro/sistema con preferencia global (shared_preferences)
+**Fecha:** 2026-11-15
+**Contexto:** la pantalla de bloqueo aparece antes de abrir cualquier base de
+perfil; guardar el tema por perfil obligaría a esperar al desbloqueo y produciría
+parpadeos.
+**Decisión:** `ThemeController` global persistido con `shared_preferences`
+(`ui.themeMode` = system|light|dark y `ui.terminalAlwaysDark`). Se carga en
+`main` **antes del primer frame**; sin preferencia se usa `ThemeMode.system`.
+`AppThemeScope` expone el controlador a Ajustes y el `MaterialApp` cambia de tema
+al instante con `themeAnimationDuration` de 220 ms. El terminal usa la paleta ANSI
+de cada tema salvo que «Terminal siempre oscura» esté activo.
+**Consecuencias:** nueva dependencia `shared_preferences` (BSD-3) en
+`THIRD_PARTY_NOTICES.md`. Los tests usan `ThemeController.memory` o
+`SharedPreferences.setMockInitialValues`; nunca tocan preferencias reales.
+
+---
+
+## D-023 — Sistema de diseño en `lib/app/theme` (solo presentación)
+**Fecha:** 2026-11-15
+**Contexto:** había colores y paddings escritos a mano en 14 widgets, un único
+tema oscuro y ninguna garantía de contraste.
+**Decisión:** paleta `AppPalette` clara y oscura construida a mano (no
+`fromSeed`), `AppTokens` como `ThemeExtension` (espaciados, radios, duraciones,
+curvas, estados y terminal) y component themes para todo lo usado. Los widgets
+consumen `context.colors`, `context.texts` y `context.tokens`. Se añadieron tests
+de contraste (4,5:1 texto, 3:1 componentes) y una matriz de pantallas en ambos
+temas, tres tamaños y escala 1,3.
+**Consecuencias:** ningún `Color(0x...)`/`Colors.white|black|grey` queda fuera de
+`lib/app/theme`. Los golden tests se omitieron: en `flutter_test` las fuentes de
+assets no se cargan por defecto (Ahem), así que no representarían la tipografía
+real; la cobertura equivalente son los tests de layout, contraste y temas.
+No se tocó lógica de negocio, seguridad, base de datos, SSH/SFTP ni navegación.
