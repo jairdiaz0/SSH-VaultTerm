@@ -118,8 +118,17 @@ El SPEC pide el paquete real `xterm` y prohíbe forks AGPL/GPL.
 con Flutter 3.47.9, se evalúa `xterm2` (MIT, mantenido) y se registra aquí el
 cambio con evidencia. No se acepta ningún fork AGPL/GPL.
 
-**Verificación pendiente:** `flutter analyze` actual pasa con `xterm` 4.0.0 como
-dependencia; la integración funcional se prueba en la fase 3.
+**Verificación (fase 3):** `xterm` 4.0.0 compila con Flutter 3.47.9 y funciona en
+`flutter test`: `Terminal`, `TerminalView`, búfer, colores ANSI, entrada y
+`onResize` están cubiertos por tests. Contra el servidor real, un pty responde a
+`stty size` (24×80 al abrir, 30×100 tras `resize`), devuelve UTF-8 correcto
+(`áéíóú`) y mantiene los comandos bidireccionales. **Se mantiene `xterm`; no se
+cambia a `xterm2`.**
+**Limitación conocida:** con `maxLines` menor que la altura visible (24 por
+defecto) el búfer circular de `xterm` 4.0.0 lanza `RangeError`. La app usa 10 000
+líneas de scrollback, muy por encima, y el test lo fija en 100 con 150 líneas
+escritas. Si algún día se permite configurar scrollback por debajo de la altura,
+hay que subir ese mínimo o migrar a `xterm2`.
 
 ---
 

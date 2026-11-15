@@ -25,9 +25,13 @@ solo lectura).
 Fase 2 (motor SSH) implementada y verificada: TOFU con huellas SHA-256,
 autenticación por contraseña y por llave privada, estados de conexión, timeouts,
 keep-alive y cierre ordenado, con tests unitarios y tests de integración reales
-contra el servidor de pruebas (122 tests). Falta la pantalla de huellas guardadas,
-que llega con Ajustes en la fase 4. Los widget tests nunca sustituyen la
-verificación real: ver `docs/TESTING.md`. Consulta el plan para el detalle.
+contra el servidor de pruebas.
+
+Fase 3 (terminal) tiene su motor listo y verificado: emulador `xterm` conectado a
+un pty real (bidireccional, redimensionado, UTF-8 y scrollback acotado), con 127
+tests en total, incluido un pty real. La selección, copia/pegado y el workspace
+visual llegan con la fase 4. Los widget tests nunca sustituyen la verificación
+real: ver `docs/TESTING.md`. Consulta el plan para el detalle.
 
 ## Requisitos para desarrollar
 

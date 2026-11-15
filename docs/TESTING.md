@@ -209,6 +209,36 @@ Contra `.env.test` (cuenta de pruebas dedicada), operando solo en
 - Pérdida del transporte (`socket.destroy()`): estado
   `disconnectedUnexpectedly`.
 
+## 2026-11-15 — Fase 3 (terminal)
+
+### Estado global
+```text
+flutter analyze   → No issues found!
+flutter test      → +127 All tests passed! (incluye el pty real)
+```
+
+### Emulador — `test/features/terminal/terminal_view_test.dart`
+- Texto y colores ANSI: una celda en rojo conserva su color tras el reseteo.
+- Scrollback acotado: 150 líneas con `maxLines: 100` dejan la última y no
+  desbordan (ver la limitación de `xterm` en D-005).
+- Entrada del usuario: `textInput`/`paste` llegan a `onOutput` (lo que se envía
+  por el canal SSH).
+- `TerminalView` se monta en un `MaterialApp`, recibe salida y reporta tamaño
+  (`viewWidth`/`viewHeight` > 0), sin excepciones.
+
+### Pty real — `test/features/terminal/terminal_integration_test.dart`
+Contra el servidor de pruebas:
+- `stty size` responde `24 80` al abrir el pty con ese tamaño.
+- Tras `resize(100, 30)`, `stty size` responde `30 100`: el tamaño llega al
+  servidor.
+- Salida de comandos y eco de entrada funcionan (`MARK-42`).
+- UTF-8 en ambos sentidos (`acentos: áéíóú`).
+- Cerrar el canal del terminal no cierra la conexión SSH: un `execute` posterior
+  sigue funcionando.
+
+Pendiente (fase 4): selección, copia/pegado desde la UI, barra de teclas en
+Android y medición de rendimiento con volúmenes grandes.
+
 ## Pendiente de verificación (bloqueado por el entorno, D-001)
 - `flutter_secure_storage` en ejecución: plugin de plataforma; no hay app
   ejecutable en esta máquina. Marcado `[~]`.

@@ -86,11 +86,14 @@ y `flutter test` (unitarios, widget, golden, FFI).
 - [x] Primera conexión real al servidor de pruebas (test de integración etiquetado `integration`).
 
 ## Fase 3 — Terminal
-- [ ] Integración de `xterm` con la shell/pty remota (flujo bidireccional).
-- [ ] Redimensionado que envía el tamaño al servidor (`resizeTerminal`).
-- [ ] Colores ANSI/256/true color, UTF-8, scrollback, selección/copia/pegado.
-- [ ] Rendimiento con salida grande; nada de salida o comandos persistidos.
-- [ ] Tests de widget del terminal; interactividad real marcada `[~]` si no se puede ejecutar.
+- [x] Integración de `xterm` con la shell/pty remota (flujo bidireccional).
+- [x] Redimensionado que envía el tamaño al servidor (`resizeTerminal`).
+- [~] Colores ANSI/256/true color, UTF-8, scrollback, selección/copia/pegado
+  (emulador, UTF-8 real y scrollback cubiertos; selección/copia/pegado llegan con
+  el workspace de la fase 4).
+- [~] Rendimiento con salida grande; nada de salida o comandos persistidos
+  (no se persiste nada por diseño; falta medir el rendimiento en la UI real).
+- [x] Tests de widget del terminal; interactividad real marcada `[~]` si no se puede ejecutar.
 
 ## Fase 4 — UI de escritorio
 - [ ] Tema completo y componentes reutilizables del SPEC.
