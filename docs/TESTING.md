@@ -73,7 +73,7 @@ esperado: es SQLCipher rechazando una clave incorrecta a propósito.
   `a database newer than the app is refused, not downgraded` (`schemaTooNew`).
 - `foreign keys cascade and nullify as declared`.
 
-### Aislamiento entre perfiles — `test/core/session/profile_session_test.dart`
+### Aislamiento entre perfiles — `test/app/profile_session_test.dart`
 - Cada perfil abre su propio fichero **y** su propia clave (comparadas como
   distintas).
 - Los datos persisten al cerrar y reabrir; `close` es idempotente.
@@ -142,6 +142,72 @@ temporal, `SecretStore` en memoria):
 - Campos con nombre sensible se escriben como `***`.
 - `description` de una excepción expone solo código y tipo de causa: ni el
   mensaje del driver ni fragmentos de secretos llegan a logs ni a la UI.
+
+## 2026-11-15 — Fase 2 (motor SSH)
+
+### Estado global
+```text
+dart format .     → sin cambios pendientes
+flutter analyze   → No issues found! (análisis estricto: strict-casts, strict-inference, strict-raw-types)
+flutter test      → +122 All tests passed!
+```
+La suite incluye 7 tests de integración reales contra `192.168.100.129:22`
+(etiqueta `integration`). Se omiten solos si falta `.env.test`; sin red se puede
+ejecutar `flutter test -x integration`.
+
+### Claves privadas — `test/features/ssh/private_key_inspector_test.dart`
+Fixtures efímeros en `test/fixtures/keys/` (llaves de prueba, no de producción):
+- OpenSSH Ed25519, PKCS#1 RSA y SEC1 EC se aceptan y reportan su tipo real.
+- Llave OpenSSH cifrada: sin passphrase → `privateKeyPassphraseRequired`;
+  passphrase vacía → igual; passphrase incorrecta → `privateKeyPassphraseInvalid`;
+  correcta → `encrypted: true`.
+- PKCS#8 (`PRIVATE KEY`) → `privateKeyUnsupportedFormat` (no soportado por
+  `dartssh2` 4.1.0, que solo decodifica OpenSSH, PKCS#1 y SEC1).
+- Texto que no es PEM y entrada vacía → `privateKeyInvalid`.
+- El `description` de la excepción no contiene material de la llave.
+
+### TOFU — `test/features/ssh/host_key_verifier_test.dart`
+- Huella desconocida: se pregunta una vez y, al aceptar, se guarda con el tipo de
+  clave, el host y el puerto.
+- Huella guardada que coincide: no se vuelve a preguntar.
+- Rechazo del usuario: no se guarda nada.
+- Huella distinta: `false` sin preguntar, estado `changed`, `trustedFingerprint`
+  informado y la fila guardada **no** se sobrescribe.
+- `connection_id` distinto mantiene entradas independientes.
+
+### Errores — `test/features/ssh/ssh_error_mapper_test.dart`
+`SocketException`/`SSHSocketError` → `networkUnreachable`; `TimeoutException`,
+`SSHAuthAbortError('Authentication timed out')` y `SSHHandshakeError(...timed out)`
+→ `connectionTimeout`; `SSHAuthFailError` → `authFailed`; `SSHHostkeyError` →
+`hostKeyRejected`; `SSHDisconnectError` → `connectionLost`; `AppException` pasa
+intacta.
+
+### Servicio — `test/features/ssh/ssh_service_test.dart`
+- Sin `credentialId` o sin secreto guardado: `credentialMissing` y el socket ni se
+  abre.
+- Host inalcanzable: estados `[connecting, failed]` y `networkUnreachable`; el log
+  de fallo no contiene la contraseña.
+- Timeout de socket: `connectionTimeout`.
+- Llave privada corrupta o cifrada sin passphrase: falla **antes** de red.
+
+### Integración real — `test/features/ssh/ssh_integration_auth_test.dart` y `..._sessions_test.dart`
+Contra `.env.test` (cuenta de pruebas dedicada), operando solo en
+`~/opencode_sandbox/run_<uuid>/`: montaje común en
+`test/support/ssh_integration_harness.dart`.
+- Contraseña: conexión, huella SHA-256 `SHA256:…` aceptada y persistida,
+  secuencia `connecting → awaitingHostKey → authenticating → connected`, comando
+  ejecutado y su salida recogida; `rm -rf` del sandbox al terminar.
+- Segunda conexión con huella ya guardada: no se vuelve a preguntar.
+- Huella guardada distinta: `hostKeyChanged`, sin diálogo y sin sobrescribir.
+- Contraseña incorrecta: `authFailed` en dos intentos (límite de la cuenta de
+  pruebas).
+- Llave Ed25519 efímera: se genera con `ssh-keygen`, se añade a
+  `~/.ssh/authorized_keys` con el comentario `opencode-test-<uuid>`, se conecta
+  con llave y se retira la línea al final.
+- Dos sesiones concurrentes: cada una ejecuta su comando; cerrar una no afecta a
+  la otra.
+- Pérdida del transporte (`socket.destroy()`): estado
+  `disconnectedUnexpectedly`.
 
 ## Pendiente de verificación (bloqueado por el entorno, D-001)
 - `flutter_secure_storage` en ejecución: plugin de plataforma; no hay app

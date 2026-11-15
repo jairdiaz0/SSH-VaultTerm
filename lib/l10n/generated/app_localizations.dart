@@ -310,6 +310,78 @@ abstract class AppLocalizations {
   /// **'No se pudo abrir la base de datos cifrada del perfil.'**
   String get errorDatabaseFailure;
 
+  /// No description provided for @errorHostKeyRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'No has aceptado la huella del servidor. La conexión se ha cancelado.'**
+  String get errorHostKeyRejected;
+
+  /// No description provided for @errorHostKeyChanged.
+  ///
+  /// In es, this message translates to:
+  /// **'La huella del servidor ha cambiado desde la última conexión. La conexión se ha bloqueado para protegerte. Si el cambio es legítimo, borra la huella guardada para ese servidor y vuelve a conectar.'**
+  String get errorHostKeyChanged;
+
+  /// No description provided for @errorAuthFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'El servidor rechazó las credenciales. Comprueba el usuario y el método de acceso.'**
+  String get errorAuthFailed;
+
+  /// No description provided for @errorNetworkUnreachable.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo alcanzar el servidor. Comprueba el host, el puerto y tu red.'**
+  String get errorNetworkUnreachable;
+
+  /// No description provided for @errorConnectionTimeout.
+  ///
+  /// In es, this message translates to:
+  /// **'El servidor no respondió a tiempo.'**
+  String get errorConnectionTimeout;
+
+  /// No description provided for @errorConnectionFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo establecer la conexión SSH.'**
+  String get errorConnectionFailed;
+
+  /// No description provided for @errorConnectionLost.
+  ///
+  /// In es, this message translates to:
+  /// **'La conexión con el servidor se interrumpió inesperadamente.'**
+  String get errorConnectionLost;
+
+  /// No description provided for @errorCredentialMissing.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta conexión no tiene credenciales guardadas. Edita la conexión y vuelve a introducirlas.'**
+  String get errorCredentialMissing;
+
+  /// No description provided for @errorPrivateKeyInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'La llave privada no es válida o está dañada.'**
+  String get errorPrivateKeyInvalid;
+
+  /// No description provided for @errorPrivateKeyPassphraseRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta llave privada está protegida con una frase de contraseña.'**
+  String get errorPrivateKeyPassphraseRequired;
+
+  /// No description provided for @errorPrivateKeyPassphraseInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'La frase de contraseña de la llave no es correcta.'**
+  String get errorPrivateKeyPassphraseInvalid;
+
+  /// No description provided for @errorPrivateKeyUnsupportedFormat.
+  ///
+  /// In es, this message translates to:
+  /// **'Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.'**
+  String get errorPrivateKeyUnsupportedFormat;
+
   /// No description provided for @errorUnknown.
   ///
   /// In es, this message translates to:

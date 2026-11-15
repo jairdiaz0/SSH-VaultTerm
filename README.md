@@ -16,13 +16,18 @@ los servidores del usuario.
 
 ## Estado
 
-Fase 0 (auditoría) y fase 1 (backend y seguridad) completadas y verificadas con
-`flutter analyze` y 82 tests: catálogo y bases de datos por perfil cifradas con
-**SQLCipher 4.20.0**, claves en el almacén secreto del sistema, Argon2id
-verificado contra `argon2-cffi`, bloqueo progresivo persistente y el shell de la
-app (primer perfil, desbloqueo, home de solo lectura). Los widget tests nunca
-sustituyen la verificación real: ver `docs/TESTING.md`. El resto de fases está en
-curso; consulta el plan para el detalle.
+Fases 0 y 1 completadas y verificadas con `flutter analyze` y `flutter test`:
+catálogo y bases de datos por perfil cifradas con **SQLCipher 4.20.0**, claves en
+el almacén secreto del sistema, Argon2id verificado contra `argon2-cffi`, bloqueo
+progresivo persistente y el shell de la app (primer perfil, desbloqueo, home de
+solo lectura).
+
+Fase 2 (motor SSH) implementada y verificada: TOFU con huellas SHA-256,
+autenticación por contraseña y por llave privada, estados de conexión, timeouts,
+keep-alive y cierre ordenado, con tests unitarios y tests de integración reales
+contra el servidor de pruebas (122 tests). Falta la pantalla de huellas guardadas,
+que llega con Ajustes en la fase 4. Los widget tests nunca sustituyen la
+verificación real: ver `docs/TESTING.md`. Consulta el plan para el detalle.
 
 ## Requisitos para desarrollar
 

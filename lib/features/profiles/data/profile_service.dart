@@ -7,6 +7,7 @@ import '../../../core/errors/app_exception.dart';
 import '../../../core/security/password_hasher.dart';
 import '../../../core/storage/app_paths.dart';
 import '../../../shared/models/profile.dart';
+import '../domain/profile_rules.dart';
 import 'catalog_store.dart';
 
 /// Creates and destroys profiles. Creation is only reachable from an unlocked
@@ -28,9 +29,6 @@ class ProfileService {
   final Uuid uuid;
   final DateTime Function() now;
 
-  static const minPasswordLength = 8;
-  static const maxNameLength = 64;
-
   List<Profile> list() => catalog.profiles.all();
 
   /// Creates a profile with its own database key. Never copies data from
@@ -42,10 +40,10 @@ class ProfileService {
     Argon2Params params = Argon2Params.baseline,
   }) async {
     final trimmed = name.trim();
-    if (trimmed.isEmpty || trimmed.length > maxNameLength) {
+    if (trimmed.isEmpty || trimmed.length > ProfileRules.maxNameLength) {
       failWith(AppErrorCode.validation, cause: 'invalid profile name');
     }
-    if (password.length < minPasswordLength) {
+    if (password.length < ProfileRules.minPasswordLength) {
       failWith(AppErrorCode.validation, cause: 'password too short');
     }
     if (password != passwordConfirmation) {

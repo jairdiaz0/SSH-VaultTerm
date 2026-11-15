@@ -242,3 +242,53 @@ gate, apertura/cierre de BD) sin pagar 64 MiB por intento. El doble vive en
 **Consecuencias:** al añadir una cadena hay que ejecutar `flutter gen-l10n`
 (también lo hace `flutter run`/`build` con `generate: true`). Prohibido escribir
 texto visible literal en widgets: todo pasa por `AppLocalizations`.
+
+---
+
+## D-014 — Línea base de análisis estático estricta
+**Fecha:** 2026-11-15
+**Contexto:** `flutter_lints` solo trae las reglas recomendadas; con un cliente
+SSH que maneja sockets, bases de datos y secretos, un `dynamic` implícito o un
+`Future` olvidado cuestan caro y se detectan tarde.
+**Decisión:** `analysis_options.yaml` activa `strict-casts`, `strict-inference` y
+`strict-raw-types`, y eleva a **error** `unawaited_futures` y `avoid_print`.
+Además, obligatorias: `directives_ordering`, `always_declare_return_types`,
+`avoid_dynamic_calls` y `prefer_single_quotes`.
+**Consecuencias:** el umbral de `flutter analyze` es «No issues found!» o no hay
+commit. Un `// ignore` necesita justificación escrita junto a la línea. Los
+ficheros generados de l10n ya cumplen las reglas.
+
+---
+
+## D-015 — Errores SSH: códigos propios y la huella decide, no el texto
+**Fecha:** 2026-11-15
+**Contexto:** `dartssh2` pierde el `SSHHostkeyError` original cuando el rechazo
+ocurre durante el handshake: `authenticated` falla con
+`SSHAuthAbortError('Connection closed before authentication')`. Mapear por tipo
+habría mostrado «no se pudo conectar» en un caso de posible MITM, y mapear por
+texto habría dependido de mensajes de la librería.
+**Decisión:** `mapSshError` traduce solo errores de red, autenticación y handshake
+a `AppErrorCode`, sin propagar mensajes. La decisión sobre la host key la toma
+`SshService` a partir del resultado del verificador (`lastAccepted` y `status`):
+rechazo del usuario → `hostKeyRejected`; huella distinta → `hostKeyChanged`.
+**Consecuencias:** el usuario ve la causa real aunque la librería la enmascare.
+Un fallo de red ocurrido mientras el diálogo de huella está abierto sigue siendo
+`networkUnreachable`, porque el verificador aún no tiene veredicto. Cubierto por
+el test unitario del mapper y por el de integración de huella cambiada.
+
+---
+
+## D-016 — Tests de integración SSH: etiqueta, `.env.test` y omisión explícita
+**Fecha:** 2026-11-15
+**Contexto:** el servidor de pruebas es real y externo; CI sin red o un clon sin
+`.env.test` no deben fallar por ello, pero tampoco deben fingir que probaron SSH.
+**Decisión:** los tests viven en `test/features/ssh/ssh_integration_auth_test.dart`
+y `ssh_integration_sessions_test.dart`, con la etiqueta `integration` (declarada en
+`dart_test.yaml`) y un montaje común en `test/support/ssh_integration_harness.dart`.
+`SshTestServer.load()` lee variables de entorno o `.env.test`; si faltan, el grupo
+se marca `skip` con un motivo explícito. Operan solo dentro de
+`~/opencode_sandbox/run_<uuid>/` y borran su rastro, incluida la llave pública
+efímera de `authorized_keys`.
+**Consecuencias:** `flutter test` ejercita red real cuando hay entorno;
+`flutter test -x integration` es la ejecución offline. Ningún ítem se marca `[x]`
+sin haber ejecutado la versión con red.

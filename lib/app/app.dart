@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import 'app_services.dart';
 import 'session_controller.dart';
 import 'session_gate.dart';
 import 'theme/app_theme.dart';
-import '../l10n/generated/app_localizations.dart';
 
 /// Root widget. Holds the session controller for the app's lifetime and
 /// rebuilds the gate whenever the locked/unlocked state changes.

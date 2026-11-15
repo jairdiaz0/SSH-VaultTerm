@@ -13,6 +13,19 @@ enum AppErrorCode {
   conflict,
   validation,
   unsupported,
+  // SSH
+  hostKeyRejected,
+  hostKeyChanged,
+  authFailed,
+  networkUnreachable,
+  connectionTimeout,
+  connectionFailed,
+  connectionLost,
+  credentialMissing,
+  privateKeyInvalid,
+  privateKeyPassphraseRequired,
+  privateKeyPassphraseInvalid,
+  privateKeyUnsupportedFormat,
   unknown,
 }
 

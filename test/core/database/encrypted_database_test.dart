@@ -3,11 +3,11 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:ssh_client/core/database/encrypted_database.dart';
 import 'package:ssh_client/core/database/migrations.dart';
 import 'package:ssh_client/core/database/schemas.dart';
 import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:path/path.dart' as p;
 
 void main() {
   late Directory dir;

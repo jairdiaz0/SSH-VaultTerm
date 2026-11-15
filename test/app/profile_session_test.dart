@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ssh_client/app/profile_session.dart';
 import 'package:ssh_client/core/database/database_key_store.dart';
-import 'package:ssh_client/core/session/profile_session.dart';
 import 'package:ssh_client/shared/models/connection.dart';
 
-import '../../support/test_context.dart';
+import '../support/test_context.dart';
 
 void main() {
   late TestContext ctx;

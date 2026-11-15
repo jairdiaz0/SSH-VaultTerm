@@ -10,7 +10,8 @@ lib/
   main.dart                 # arranque: bootstrap de servicios o pantalla de fallo
   app/
     app.dart                # MaterialApp: tema, l10n, SessionGate
-    app_services.dart       # composition root (bootstrap / fromStorage)
+    app_services.dart       # composition root (bootstrap / fromStorage) + sshFor
+    profile_session.dart    # ensambla la BD del perfil y sus repositorios
     session_controller.dart # estado bloqueado/desbloqueado + sesión de perfil
     session_gate.dart       # elige pantalla según el estado
     error_messages.dart     # AppErrorCode -> mensaje localizado
@@ -20,17 +21,17 @@ lib/
     database/               # EncryptedDatabase, migraciones, esquemas
     errors/                 # AppException + códigos
     security/               # Argon2id, CSPRNG, comparación en tiempo constante
-    session/                # ProfileSession (BD de un perfil abierto)
     storage/                # SecretStore, AppPaths, implementación real
     utils/                  # logger redactado
     widgets/                # widgets compartidos (InlineMessage)
   features/
-    authentication/         # servicio de desbloqueo, política de bloqueo, pantalla
-    profiles/               # catálogo, creación/borrado, asistente inicial
-    collections/            # repositorio de colecciones
-    connections/            # repositorio de conexiones, credenciales
-    ssh/                    # huellas conocidas (fase 2: servicio SSH)
-    shell/                  # home del perfil desbloqueado
+    authentication/         # data/ domain/ presentation/: desbloqueo y bloqueo
+    profiles/               # data/ domain/ presentation/: catálogo y reglas
+    collections/            # data/: repositorio de colecciones
+    connections/            # data/: repositorios de conexiones y credenciales
+    ssh/                    # domain/: reglas puras (TOFU, llaves, errores)
+                            # data/: SshService, SshConnection, repositorio
+    shell/                  # presentation/: home del perfil desbloqueado
   shared/
     models/                 # Profile, ServerCollection, Connection, KnownHost
   l10n/
@@ -38,9 +39,18 @@ lib/
     generated/              # salida de gen-l10n (versionada)
 ```
 
-Fases 2–7 añadirán `features/ssh`, `features/terminal`, `features/sftp`,
-`features/backup` y `features/settings` con la misma forma: `data/` (servicios y
-repositorios), `domain/` (reglas puras), `presentation/` (widgets).
+Fases 3–7 añadirán `features/terminal`, `features/sftp`, `features/backup` y
+`features/settings` con la misma forma: `data/` (servicios y repositorios),
+`domain/` (reglas puras), `presentation/` (widgets).
+
+### Dónde va un modelo
+
+- Vive en `shared/models/` solo si **dos o más features** lo usan (`Connection`,
+  `Profile`, `KnownHost`). Si solo lo usa una feature, va a su `domain/`.
+- `core/` no conoce features. Por eso `ProfileSession`, que ensambla repositorios
+  de varias features, vive en `app/` y no en `core/`.
+- Sin barrels (`export`): cada import nombra el fichero real, así no se crean
+  ciclos ocultos ni se degrada el *tree shaking*.
 
 ## 2. Capas
 
@@ -100,4 +110,39 @@ Invariantes:
 | --- | --- |
 | `core`, `data`, `domain` | `flutter test` con servicios reales y directorio temporal |
 | `presentation` | `testWidgets` con `AppHarness` (servicios reales, `SecretStore` en memoria) |
+| SSH/SFTP contra el servidor de pruebas | `flutter test` con tests etiquetados `integration`; se omiten solos si falta `.env.test` |
 | Plataforma (keychain, drag and drop) | bloqueado por el entorno (`DECISIONS.md` D-001) |
+
+Los tests de integración no se pueden simular: usan `SshSocket.connect` real. Por
+eso viven aparte, con etiqueta `integration` (`dart_test.yaml`), y `flutter test -x
+integration` deja una ejecución sin red.
+
+## 8. Motor SSH (fase 2)
+
+```text
+UI (fase 3/4) → AppServices.sshFor(session) → SshService.connect(connection)
+                                           ├─ CredentialService (secret store, solo al conectar)
+                                           ├─ TofuHostKeyVerifier → KnownHostRepository (BD del perfil)
+                                           └─ SSHClient (dartssh2)
+SshConnection: un SSHClient por conexión; terminal y SFTP abrirán canales sobre él.
+```
+
+- `SshService` recibe `profileId`, credenciales, repositorio de huellas y logger.
+  `AppServices.sshFor` es el único sitio que lo construye, para que ningún
+  llamador olvide el aislamiento por perfil.
+- Estados observables: `connecting → awaitingHostKey → authenticating →
+  connected`, más `disconnected`, `disconnectedUnexpectedly` y `failed` (con su
+  `AppErrorCode`).
+- Los errores de `dartssh2` se traducen a códigos en
+  `domain/ssh_error_mapper.dart`; los mensajes del servidor no se propagan nunca.
+- `SshConnection` no guarda comandos ni salida. `execute` existe para diagnósticos
+  y tests; la terminal usará `openShell` (fase 3).
+
+## 9. Análisis estático y estilo
+
+`analysis_options.yaml` activa `strict-casts`, `strict-inference` y
+`strict-raw-types`, y trata como obligatorios `unawaited_futures`, `avoid_print`,
+`directives_ordering`, `always_declare_return_types` y `prefer_single_quotes`.
+
+Regla operativa: si una regla estorba, se corrige el código o se justifica por
+escrito. No se añade un `// ignore` sin motivo.

@@ -1,18 +1,22 @@
 import 'package:sqlite3/sqlite3.dart';
 
-import '../../core/database/database_key_store.dart';
-import '../../core/database/encrypted_database.dart';
-import '../../core/database/schemas.dart';
-import '../../core/storage/app_paths.dart';
-import '../../features/collections/data/collection_repository.dart';
-import '../../features/connections/data/connection_repository.dart';
-import '../../features/ssh/data/known_host_repository.dart';
-import '../../shared/models/profile.dart';
+import '../core/database/database_key_store.dart';
+import '../core/database/encrypted_database.dart';
+import '../core/database/schemas.dart';
+import '../core/storage/app_paths.dart';
+import '../features/collections/data/collection_repository.dart';
+import '../features/connections/data/connection_repository.dart';
+import '../features/ssh/data/known_host_repository.dart';
+import '../shared/models/profile.dart';
 
-/// An unlocked profile: its own encrypted database and repositories.
+/// An unlocked profile: its own encrypted database and the repositories bound
+/// to it.
 ///
 /// One instance per unlocked profile. [close] is the only way to release the
 /// database; the app calls it on lock, logout and profile switch.
+///
+/// Lives in `app/` and not in `core/` on purpose: it is the assembly of feature
+/// repositories, and `core/` must stay feature-agnostic.
 class ProfileSession {
   ProfileSession({
     required this.profile,

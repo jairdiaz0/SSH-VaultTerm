@@ -71,5 +71,17 @@
   "errorConflict": "Ese elemento ya existe.",
   "errorSecureStorageUnavailable": "El almacén seguro del sistema no está disponible. Sin él no se pueden guardar secretos y la aplicación no puede continuar.",
   "errorDatabaseFailure": "No se pudo abrir la base de datos cifrada del perfil.",
+  "errorHostKeyRejected": "No has aceptado la huella del servidor. La conexión se ha cancelado.",
+  "errorHostKeyChanged": "La huella del servidor ha cambiado desde la última conexión. La conexión se ha bloqueado para protegerte. Si el cambio es legítimo, borra la huella guardada para ese servidor y vuelve a conectar.",
+  "errorAuthFailed": "El servidor rechazó las credenciales. Comprueba el usuario y el método de acceso.",
+  "errorNetworkUnreachable": "No se pudo alcanzar el servidor. Comprueba el host, el puerto y tu red.",
+  "errorConnectionTimeout": "El servidor no respondió a tiempo.",
+  "errorConnectionFailed": "No se pudo establecer la conexión SSH.",
+  "errorConnectionLost": "La conexión con el servidor se interrumpió inesperadamente.",
+  "errorCredentialMissing": "Esta conexión no tiene credenciales guardadas. Edita la conexión y vuelve a introducirlas.",
+  "errorPrivateKeyInvalid": "La llave privada no es válida o está dañada.",
+  "errorPrivateKeyPassphraseRequired": "Esta llave privada está protegida con una frase de contraseña.",
+  "errorPrivateKeyPassphraseInvalid": "La frase de contraseña de la llave no es correcta.",
+  "errorPrivateKeyUnsupportedFormat": "Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.",
   "errorUnknown": "Ha ocurrido un error inesperado."
 }

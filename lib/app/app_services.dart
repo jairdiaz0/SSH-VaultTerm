@@ -6,8 +6,11 @@ import '../core/storage/secret_store.dart';
 import '../core/storage/secure_storage_secret_store.dart';
 import '../core/utils/app_logger.dart';
 import '../features/authentication/data/authentication_service.dart';
+import '../features/connections/data/credential_service.dart';
 import '../features/profiles/data/catalog_store.dart';
 import '../features/profiles/data/profile_service.dart';
+import '../features/ssh/data/ssh_service.dart';
+import 'profile_session.dart';
 
 /// Composition root: every long-lived service the UI is allowed to touch.
 ///
@@ -23,6 +26,7 @@ class AppServices {
     required this.catalog,
     required this.profiles,
     required this.auth,
+    required this.credentials,
     AppLogger? logger,
   }) : logger = logger ?? AppLogger();
 
@@ -33,7 +37,19 @@ class AppServices {
   final CatalogStore catalog;
   final ProfileService profiles;
   final AuthenticationService auth;
+  final CredentialService credentials;
   final AppLogger logger;
+
+  /// SSH engine for the open [session].
+  ///
+  /// One place builds it, so every caller gets the profile id, the profile's
+  /// known-host store and the redacting logger without repeating the wiring.
+  SshService sshFor(ProfileSession session) => SshService(
+    profileId: session.profile.id,
+    credentials: credentials,
+    knownHosts: session.knownHosts,
+    logger: logger,
+  );
 
   /// Wires the real platform storage. Throws [AppErrorCode.secureStorageUnavailable]
   /// when the OS keystore cannot be used: there is no plaintext fallback.
@@ -70,6 +86,7 @@ class AppServices {
         paths: paths,
       ),
       auth: AuthenticationService(catalog: catalog, hasher: effectiveHasher),
+      credentials: CredentialService(secrets: secrets),
       logger: logger,
     );
   }

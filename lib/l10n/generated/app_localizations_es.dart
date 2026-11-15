@@ -140,5 +140,51 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo abrir la base de datos cifrada del perfil.';
 
   @override
+  String get errorHostKeyRejected =>
+      'No has aceptado la huella del servidor. La conexión se ha cancelado.';
+
+  @override
+  String get errorHostKeyChanged =>
+      'La huella del servidor ha cambiado desde la última conexión. La conexión se ha bloqueado para protegerte. Si el cambio es legítimo, borra la huella guardada para ese servidor y vuelve a conectar.';
+
+  @override
+  String get errorAuthFailed =>
+      'El servidor rechazó las credenciales. Comprueba el usuario y el método de acceso.';
+
+  @override
+  String get errorNetworkUnreachable =>
+      'No se pudo alcanzar el servidor. Comprueba el host, el puerto y tu red.';
+
+  @override
+  String get errorConnectionTimeout => 'El servidor no respondió a tiempo.';
+
+  @override
+  String get errorConnectionFailed => 'No se pudo establecer la conexión SSH.';
+
+  @override
+  String get errorConnectionLost =>
+      'La conexión con el servidor se interrumpió inesperadamente.';
+
+  @override
+  String get errorCredentialMissing =>
+      'Esta conexión no tiene credenciales guardadas. Edita la conexión y vuelve a introducirlas.';
+
+  @override
+  String get errorPrivateKeyInvalid =>
+      'La llave privada no es válida o está dañada.';
+
+  @override
+  String get errorPrivateKeyPassphraseRequired =>
+      'Esta llave privada está protegida con una frase de contraseña.';
+
+  @override
+  String get errorPrivateKeyPassphraseInvalid =>
+      'La frase de contraseña de la llave no es correcta.';
+
+  @override
+  String get errorPrivateKeyUnsupportedFormat =>
+      'Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.';
+
+  @override
   String get errorUnknown => 'Ha ocurrido un error inesperado.';
 }

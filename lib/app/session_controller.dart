@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 
 import '../core/errors/app_exception.dart';
 import '../core/security/password_hasher.dart';
-import '../core/session/profile_session.dart';
 import '../features/authentication/data/authentication_service.dart';
 import '../shared/models/profile.dart';
 import 'app_services.dart';
+import 'profile_session.dart';
 
 /// Owns the locked/unlocked state of the app and the single open profile
 /// session.

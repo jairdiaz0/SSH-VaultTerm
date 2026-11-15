@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../core/errors/app_exception.dart';
-import '../features/profiles/data/profile_service.dart';
+import '../features/profiles/domain/profile_rules.dart';
 import '../l10n/generated/app_localizations.dart';
 
 /// Maps a domain error to a localized, secret-free message.
@@ -26,6 +26,21 @@ String describeAppError(
     AppErrorCode.schemaTooNew => l10n.errorDatabaseFailure,
     AppErrorCode.validation => l10n.errorValidation,
     AppErrorCode.conflict => l10n.errorConflict,
+    AppErrorCode.hostKeyRejected => l10n.errorHostKeyRejected,
+    AppErrorCode.hostKeyChanged => l10n.errorHostKeyChanged,
+    AppErrorCode.authFailed => l10n.errorAuthFailed,
+    AppErrorCode.networkUnreachable => l10n.errorNetworkUnreachable,
+    AppErrorCode.connectionTimeout => l10n.errorConnectionTimeout,
+    AppErrorCode.connectionFailed => l10n.errorConnectionFailed,
+    AppErrorCode.connectionLost => l10n.errorConnectionLost,
+    AppErrorCode.credentialMissing => l10n.errorCredentialMissing,
+    AppErrorCode.privateKeyInvalid => l10n.errorPrivateKeyInvalid,
+    AppErrorCode.privateKeyPassphraseRequired =>
+      l10n.errorPrivateKeyPassphraseRequired,
+    AppErrorCode.privateKeyPassphraseInvalid =>
+      l10n.errorPrivateKeyPassphraseInvalid,
+    AppErrorCode.privateKeyUnsupportedFormat =>
+      l10n.errorPrivateKeyUnsupportedFormat,
     AppErrorCode.notFound ||
     AppErrorCode.secretNotFound ||
     AppErrorCode.unsupported ||
@@ -40,7 +55,7 @@ int _seconds(Duration remaining) {
 }
 
 /// Shortcut for the shared minimum profile password length.
-int get profilePasswordMinLength => ProfileService.minPasswordLength;
+int get profilePasswordMinLength => ProfileRules.minPasswordLength;
 
 /// Builds a localized title for the app itself.
 String appTitleOf(BuildContext context) =>

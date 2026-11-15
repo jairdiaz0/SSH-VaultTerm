@@ -45,7 +45,8 @@ prometer garantías que no existen.
 | Generación de claves | CSPRNG del sistema (`Random.secure`) → 32 bytes | `core/security/secure_random.dart` |
 | Contraseña del perfil | Argon2id, 64 MiB, t=3, p=2, hash 32 B, sal 16 B por perfil | `core/security/password_hasher.dart` |
 | Comparación de verificadores | Comparación en tiempo constante | `constantTimeEquals` |
-| Huella de host key | SHA-256 estilo OpenSSH (`SHA256:<base64>`) entregada por `dartssh2` | fase 2 |
+| Huella de host key | SHA-256 estilo OpenSSH (`SHA256:<base64>`) entregada por `dartssh2` sobre el blob de la clave | `features/ssh/domain/host_key_verifier.dart` |
+| Llaves privadas SSH | Se validan con `dartssh2` 4.1.0: OpenSSH, RSA PKCS#1 y EC SEC1; el descifrado bcrypt de OpenSSH lo hace la librería | `features/ssh/domain/private_key_inspector.dart` |
 | Aleatoriedad de UUID | `uuid` v4 (aleatorio) | `ProfileService` |
 
 Ningún algoritmo criptográfico es propio. Ninguna primitiva se reimplementa.
@@ -68,6 +69,10 @@ Verificado contra un vector de referencia de `argon2-cffi` (ver
 - Namespace de secretos (`SecretKeys`):
   `catalog/dbKey`, `profile/<profileId>/dbKey`,
   `profile/<profileId>/credential/<credentialId>`.
+- Llaves privadas SSH: solo dentro del secreto de la credencial, nunca como
+  fichero en el directorio de datos de la app ni en logs. `PrivateKeyInspector`
+  las procesa en memoria para validar formato y tipo; `SshService` las vuelve a
+  decodificar al conectar, no antes.
 - El borrado de un perfil elimina **primero** sus secretos y después la fila y
   los ficheros: peor caso, quedan ficheros cifrados sin clave.
 - Si el almacén del sistema no está disponible, `AppServices.bootstrap` falla con
@@ -105,18 +110,31 @@ memoria; el contrato de claves está cubierto por tests.
   está activa, los cambios sensibles piden la contraseña. `confirmPassword` no
   toca los contadores de bloqueo (la sesión ya está autenticada).
 
-## 5. Host keys (TOFU) — fase 2
+## 5. Host keys (TOFU)
 
-Reglas no negociables, ya fijadas antes de implementar:
+Implementado en `features/ssh/domain/host_key_verifier.dart` y conectado a
+`SSHClient.onVerifyHostKey` en `features/ssh/data/ssh_service.dart`.
 
 - `onVerifyHostKey` **nunca** se pasa como `null`: en `dartssh2` eso acepta
-  cualquier clave.
-- Primera conexión: mostrar `SHA256:<base64>` y exigir confirmación explícita.
-- Conexiones posteriores: comparar con `known_hosts`; si difiere, **bloquear** y
-  advertir. No hay opción «continuar de todos modos» silenciosa.
-- Las huellas se pueden revisar y borrar desde la UI (Ajustes → Seguridad).
-- Prohibido desactivar la verificación para depurar, incluso con variables de
-  entorno.
+  cualquier clave. El parámetro `disableHostkeyVerification` no se usa.
+- La huella que entrega `dartssh2` 4.1.0 ya es SHA-256 estilo OpenSSH
+  (`SHA256:<base64 sin relleno>`), calculada sobre el blob de la clave; no hace
+  falta vendorizar el paquete (D-003).
+- Primera conexión: se muestra `SHA256:<base64>` junto al tipo de clave y se exige
+  confirmación explícita. Solo entonces se inserta en `known_hosts`.
+- Conexiones posteriores: si la huella coincide, no se vuelve a preguntar.
+- Si la huella **difiere**, no se ofrece ninguna opción: se cierra la conexión,
+  no se actualiza la fila guardada y el error es `hostKeyChanged`. La única salida
+  es que el usuario borre la huella guardada desde Ajustes.
+- Reintentos durante el mismo intento de conexión: si el usuario cancela el
+  diálogo, se trata como rechazo (`hostKeyRejected`); una excepción en el diálogo
+  también, nunca como aceptación implícita.
+- La huella guardada pertenece a `(perfil, conexión, hostname, puerto)`; el
+  repositorio rechaza sobrescribir una huella distinta incluso fuera de la UI.
+
+Pendiente (fase 4): pantalla de Ajustes → Seguridad para revisar y borrar
+huellas. El repositorio y el servicio ya exponen `byConnection`, `find`,
+`delete` y `deleteForConnection`, con tests.
 
 ## 6. Logs
 

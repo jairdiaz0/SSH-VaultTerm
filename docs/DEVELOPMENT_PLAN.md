@@ -75,14 +75,15 @@ y `flutter test` (unitarios, widget, golden, FFI).
 - [x] `dart format .`, `flutter analyze`, `flutter test` en verde (82 tests).
 
 ## Fase 2 — Motor SSH
-- [ ] `SshService` con una única sesión `SSHClient` por conexión y canales separados.
-- [ ] TOFU: callback obligatorio, SHA-256, primera aceptación, comparación posterior, bloqueo si cambia.
-- [ ] Persistencia de huellas (`KnownHost`) por perfil y conexión; revisión y borrado desde UI.
-- [ ] Autenticación por contraseña (credencial desde Secure Storage, cargada solo al conectar).
-- [ ] Autenticación por llave privada: importar archivo, passphrase, validación de formato, tipos soportados por `dartssh2` 4.1.0.
-- [ ] Estados de conexión: conectando, autenticando, esperando huella, conectado, desconexión inesperada.
-- [ ] Timeout, keep-alive, errores sin fuga de secretos, cierre ordenado de canales.
-- [ ] Primera conexión real al servidor de pruebas (test de integración etiquetado `integration`).
+- [x] `SshService` con una única sesión `SSHClient` por conexión y canales separados.
+- [x] TOFU: callback obligatorio, SHA-256, primera aceptación, comparación posterior, bloqueo si cambia.
+- [~] Persistencia de huellas (`KnownHost`) por perfil y conexión; revisión y borrado desde UI
+  (repositorio y verificación cubiertos por tests; pantalla en fase 4).
+- [x] Autenticación por contraseña (credencial desde Secure Storage, cargada solo al conectar).
+- [x] Autenticación por llave privada: importar archivo, passphrase, validación de formato, tipos soportados por `dartssh2` 4.1.0.
+- [x] Estados de conexión: conectando, autenticando, esperando huella, conectado, desconexión inesperada.
+- [x] Timeout, keep-alive, errores sin fuga de secretos, cierre ordenado de canales.
+- [x] Primera conexión real al servidor de pruebas (test de integración etiquetado `integration`).
 
 ## Fase 3 — Terminal
 - [ ] Integración de `xterm` con la shell/pty remota (flujo bidireccional).
