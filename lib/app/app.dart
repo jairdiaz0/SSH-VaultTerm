@@ -38,12 +38,15 @@ class SshClientApp extends StatefulWidget {
 class _SshClientAppState extends State<SshClientApp> {
   late AppServices _services = widget.services;
   late SessionController _controller = SessionController(services: _services);
+  bool _resetting = false;
+
   late final ThemeController _theme =
       widget.themeController ?? ThemeController.memory();
 
   @override
   void dispose() {
     _controller.dispose();
+    _services.dispose();
     super.dispose();
   }
 
@@ -54,6 +57,10 @@ class _SshClientAppState extends State<SshClientApp> {
     }
     final paths = _services.paths;
     final keys = _services.keys;
+    // Replace the tree first: no widget may touch the databases while they are
+    // being closed and deleted.
+    setState(() => _resetting = true);
+    await WidgetsBinding.instance.endOfFrame;
     _controller.dispose();
     _services.dispose();
     await AppResetService(
@@ -70,12 +77,20 @@ class _SshClientAppState extends State<SshClientApp> {
     setState(() {
       _services = fresh;
       _controller = SessionController(services: fresh);
+      _resetting = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final canReset = widget.rebuildServices != null;
+    if (_resetting) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.dark(),
+        home: const Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
     return AppThemeScope(
       controller: _theme,
       child: AppRuntime(

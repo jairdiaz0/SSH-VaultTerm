@@ -113,5 +113,11 @@ class AppServices {
     );
   }
 
-  void dispose() => catalog.close();
+  bool _disposed = false;
+
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    catalog.close();
+  }
 }

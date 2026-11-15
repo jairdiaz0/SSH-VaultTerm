@@ -9,7 +9,37 @@ Registro de verificaciones ejecutadas, con comando y resultado resumido. Un
 - Visual Studio 2026 con C++ instalado: `build windows` e integración real
   disponibles. Android SDK sigue ausente. Ver `docs/DECISIONS.md` D-001.
 
-## 2026-11-15 — Ronda 4 (integridad de almacenamiento)
+## 2026-11-15 — Ronda 6 (reset y alcance de GUI)
+
+### Línea base
+```text
+flutter analyze → No issues found!
+flutter test    → +277 All tests passed!
+```
+
+### Reset verificado
+- `test/app/app_reset_flow_test.dart`: flujo real de UI desde Ajustes → Avanzado:
+  palabra RESTABLECER, contraseña del perfil y, tras el reset, el árbol de widgets
+  se sustituye por una pantalla de transición **antes** de cerrar las bases; el
+  grafo de servicios se reconstruye y aparece el asistente del primer perfil sin
+  perfiles ni secretos.
+- Catálogo corrupto: se borra sin abrirlo (`AppResetService`), sin tocar bases.
+- Marcador `reset.pending`: se aplica en `main` antes de abrir cualquier base.
+- Aislamiento: el reset solo borra claves con prefijos propios (tests de namespace).
+- `AppServices.dispose` es idempotente y `SshClientApp.dispose` cierra el catálogo.
+
+### GUI de la ronda 6
+No implementada en esta ronda; el sistema visual sigue siendo el de la ronda 3. El
+detalle de lo pendiente está en `docs/DEVELOPMENT_PLAN.md` (Ronda 6) y
+`docs/ROADMAP.md`. No se marca `[x]` ningún punto de las fases 1–5.
+
+### Estado al cierre
+```text
+flutter analyze → No issues found!
+flutter test    → +280 All tests passed!
+```
+
+## 2026-11-15 - Ronda 4 (integridad de almacenamiento)
 
 ### Línea base de la ronda
 ```text

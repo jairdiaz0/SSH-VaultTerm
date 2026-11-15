@@ -512,3 +512,18 @@ archivos. Android lleva `allowBackup=false` y reglas de exclusión para Android 
 base sin su clave no sirve y restaurarla en otro dispositivo produce el hmac failure
 descrito; por eso se bloquea en origen.
 **Consecuencias:** no verificable sin SDK/dispositivo; revisado en manifiesto y XML.
+
+---
+
+## D-028 — Reset: sustituir el árbol antes de cerrar las bases
+**Fecha:** 2026-11-15
+**Contexto:** al probar el reset desde Ajustes, el diálogo seguía montado mientras
+se cerraban y borraban las bases, y su reconstrucción consultaba el catálogo ya
+cerrado (`Bad state: This database has already been closed`).
+**Decisión:** `SshClientApp` marca `_resetting`, sustituye el árbol por una pantalla
+de transición y espera al final del frame antes de cerrar servicios y borrar. Solo
+después construye el grafo nuevo y vuelve al gate. `AppServices.dispose` es
+idempotente y `SshClientApp.dispose` cierra el catálogo que posee.
+**Consecuencias:** el reset con sesión abierta funciona y está cubierto por un widget
+test; ningún widget toca una base cerrada durante la operación. La UI de la fase 1 de
+esta ronda no se implementó (ver `ROADMAP.md`).
