@@ -58,8 +58,10 @@ void main() {
       reason: 'The marker is readable in the raw file: it is not encrypted.',
     );
     // A SQLCipher database does not start with the plain SQLite header.
-    expect(utf8.decode(bytes.sublist(0, 15), allowMalformed: true),
-        isNot(startsWith('SQLite format 3')));
+    expect(
+      utf8.decode(bytes.sublist(0, 15), allowMalformed: true),
+      isNot(startsWith('SQLite format 3')),
+    );
   });
 
   test('wrong key fails, right raw key succeeds', () {
@@ -67,9 +69,7 @@ void main() {
     final rawKey = Uint8List.fromList(
       List<int>.generate(32, (i) => (i * 7 + 3) & 0xff),
     );
-    final hex = rawKey
-        .map((b) => b.toRadixString(16).padLeft(2, '0'))
-        .join();
+    final hex = rawKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
     final pragma = "x'$hex'";
 
     final writer = sqlite3.open(path);
