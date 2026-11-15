@@ -1120,6 +1120,30 @@ abstract class AppLocalizations {
   /// **'Perfil'**
   String get profileSection;
 
+  /// No description provided for @requireReauthLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Requerir contraseña al editar'**
+  String get requireReauthLabel;
+
+  /// No description provided for @requireReauthHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Pide la contraseña del perfil al guardar conexiones o credenciales.'**
+  String get requireReauthHelp;
+
+  /// No description provided for @reauthPromptTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirma tu contraseña'**
+  String get reauthPromptTitle;
+
+  /// No description provided for @reauthPromptBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Este perfil pide la contraseña antes de guardar cambios en conexiones o credenciales.'**
+  String get reauthPromptBody;
+
   /// No description provided for @errorUnknown.
   ///
   /// In es, this message translates to:

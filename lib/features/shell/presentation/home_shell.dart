@@ -79,41 +79,64 @@ class _HomeShellState extends State<HomeShell> {
     super.dispose();
   }
 
+  Future<void> _openSettings(BuildContext context, ShellController shell) =>
+      SettingsDialog.show(
+        context,
+        controller: shell,
+        onLock: _lock,
+        onSignOut: _signOut,
+      );
+
   @override
   Widget build(BuildContext context) {
     final shell = _shell;
     if (shell == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            const Icon(Icons.terminal, size: 18, color: AppColors.accent),
-            const SizedBox(width: 8),
-            Text(l10n.appTitle),
-          ],
-        ),
-      ),
-      body: ListenableBuilder(
-        listenable: shell,
-        builder: (context, _) => Row(
-          children: [
-            Sidebar(
-              controller: shell,
-              onOpenSettings: () => SettingsDialog.show(
-                context,
-                controller: shell,
-                onLock: _lock,
-                onSignOut: _signOut,
-              ),
-              onLock: _lock,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 900;
+        Sidebar sidebar() => Sidebar(
+          controller: shell,
+          onOpenSettings: () => _openSettings(context, shell),
+          onLock: _lock,
+        );
+        return Scaffold(
+          appBar: AppBar(
+            title: Row(
+              children: [
+                const Icon(Icons.terminal, size: 18, color: AppColors.accent),
+                const SizedBox(width: 8),
+                Text(l10n.appTitle),
+              ],
             ),
-            const VerticalDivider(width: 1, thickness: 1),
-            Expanded(child: WorkspacePanel(controller: shell.workspace)),
-          ],
-        ),
-      ),
+          ),
+          drawer: wide
+              ? null
+              : Drawer(
+                  child: SafeArea(
+                    child: ListenableBuilder(
+                      listenable: shell,
+                      builder: (context, _) => sidebar(),
+                    ),
+                  ),
+                ),
+          body: ListenableBuilder(
+            listenable: shell,
+            builder: (context, _) => wide
+                ? Row(
+                    children: [
+                      sidebar(),
+                      const VerticalDivider(width: 1, thickness: 1),
+                      Expanded(
+                        child: WorkspacePanel(controller: shell.workspace),
+                      ),
+                    ],
+                  )
+                : WorkspacePanel(controller: shell.workspace, compact: true),
+          ),
+        );
+      },
     );
   }
 }

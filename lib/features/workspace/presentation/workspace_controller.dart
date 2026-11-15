@@ -137,6 +137,9 @@ class WorkspaceController extends ChangeNotifier {
     }
   }
 
+  /// Sends a raw key sequence through the terminal channel.
+  void sendTerminal(String data) => _terminal?.send(data);
+
   void _onSshState() {
     final current = _ssh?.state.value;
     if (current == null) return;

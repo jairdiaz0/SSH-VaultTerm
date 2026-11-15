@@ -73,6 +73,13 @@ class RemoteTerminal {
 
   bool get isClosed => _closed;
 
+  /// Writes raw bytes to the pty. Used by the touch key bar for sequences that
+  /// the soft keyboard cannot produce (Esc, Tab, Ctrl+C…).
+  void send(String data) {
+    if (_closed) return;
+    session.stdin.add(utf8.encode(data));
+  }
+
   /// Resizes the emulator, which forwards the new size to the server.
   void resize(int width, int height) => terminal.resize(width, height, 0, 0);
 

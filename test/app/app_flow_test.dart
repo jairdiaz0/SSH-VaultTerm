@@ -22,6 +22,10 @@ void main() {
   });
 
   Future<void> pumpGate(WidgetTester tester) async {
+    // Desktop-sized surface: SessionGate mounts the desktop shell.
+    tester.view.physicalSize = const Size(1400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       harness.wrap(SessionGate(controller: harness.controller)),
     );

@@ -274,5 +274,9 @@
     }
   },
   "profileSection": "Perfil",
+  "requireReauthLabel": "Requerir contraseña al editar",
+  "requireReauthHelp": "Pide la contraseña del perfil al guardar conexiones o credenciales.",
+  "reauthPromptTitle": "Confirma tu contraseña",
+  "reauthPromptBody": "Este perfil pide la contraseña antes de guardar cambios en conexiones o credenciales.",
   "errorUnknown": "Ha ocurrido un error inesperado."
 }

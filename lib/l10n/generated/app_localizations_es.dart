@@ -589,5 +589,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileSection => 'Perfil';
 
   @override
+  String get requireReauthLabel => 'Requerir contraseña al editar';
+
+  @override
+  String get requireReauthHelp =>
+      'Pide la contraseña del perfil al guardar conexiones o credenciales.';
+
+  @override
+  String get reauthPromptTitle => 'Confirma tu contraseña';
+
+  @override
+  String get reauthPromptBody =>
+      'Este perfil pide la contraseña antes de guardar cambios en conexiones o credenciales.';
+
+  @override
   String get errorUnknown => 'Ha ocurrido un error inesperado.';
 }

@@ -39,6 +39,26 @@ class ShellController extends ChangeNotifier {
 
   DateTime get now => DateTime.now();
 
+  /// Whether editing connections or credentials must ask for the profile
+  /// password again. Read from the catalog, so the toggle takes effect at once.
+  bool get requireReauthOnEdit {
+    final profile = services.catalog.profiles.byId(session.profile.id);
+    return profile?.settings['requireReauthOnEdit'] == true;
+  }
+
+  void setRequireReauthOnEdit(bool value) {
+    final profile = services.catalog.profiles.byId(session.profile.id);
+    if (profile == null) return;
+    services.profiles.updateSettings(profile, {
+      ...profile.settings,
+      'requireReauthOnEdit': value,
+    });
+    notifyListeners();
+  }
+
+  Future<bool> confirmPassword(String password) => services.auth
+      .confirmPassword(profileId: session.profile.id, password: password);
+
   void reload() => notifyListeners();
 
   Future<void> connect(BuildContext context, Connection connection) async {

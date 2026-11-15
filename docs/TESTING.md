@@ -323,6 +323,67 @@ encola, completa y refresca el listado mostrando «Finalizada».
 Pendiente: el arrastre real del sistema operativo al panel (`DropTarget` y su
 manejador cableados y probados por código, no por gesto del SO).
 
+## 2026-11-15 — Fase 6 (backups)
+
+### Estado global
+```text
+flutter analyze   → No issues found!
+flutter test      → +178 All tests passed!
+```
+
+### Documento — `test/features/backup/backup_test.dart`
+- Exporta perfiles, colecciones, conexiones, huellas y credenciales (leídas del
+  almacén) y **no** incluye las claves maestras de las BD: se comprueba que ni la
+  clave del catálogo ni la del perfil aparecen en el JSON, ni la contraseña.
+- Round trip completo JSON → instalación nueva: perfiles, datos, credenciales y
+  huellas se restauran; la clave de BD del perfil es **nueva**; la contraseña
+  original sigue desbloqueando el perfil restaurado (el verificador se conserva).
+- Fusionar conserva los datos locales que no están en el respaldo y renombra el
+  perfil importado si el nombre choca («Local (importado)»).
+- Reemplazar un perfil deja intacto el otro perfil.
+- Fallo inyectado en el almacén de secretos a mitad de importación → se restaura
+  el estado anterior (sin perfiles a medias, sin secretos huérfanos).
+- Versión futura → `backupVersionUnsupported`; JSON inválido o incompleto →
+  `backupInvalid`.
+
+### Diálogos — `test/features/backup/backup_dialogs_test.dart`
+- La advertencia de exportación muestra el texto del SPEC (incluye la frase de
+  fuerza bruta) y solo devuelve `true` con la confirmación explícita.
+- El resumen de importación muestra perfiles, conexiones y credenciales, permite
+  elegir modo y avisa al elegir «Reemplazar todos»; «Reemplazar un perfil» queda
+  deshabilitado si el respaldo no contiene un perfil local coincidente.
+
+Pendiente: escritura/lectura real de ficheros vía selector del sistema (no
+ejecutable aquí) y migración de documentos de versiones anteriores (solo existe v1).
+
+## 2026-11-15 — Fase 7 (Android / layouts por espacio)
+
+### Estado global
+```text
+flutter analyze   → No issues found!
+flutter test      → +185 All tests passed!
+```
+
+### Layout responsive — `test/features/shell/mobile_layout_test.dart`
+- Con 700×900 la app usa `Drawer`: la barra lateral no está montada hasta abrir el
+  cajón, y al abrirlo aparece el perfil.
+- Con 1400×1000 no hay `Drawer` y la barra lateral está siempre visible.
+- El breakpoint depende del ancho disponible (`LayoutBuilder`), no del SO.
+
+### Pestañas — `test/shared/compact_tabs_test.dart`
+`IndexedStack` mantiene las dos pestañas montadas: cambiar de Terminal a Archivos
+no reconstruye el terminal ni el canal SFTP. Se comprueba que el contenido de la
+pestaña oculta sigue en el árbol (`skipOffstage: false`).
+
+### Barra de teclas — `test/features/terminal/terminal_key_bar_test.dart`
+Esc, Tab y flechas envían sus secuencias ANSI; Ctrl+C/D/L envían los caracteres de
+control; Alt prefija `ESC` solo a la siguiente tecla. La barra escribe en el pty
+con `RemoteTerminal.send`, sin pasar por el IME.
+
+Pendiente: teclado virtual real, latches Ctrl/Alt aplicados al teclado del sistema,
+scroll y selección táctil, y selectores nativos. Todo eso exige dispositivo o
+emulador Android, que este entorno no tiene (D-001).
+
 ## Pendiente de verificación (bloqueado por el entorno, D-001)
 - `flutter_secure_storage` en ejecución: plugin de plataforma; no hay app
   ejecutable en esta máquina. Marcado `[~]`.

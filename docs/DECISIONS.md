@@ -301,3 +301,25 @@ efímera de `authorized_keys`.
 **Consecuencias:** `flutter test` ejercita red real cuando hay entorno;
 `flutter test -x integration` es la ejecución offline. Ningún ítem se marca `[x]`
 sin haber ejecutado la versión con red.
+
+---
+
+## D-017 — Importación de respaldos: validar, fotografiar y compensar
+**Fecha:** 2026-11-15
+**Contexto:** el estado vive en tres almacenes distintos (catálogo cifrado, una BD
+cifrada por perfil y el almacén de secretos del sistema). No existe una
+transacción ACID que los abarque, y el SPEC exige atomicidad y rollback probado.
+Construir BDs nuevas en staging y luego intercambiar ficheros obliga a renombrar
+directorios con la app abierta y a reescribir todas las claves de secretos; si el
+intercambio falla a medias, el propio staging se convierte en el problema.
+**Decisión:** validar el documento completo **antes** de tocar nada (versión,
+tipos, UUIDs duplicados, datos huérfanos), tomar una fotografía en memoria del
+estado actual (perfiles, datos y secretos) y aplicar los cambios. Ante cualquier
+fallo, restaurar la fotografía: borrar lo presente y reconstruirlo desde memoria.
+**Consecuencias:** el rollback está probado con un almacén de secretos que falla a
+mitad (`test/features/backup/backup_test.dart`). La restauración reconstruye las
+BDs con claves nuevas y reescribe secretos, así que es costosa en perfiles muy
+grandes; se acepta porque una importación es una operación excepcional. No se
+afirma atomicidad a nivel de disco: se garantiza que un fallo no deja perfiles a
+medias ni credenciales huérfanas, que es el requisito verificable. Si en el futuro
+se añade staging real, esta decisión se revisa con evidencia.

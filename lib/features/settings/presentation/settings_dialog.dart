@@ -65,6 +65,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
             ),
             const SizedBox(height: 8),
             _SectionHeader(title: l10n.securitySection),
+            SwitchListTile(
+              key: const Key('reauth-switch'),
+              value: controller.requireReauthOnEdit,
+              onChanged: (value) {
+                controller.setRequireReauthOnEdit(value);
+                setState(() {});
+              },
+              title: Text(l10n.requireReauthLabel),
+              subtitle: Text(l10n.requireReauthHelp),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
             _SectionHeader(title: l10n.knownHostsTitle),
             if (knownHosts.count() == 0)
               Padding(

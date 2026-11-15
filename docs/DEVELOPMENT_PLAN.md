@@ -51,8 +51,9 @@ y `flutter test` (unitarios, widget, golden, FFI).
 - [x] Servicio de autenticación: verificador, mensajes genéricos, retardo progresivo persistente.
 - [x] Sesión: desbloquear, bloquear, cambiar de perfil, cerrar (y cerrar BD + limpiar memoria).
 - [x] Creación de perfil restringida a sesión desbloqueada; nunca copia datos.
-- [~] Interruptor de reautenticación por perfil: flag persistido (`settings.requireReauthOnEdit`) y
-  `confirmPassword` listos; el control en Ajustes llega en la fase 4.
+- [x] Interruptor de reautenticación por perfil: flag persistido
+  (`settings.requireReauthOnEdit`), control en Ajustes y petición de contraseña al
+  guardar conexiones o credenciales (probado).
 
 ### Credenciales
 - [x] `CredentialService` con namespace `profile/{profileId}/credential/{credentialId}`.
@@ -115,20 +116,27 @@ y `flutter test` (unitarios, widget, golden, FFI).
 - [x] Integridad por checksum en tests contra el servidor de pruebas.
 
 ## Fase 6 — Backups
-- [ ] Exportación JSON con advertencia bloqueante y confirmación explícita.
-- [ ] Esquema versionado, validación estricta y migraciones.
-- [ ] Importación con resumen previo y modos Fusionar / Reemplazar perfil / Reemplazar todo.
-- [ ] Atomicidad con staging y rollback; prueba con fallos inyectados.
+- [x] Exportación JSON con advertencia bloqueante y confirmación explícita.
+- [~] Esquema versionado y validación estricta (rechaza versiones futuras; aún no hay
+  migración de documentos v0 → v1 porque solo existe la v1).
+- [x] Importación con resumen previo y modos Fusionar / Reemplazar perfil / Reemplazar todo.
+- [~] Atomicidad con rollback verificado por fallo inyectado (la sustitución usa
+  snapshot + compensación en vez de staging de ficheros; ver D-017).
 
 ## Fase 7 — Android
-- [ ] Drawer y workspace con pestañas Terminal/Archivos que conservan la sesión.
-- [ ] Terminal móvil: teclado virtual, foco, scroll, selección, barra de teclas.
-- [ ] SFTP táctil con menús y transferencias; selectores nativos.
-- [ ] Tablets con `LayoutBuilder` y breakpoints por espacio.
+- [x] Drawer y workspace con pestañas Terminal/Archivos que conservan la sesión
+  (`IndexedStack`: ambos canales siguen montados al cambiar de pestaña).
+- [~] Terminal móvil: teclado virtual, foco, scroll, selección, barra de teclas
+  (barra de teclas implementada y probada; teclado, scroll y selección requieren
+  dispositivo real).
+- [~] SFTP táctil con menús y transferencias; selectores nativos (menús y cola
+  compartidos y probados; selectores nativos no ejecutables aquí).
+- [x] Tablets con `LayoutBuilder` y breakpoints por espacio, no por tipo de dispositivo.
 - [!] Verificación en dispositivo: imposible aquí (sin Android SDK, D-001).
 
 ## Fase 8 — Revisión final
-- [ ] `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` limpios.
-- [ ] Tests de integración SSH/SFTP contra el servidor de pruebas.
-- [ ] Compilar las plataformas posibles y documentar las no verificadas.
-- [ ] Informe final de la sección 19 del SPEC.
+- [x] `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` limpios.
+- [x] Tests de integración SSH/SFTP contra el servidor de pruebas.
+- [!] Compilar las plataformas posibles: imposible en este entorno (sin Visual Studio C++,
+  sin Android SDK, D-001). Ver informe final.
+- [x] Informe final de la sección 19 del SPEC (`docs/FINAL_REPORT.md`).

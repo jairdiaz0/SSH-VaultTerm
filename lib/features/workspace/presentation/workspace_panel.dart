@@ -5,19 +5,27 @@ import '../../../app/error_messages.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/widgets/compact_tabs.dart';
 import '../../../shared/widgets/resizable_split.dart';
 import '../../sftp/presentation/sftp_panel.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
+import '../../terminal/presentation/terminal_key_bar.dart';
 import '../../terminal/presentation/terminal_style.dart';
 import 'workspace_actions.dart';
 import 'workspace_controller.dart';
 
-/// Right-hand workspace: the terminal of the active session and, from phase 5,
-/// the SFTP explorer. Resizable and maximizable without losing the session.
+/// Right-hand workspace: the terminal of the active session and the SFTP
+/// explorer. On desktop it is resizable and maximizable; on narrow layouts the
+/// two panes become tabs that keep both channels alive.
 class WorkspacePanel extends StatelessWidget {
-  const WorkspacePanel({super.key, required this.controller});
+  const WorkspacePanel({
+    super.key,
+    required this.controller,
+    this.compact = false,
+  });
 
   final WorkspaceController controller;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +37,9 @@ class WorkspacePanel extends StatelessWidget {
           return const _EmptyWorkspace();
         }
         final l10n = AppLocalizations.of(context);
+        final files = controller.sftp == null
+            ? const _FilesUnavailable()
+            : SftpPanel(controller: controller.sftp!);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -39,11 +50,22 @@ class WorkspacePanel extends StatelessWidget {
             Expanded(
               child: controller.terminal == null
                   ? const SizedBox.shrink()
+                  : compact
+                  ? CompactTabs(
+                      firstLabel: l10n.terminalTab,
+                      secondLabel: l10n.filesTab,
+                      first: _TerminalPane(
+                        terminal: controller.terminal!,
+                        onKey: controller.sendTerminal,
+                      ),
+                      second: files,
+                    )
                   : ResizableSplit(
-                      first: _TerminalPane(terminal: controller.terminal!),
-                      second: controller.sftp == null
-                          ? const _FilesUnavailable()
-                          : SftpPanel(controller: controller.sftp!),
+                      first: _TerminalPane(
+                        terminal: controller.terminal!,
+                        onKey: controller.sendTerminal,
+                      ),
+                      second: files,
                     ),
             ),
             SizedBox(
@@ -204,19 +226,27 @@ class _ErrorBanner extends StatelessWidget {
 }
 
 class _TerminalPane extends StatelessWidget {
-  const _TerminalPane({required this.terminal});
+  const _TerminalPane({required this.terminal, required this.onKey});
 
   final Terminal terminal;
+  final void Function(String data) onKey;
 
   @override
   Widget build(BuildContext context) => ColoredBox(
     color: AppColors.background,
-    child: TerminalView(
-      terminal,
-      theme: appTerminalTheme,
-      textStyle: appTerminalStyle,
-      padding: const EdgeInsets.all(8),
-      autofocus: true,
+    child: Column(
+      children: [
+        Expanded(
+          child: TerminalView(
+            terminal,
+            theme: appTerminalTheme,
+            textStyle: appTerminalStyle,
+            padding: const EdgeInsets.all(8),
+            autofocus: true,
+          ),
+        ),
+        TerminalKeyBar(onInput: onKey),
+      ],
     ),
   );
 }
