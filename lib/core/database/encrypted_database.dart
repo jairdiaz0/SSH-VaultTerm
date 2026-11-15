@@ -40,10 +40,12 @@ abstract final class EncryptedDatabase {
     }
 
     try {
+      _prepare(db);
       _applyKey(db, key);
       _verifyCipher(db);
       // Force a real read: SQLCipher only validates the key on first access.
       MigrationRunner.userVersion(db);
+      _validateReadable(db);
       _configure(db);
       migrations.apply(db);
       return db;
@@ -54,8 +56,15 @@ abstract final class EncryptedDatabase {
         // Closing a database that never decrypted may fail; the open error wins.
       }
       if (error is AppException) rethrow;
+      if (_isKeyMismatch(error)) {
+        throw AppException(
+          AppErrorCode.databaseKeyMismatch,
+          cause: error,
+          stackTrace: stackTrace,
+        );
+      }
       throw AppException(
-        AppErrorCode.databaseKeyInvalid,
+        AppErrorCode.databaseFailure,
         cause: error,
         stackTrace: stackTrace,
       );
@@ -70,6 +79,7 @@ abstract final class EncryptedDatabase {
     _validateKey(key);
     final db = sqlite3.openInMemory();
     try {
+      _prepare(db);
       _applyKey(db, key);
       _verifyCipher(db);
       _configure(db);
@@ -91,6 +101,27 @@ abstract final class EncryptedDatabase {
     final rows = db.select('PRAGMA cipher_version;');
     if (rows.isEmpty) return '';
     return (rows.first.columnAt(0) as String?) ?? '';
+  }
+
+  /// Cipher settings pinned so a library upgrade cannot change the defaults
+  /// under an existing database.
+  static void _prepare(Database db) {
+    db.execute('PRAGMA cipher_compatibility = 4;');
+    db.execute('PRAGMA cipher_page_size = 4096;');
+  }
+
+  /// Forces a real page read: SQLCipher validates the key on first access.
+  static void _validateReadable(Database db) {
+    db.select('SELECT count(*) FROM sqlite_master;');
+  }
+
+  static bool _isKeyMismatch(Object error) {
+    if (error is! SqliteException) return false;
+    final message = error.message.toLowerCase();
+    return message.contains('hmac') ||
+        message.contains('decrypt') ||
+        message.contains('file is not a database') ||
+        message.contains('file is encrypted');
   }
 
   static void _validateKey(Uint8List key) {

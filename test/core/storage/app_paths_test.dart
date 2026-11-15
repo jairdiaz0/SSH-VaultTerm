@@ -39,6 +39,31 @@ void main() {
     expect(paths.profileDirectoryExists('p1'), isTrue);
   });
 
+  test('Windows uses LOCALAPPDATA, never Roaming', () async {
+    final resolved = await AppPaths.resolveFrom(
+      environment: const {
+        'LOCALAPPDATA': r'C:\Users\me\AppData\Local',
+        'APPDATA': r'C:\Users\me\AppData\Roaming',
+      },
+      applicationSupport: () async => Directory(root.path),
+      isWindows: true,
+    );
+    expect(
+      resolved.root,
+      p.join(r'C:\Users\me\AppData\Local', 'dev.sshclient', 'ssh_client'),
+    );
+  });
+
+  test('the data dir override wins on every platform', () async {
+    final override = p.join(root.path, 'override');
+    final resolved = await AppPaths.resolveFrom(
+      environment: {'SSH_CLIENT_DATA_DIR': override},
+      applicationSupport: () async => Directory(root.path),
+      isWindows: true,
+    );
+    expect(resolved.root, p.normalize(p.absolute(override)));
+  });
+
   test('deleteProfileFiles removes the database and its WAL sidecars', () {
     paths.ensureProfileDirectory('p1');
     final db = File(paths.profileDatabase('p1'))..writeAsStringSync('x');

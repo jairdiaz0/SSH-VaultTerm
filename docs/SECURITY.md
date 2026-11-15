@@ -128,6 +128,22 @@ memoria; el contrato de claves está cubierto por tests.
 - **Sin caché**: la contraseña no se guarda ni se recuerda durante N minutos; el
   controlador del diálogo se libera al cerrar y nunca se registra en logs.
 
+## 4 ter. Ubicación de datos, reset y cambio de equipo
+
+- En Windows las bases viven en `%LOCALAPPDATA%\dev.sshclient\ssh_client`, nunca en
+  Roaming: una carpeta itinerante llevaría el archivo a otro equipo sin las claves
+  del Credential Manager. Los datos antiguos en Roaming no se abren; la pantalla de
+  estado los detecta y el reset los elimina.
+- El reset (Ajustes → Avanzado, o `tool/reset_dev_data.ps1`) cierra sesiones y bases,
+  borra catálogo, perfiles, `-wal`/`-shm`/`-journal`, staging/backup y **solo** las
+  claves de este namespace (`catalog/`, `profile/`, `staging/`, `backup/`,
+  `__probe__`). Nunca hace `deletePrefix('')` ni toca el Credential Manager completo.
+- Cambiar de equipo se hace **solo** exportando e importando el JSON: el archivo no
+  está cifrado y la contraseña del perfil solo verifica identidad (no lo cifra).
+  Copiar bases es inseguro e inútil sin sus claves; Android bloquea backups.
+- Tras un reset, el siguiente arranque crea un catálogo nuevo y muestra el asistente
+  del primer perfil.
+
 ## 5. Host keys (TOFU)
 
 Implementado en `features/ssh/domain/host_key_verifier.dart` y conectado a

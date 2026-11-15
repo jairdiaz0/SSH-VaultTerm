@@ -74,7 +74,7 @@ void main() {
         isA<AppException>().having(
           (e) => e.code,
           'code',
-          AppErrorCode.databaseKeyInvalid,
+          AppErrorCode.databaseKeyMismatch,
         ),
       ),
     );

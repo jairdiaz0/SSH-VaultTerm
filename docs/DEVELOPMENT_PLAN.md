@@ -154,6 +154,26 @@ y `flutter test` (unitarios, widget, golden, FFI).
   `flutter test integration_test -d windows` con almacén seguro y BD cifrada reales.
 - [!] Android/macOS/Linux: sin toolchain aquí (D-001). Sin verificar en ejecución.
 
+## Ronda 4 (integridad de almacenamiento y terminal)
+
+- [x] Causa raíz del hmac: separación crear/abrir claves, errores tipados
+  (`databaseKeyMissing`/`Orphan`/`Invalid`/`Mismatch`) y parámetros de cifrado fijos.
+- [x] Importación con staging, copias `.bak` de archivos y claves, verificación en
+  frío y rollback probado con fallos inyectados.
+- [x] Reset completo (catálogo, perfiles, sidecars, staging, backup y solo claves
+  propias) con confirmación fuerte + contraseña, estado del almacenamiento y
+  marcador para el siguiente arranque.
+- [x] Windows en `LOCALAPPDATA`; Android sin backup ni transferencia de datos.
+- [x] Paleta ANSI por tema con contraste ≥4,5:1 y verificación de 256/true color;
+  `xterm-256color` en el pty.
+- [ ] «Activar colores en esta sesión» (detectar shell y enviar comandos): pendiente.
+- [ ] Resaltado inteligente de terminal (2.3): pendiente; la API de celdas existe
+  (`setForeground`), no se ha implementado ni probado.
+- [ ] Rediseño de la Parte 3 (navegación, tarjetas, buscador, cuadrícula, pestañas
+  multi-sesión): pendiente.
+- [ ] Parte 4 (estrés SFTP 50 MiB, fuzz adicional, autobloqueo, huellas en la
+  navegación): pendiente.
+
 ## Ronda 3 (seguridad adicional y modernización de UI)
 
 - [x] Reautenticación de acciones sensibles en la capa de servicio: interruptor de

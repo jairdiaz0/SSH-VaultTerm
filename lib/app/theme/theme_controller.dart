@@ -56,6 +56,15 @@ class ThemeController extends ChangeNotifier {
     await _preferences?.setBool(terminalDarkKey, value);
   }
 
+  /// Removes the appearance preferences (application reset).
+  Future<void> resetPreferences() async {
+    _mode = ThemeMode.system;
+    _alwaysDarkTerminal = false;
+    notifyListeners();
+    await _preferences?.remove(modeKey);
+    await _preferences?.remove(terminalDarkKey);
+  }
+
   static ThemeMode _parse(String? value) => switch (value) {
     'light' => ThemeMode.light,
     'dark' => ThemeMode.dark,

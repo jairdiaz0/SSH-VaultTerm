@@ -25,6 +25,7 @@ class AppPaths {
   /// Same as [resolve] with injected environment and platform directory, so the
   /// override can be tested without mutating real process environment.
   static Future<AppPaths> resolveFrom({
+    bool? isWindows,
     required Map<String, String> environment,
     required Future<Directory> Function() applicationSupport,
   }) async {
@@ -32,11 +33,36 @@ class AppPaths {
     if (override != null && override.isNotEmpty) {
       return AppPaths(p.normalize(p.absolute(override)));
     }
+    // Windows: LOCALAPPDATA, not Roaming. A roaming folder would be synced to
+    // another machine without the keys stored in Credential Manager.
+    final windows = isWindows ?? Platform.isWindows;
+    final localAppData = environment['LOCALAPPDATA']?.trim();
+    if (windows && localAppData != null && localAppData.isNotEmpty) {
+      return AppPaths(p.join(localAppData, 'dev.sshclient', appFolderName));
+    }
     final base = await applicationSupport();
     return AppPaths(p.join(base.path, appFolderName));
   }
 
+  /// Old Windows location (Roaming). Never opened; only reported by the
+  /// storage status so the user can reset deliberately.
+  static String? legacyWindowsRoot(Map<String, String> environment) {
+    final roaming = environment['APPDATA']?.trim();
+    if (roaming == null || roaming.isEmpty) return null;
+    return p.join(roaming, 'dev.sshclient', appFolderName);
+  }
+
   String get catalogDatabase => p.join(root, 'catalog.db');
+
+  /// Temporary builds during import. Never opened by the app at startup.
+  String get stagingRoot => p.join(root, 'staging');
+
+  /// Pre-swap copies of databases and keys during import.
+  String get backupRoot => p.join(root, 'backup');
+
+  /// Created by a reset when the catalog cannot be deleted while open; the
+  /// next startup removes the catalog before opening it.
+  String get resetMarker => p.join(root, 'reset.pending');
 
   String profileDirectory(String profileId) =>
       p.join(root, 'profiles', profileId);

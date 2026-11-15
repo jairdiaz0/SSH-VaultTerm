@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:sqlite3/sqlite3.dart';
 
 import '../../../core/database/database_key_store.dart';
@@ -19,7 +21,11 @@ class CatalogStore {
     required DatabaseKeyStore keys,
   }) async {
     paths.ensureCreated();
-    final key = await keys.catalogKey();
+    final exists = File(paths.catalogDatabase).existsSync();
+    // Existing file: the key must already exist. Never mint a new one here.
+    final key = exists
+        ? await keys.loadCatalogKey()
+        : await keys.createCatalogKey();
     final db = EncryptedDatabase.open(
       path: paths.catalogDatabase,
       key: key,

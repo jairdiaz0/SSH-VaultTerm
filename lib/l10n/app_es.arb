@@ -75,6 +75,8 @@
   "errorConflict": "Ese elemento ya existe.",
   "errorSecureStorageUnavailable": "El almacén seguro del sistema no está disponible. Sin él no se pueden guardar secretos y la aplicación no puede continuar.",
   "errorDatabaseFailure": "No se pudo abrir la base de datos cifrada del perfil.",
+"errorDatabaseKeyMismatch": "La clave guardada no corresponde a estos datos cifrados. Si no necesitas recuperarlos, restablece la aplicación.",
+  "errorDatabaseKeyOrphan": "Hay una clave guardada sin base de datos asociada. Restablece la aplicación para empezar de cero.",
   "errorHostKeyRejected": "No has aceptado la huella del servidor. La conexión se ha cancelado.",
   "errorHostKeyChanged": "La huella del servidor ha cambiado desde la última conexión. La conexión se ha bloqueado para protegerte. Si el cambio es legítimo, borra la huella guardada para ese servidor y vuelve a conectar.",
   "errorAuthFailed": "El servidor rechazó las credenciales. Comprueba el usuario y el método de acceso.",
@@ -121,6 +123,48 @@
   "sftpDeleted": "Elemento eliminado.",
   "sftpUploadStarted": "Subida en curso.",
   "sftpDownloadStarted": "Descarga en curso.",
+  "advancedSection": "Avanzado",
+  "storageStatusAction": "Estado del almacenamiento",
+  "storageStatusTitle": "Estado del almacenamiento",
+  "storageCatalogLabel": "Catálogo cifrado",
+  "storageCatalogOk": "abre correctamente",
+  "storageCatalogKeyMissing": "clave ausente",
+  "storageCatalogError": "error: {code}",
+  "@storageCatalogError": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "storageProfileLabel": "{id} · archivo {file} · clave {key} · {state}",
+  "@storageProfileLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "file": {
+        "type": "String"
+      },
+      "key": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "storagePresent": "sí",
+  "storageAbsent": "no",
+  "storagePendingReset": "Hay un restablecimiento pendiente; se completará al reiniciar.",
+  "storageLegacy": "Se detectaron datos antiguos en Roaming. No se abren; usa Restablecer para limpiarlos.",
+  "resetApplicationAction": "Restablecer la aplicación",
+  "resetWarningTitle": "Restablecer la aplicación",
+  "resetWarningBody": "Se borrarán TODOS los perfiles, conexiones, credenciales, huellas y las claves de las bases de datos. La aplicación volverá a mostrarse como recién instalada. Esta acción no se puede deshacer.",
+  "resetTypeWord": "Escribe RESTABLECER para continuar",
+  "resetWord": "RESTABLECER",
+  "resetConfirmAction": "Restablecer",
+  "resetFailed": "No se pudo restablecer por completo. Cierra la aplicación y vuelve a abrirla; si el problema continúa, usa tool/reset_dev_data.ps1.",
   "backupSection": "Respaldos",
   "exportBackupAction": "Exportar respaldo",
   "importBackupAction": "Importar respaldo",

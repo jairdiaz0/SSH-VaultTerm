@@ -442,3 +442,73 @@ temas, tres tamaños y escala 1,3.
 assets no se cargan por defecto (Ahem), así que no representarían la tipografía
 real; la cobertura equivalente son los tests de layout, contraste y temas.
 No se tocó lógica de negocio, seguridad, base de datos, SSH/SFTP ni navegación.
+
+---
+
+## D-024 — Claves de BD: crear y abrir son operaciones distintas
+**Fecha:** 2026-11-15
+**Contexto:** el bug reportado (hmac check failed tras importar y en cada
+desbloqueo) exige que un archivo existente nunca reciba una clave recién generada.
+El código anterior usaba `getOrCreate` al abrir; una clave ausente (namespace
+distinto, reset parcial, restauración a medias) producía una clave nueva y la
+apertura fallaba con SQLCipher sin explicación.
+**Decisión:** `DatabaseKeyStore` expone `createCatalogKey`/`createProfileKey` y
+`loadCatalogKey`/`loadProfileKey`. Reglas: archivo+clave → abrir; archivo sin clave
+→ `databaseKeyMissing` sin generar; clave sin archivo → `databaseKeyOrphan` (solo
+se limpia con el reset); longitud inválida → `databaseKeyInvalid`; clave correcta
+en forma pero distinta de la del archivo → `databaseKeyMismatch`. La creación de
+perfil genera clave, archivo cifrado y fila con compensación ante fallo.
+`EncryptedDatabase` fija `cipher_compatibility = 4` y `cipher_page_size = 4096`
+antes de aplicar la clave.
+**Consecuencias:** un fallo de apertura es tipado y no sobrescribe datos ni claves.
+Tests: `test/core/database/key_policy_test.dart`, migración y backup.
+
+---
+
+## D-025 — Importación con staging, verificación en frío y rollback
+**Fecha:** 2026-11-15
+**Contexto:** la importación anterior escribía directamente y usaba un snapshot en
+memoria; no construía bases nuevas ni verificaba que las claves promovidas abrieran
+los archivos. Un fallo a mitad podía dejar archivo y clave desalineados: el síntoma
+del bug.
+**Decisión:** `merge` solo escribe filas en bases existentes (transacción + snapshot
+de filas/secretos). `replaceProfile`/`replaceAll`: construyen bases nuevas con claves
+nuevas en `staging/<uuid>`, copian claves/credenciales a `staging/<uuid>/...` en el
+almacén, mueven las bases actuales a `backup/<uuid>`, guardan las claves viejas en
+`backup/<uuid>/...`, intercambian, promueven claves/credenciales y **reabren catálogo
+y perfiles leyendo las claves del almacén** antes de borrar los backups. Cualquier
+fallo revierte archivos, claves, credenciales y filas; los tests inyectan fallos en
+staging y en la promoción de claves.
+**Consecuencias:** el intercambio tiene más pasos y requiere que la UI cierre la
+sesión del perfil abierto antes de reemplazar. Si el proceso muere a mitad, quedan
+`staging/`/`backup/` y claves con prefijo propio; la pantalla de estado y el reset
+las detectan y limpian. No quedan sidecars `-wal`/`-shm` de las bases antiguas
+porque se mueve el directorio completo del perfil.
+
+---
+
+## D-026 — Reset completo y ubicación de datos
+**Fecha:** 2026-11-15
+**Contexto:** el usuario no necesita los datos actuales y el requisito es que la app
+vuelva a "recién instalada" sin desactivar SQLCipher ni guardar claves en archivos.
+**Decisión:** `AppResetService` borra `catalog.db` y sidecars, `profiles/`,
+`staging/`, `backup/` y **solo** claves de este namespace (`catalog/`, `profile/`,
+`staging/`, `backup/`, `__probe__`), enumerando claves exactas; nunca un
+`deletePrefix('')` ni el Credential Manager completo. Si un archivo sigue abierto,
+deja un marcador `reset.pending` que el siguiente arranque aplica antes de abrir
+nada. En Windows los datos pasan a `%LOCALAPPDATA%\dev.sshclient\ssh_client`
+(nunca Roaming: una carpeta itinerante viajaría sin sus claves). Los datos antiguos
+en Roaming no se abren; la pantalla de estado los señala y el reset los elimina.
+**Consecuencias:** cambiar de equipo se hace solo exportando e importando el JSON
+(no cifrado; la contraseña del perfil verifica identidad, no cifra), nunca copiando
+archivos. Android lleva `allowBackup=false` y reglas de exclusión para Android 12+.
+
+---
+
+## D-027 — Android: nada de la app viaja en copias ni transferencias
+**Fecha:** 2026-11-15
+**Decisión:** `android:allowBackup="false"`, `fullBackupContent` y
+`dataExtractionRules` excluyen bases, preferencias y ficheros de la app. Copiar la
+base sin su clave no sirve y restaurarla en otro dispositivo produce el hmac failure
+descrito; por eso se bloquea en origen.
+**Consecuencias:** no verificable sin SDK/dispositivo; revisado en manifiesto y XML.
