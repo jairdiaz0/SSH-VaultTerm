@@ -17,10 +17,26 @@ abstract final class AppSpacing {
 abstract final class AppLayout {
   static const minWidth = 900.0;
   static const minHeight = 600.0;
-  static const sidebarWidth = 288.0;
+
+  /// Round 6 shell: 220 px sidebar that collapses to a 64 px icon rail, a
+  /// 44 px tab strip and a 380 px details panel.
+  static const sidebarWidth = 220.0;
+  static const railWidth = 64.0;
+  static const topBarHeight = 44.0;
+  static const detailsPanelWidth = 380.0;
 
   /// Forms and settings keep a readable measure on wide screens.
   static const maxFormWidth = 720.0;
+}
+
+/// Round 6 corner radii, available to widgets that cannot read the theme
+/// extension (const decorations, const borders).
+abstract final class AppRadii {
+  static const card = 12.0;
+  static const dialog = 12.0;
+  static const button = 10.0;
+  static const field = 10.0;
+  static const chip = 8.0;
 }
 
 /// Project tokens that are not part of [ColorScheme]: status colours, terminal

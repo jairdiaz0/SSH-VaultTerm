@@ -781,4 +781,82 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorUnknown => 'Ha ocurrido un error inesperado.';
+
+  @override
+  String get navConnections => 'Conexiones';
+
+  @override
+  String get navFingerprints => 'Huellas';
+
+  @override
+  String get navSettings => 'Ajustes';
+
+  @override
+  String get collapseSidebar => 'Contraer barra lateral';
+
+  @override
+  String get expandSidebar => 'Expandir barra lateral';
+
+  @override
+  String get tabConnections => 'Conexiones';
+
+  @override
+  String get tabSftp => 'SFTP';
+
+  @override
+  String get tabCloseSession => 'Cerrar pestaña';
+
+  @override
+  String get dashboardSearchHint =>
+      'Buscar por nombre, host, usuario o etiqueta';
+
+  @override
+  String get dashboardGridView => 'Cuadrícula';
+
+  @override
+  String get dashboardListView => 'Lista';
+
+  @override
+  String get dashboardSortLabel => 'Ordenar';
+
+  @override
+  String get dashboardSortByName => 'Nombre';
+
+  @override
+  String get dashboardSortByHost => 'Host';
+
+  @override
+  String get dashboardSortByRecent => 'Más recientes';
+
+  @override
+  String get dashboardEmptyTitle => 'Aún no hay conexiones';
+
+  @override
+  String get dashboardEmptyBody =>
+      'Crea tu primera conexión o una colección para organizar tus servidores.';
+
+  @override
+  String get dashboardNoResults => 'Ningún servidor coincide con la búsqueda.';
+
+  @override
+  String get dashboardClearFilters => 'Limpiar filtros';
+
+  @override
+  String get ungroupedSection => 'Sin colección';
+
+  @override
+  String get connectionOpenAction => 'Abrir';
+
+  @override
+  String get typeSsh => 'SSH';
+
+  @override
+  String get typeSftp => 'SFTP';
+
+  @override
+  String get sftpTabEmptyTitle => 'Sin sesión SFTP';
+
+  @override
+  String get sftpTabEmptyBody =>
+      'Abre una conexión de tipo SFTP para explorar sus archivos.';
 }

@@ -6,14 +6,19 @@ import '../../../app/session_controller.dart';
 import '../../../app/theme/app_icons.dart';
 import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/widgets/empty_state.dart';
 import '../../settings/presentation/settings_dialog.dart';
+import '../../sftp/presentation/sftp_panel.dart';
 import '../../workspace/presentation/workspace_panel.dart';
+import 'dashboard_panel.dart';
+import 'fingerprints_panel.dart';
 import 'shell_controller.dart';
 import 'sidebar.dart';
+import 'top_bar.dart';
 
-/// Unlocked desktop shell: sidebar plus workspace.
+/// Unlocked desktop shell: tab strip, collapsible sidebar and workspace.
 ///
-/// Locking or signing out closes the SSH/SFTP sessions before closing the
+/// Locking or signing out closes every SSH/SFTP session before closing the
 /// profile database, so no socket outlives the session.
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key, required this.controller});
@@ -25,6 +30,7 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   ShellController? _shell;
 
   @override
@@ -73,12 +79,12 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Future<void> _lock() async {
-    await _shell?.workspace.close();
+    await _shell?.closeAllSessions();
     await widget.controller.lock();
   }
 
   Future<void> _signOut() async {
-    await _shell?.workspace.close();
+    await _shell?.closeAllSessions();
     await widget.controller.lock();
   }
 
@@ -104,56 +110,92 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     final shell = _shell;
     if (shell == null) return const SizedBox.shrink();
-    final l10n = AppLocalizations.of(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final wide = constraints.maxWidth >= AppLayout.minWidth;
-        Sidebar sidebar() => Sidebar(
-          controller: shell,
-          onOpenSettings: () => _openSettings(context, shell),
-          onLock: _lock,
-        );
+        Widget sidebar({VoidCallback? onNavigate, bool collapsible = true}) =>
+            Sidebar(
+              controller: shell,
+              collapsible: collapsible,
+              onNavigate: onNavigate,
+              onOpenSettings: () => _openSettings(context, shell),
+              onLock: _lock,
+            );
         return Scaffold(
-          appBar: AppBar(
-            title: Row(
-              children: [
-                Icon(
-                  AppIcons.terminal,
-                  size: 18,
-                  color: context.colors.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(l10n.appTitle),
-              ],
-            ),
-          ),
+          key: _scaffoldKey,
           drawer: wide
               ? null
               : Drawer(
                   child: SafeArea(
                     child: ListenableBuilder(
                       listenable: shell,
-                      builder: (context, _) => sidebar(),
+                      builder: (context, _) => sidebar(
+                        collapsible: false,
+                        onNavigate: () =>
+                            _scaffoldKey.currentState?.closeDrawer(),
+                      ),
                     ),
                   ),
                 ),
-          body: ListenableBuilder(
-            listenable: shell,
-            builder: (context, _) => wide
-                ? Row(
-                    children: [
-                      sidebar(),
-                      const VerticalDivider(width: 1, thickness: 1),
-                      Expanded(
-                        child: WorkspacePanel(controller: shell.workspace),
-                      ),
-                    ],
-                  )
-                : WorkspacePanel(controller: shell.workspace),
+          body: SafeArea(
+            bottom: false,
+            child: ListenableBuilder(
+              listenable: shell,
+              builder: (context, _) => Column(
+                children: [
+                  TopBar(
+                    controller: shell,
+                    onOpenMenu: wide
+                        ? null
+                        : () => _scaffoldKey.currentState?.openDrawer(),
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        if (wide) ...[
+                          sidebar(),
+                          VerticalDivider(
+                            width: 1,
+                            thickness: 1,
+                            color: context.colors.outlineVariant,
+                          ),
+                        ],
+                        Expanded(child: _content(context, shell)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },
     );
+  }
+
+  Widget _content(BuildContext context, ShellController shell) {
+    if (shell.section == ShellSection.fingerprints) {
+      return FingerprintsPanel(controller: shell);
+    }
+    final l10n = AppLocalizations.of(context);
+    final tab = shell.activeTab;
+    switch (shell.view) {
+      case ShellView.dashboard:
+        return DashboardPanel(controller: shell);
+      case ShellView.sftp:
+        final sftp = tab?.workspace.sftp;
+        if (sftp == null) {
+          return EmptyState(
+            icon: AppIcons.folder,
+            title: l10n.sftpTabEmptyTitle,
+            message: l10n.sftpTabEmptyBody,
+          );
+        }
+        return SftpPanel(controller: sftp);
+      case ShellView.session:
+        if (tab == null) return DashboardPanel(controller: shell);
+        return WorkspacePanel(controller: tab.workspace);
+    }
   }
 }

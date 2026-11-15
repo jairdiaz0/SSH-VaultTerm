@@ -546,3 +546,34 @@ compartido) y tolera errores del almacén al enumerar/borrar claves.
 **Consecuencias:** un almacén corrupto ya no impide limpiar las bases; los tests con
 namespace siguen aislados. Las credenciales del Credential Manager se siguen borrando
 como respaldo para versiones antiguas del plugin.
+
+---
+
+## D-030 - Shell de la ronda 6: pestañas, sidebar y dashboard
+**Fecha:** 2026-11-15
+**Contexto:** la ronda 6 pide barra superior de pestañas con sesiones vivas, sidebar
+de 220 px, dashboard de conexiones y vista de huellas, sin tocar la lógica de
+negocio ni las claves que usan los tests.
+**Decisión:**
+- Cada conexión abierta tiene su propio `WorkspaceController` dentro de un
+  `SessionTab`. Cambiar de pestaña solo cambia qué se pinta: el canal SSH, el pty
+  y el subsistema SFTP siguen vivos hasta cerrar la pestaña, desbloquear o borrar
+  la conexión. `ShellController.workspace` sigue devolviendo el workspace activo
+  (o el del shell cuando no hay pestañas), así que el código y los tests previos no
+  cambian.
+- Las pestañas fijas son «Conexiones» (dashboard) y «SFTP» (explorador de la sesión
+  activa). Si la sesión activa no es SFTP, la pestaña muestra un estado vacío: no se
+  abre un canal SFTP nuevo sobre una sesión SSH, porque sería lógica nueva.
+- La sidebar es solo navegación; el contenido (colecciones, servidores, acciones)
+  pasa al dashboard. Se conservan todas las claves `Key(...)` de los tests
+  (`new-connection-button`, `new-collection-button`, `connection-tile-*`,
+  `connection-menu-*`, `collection-menu-*`, `sidebar-profile-name`,
+  `open-settings`, `lock-session-button`).
+- «Ajustes» abre el diálogo existente en lugar de una pantalla propia: duplicar en
+  una página los respaldos, perfiles, reset y huellas añadiría riesgo sin cambiar
+  el comportamiento.
+- El contraído de la sidebar es estado de sesión (no persistido): no hay preferencia
+  de usuario que justifique tocar el almacén todavía.
+**Consecuencias:** una sesión por conexión, sin fugas al cambiar de pestaña; el
+panel de detalles y el rediseño SFTP quedan como tareas siguientes en
+`odd/tasks/ronda-6-gui.md`. Los tests de shell existentes pasan sin cambios.

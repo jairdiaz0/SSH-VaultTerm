@@ -1462,6 +1462,156 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ha ocurrido un error inesperado.'**
   String get errorUnknown;
+
+  /// No description provided for @navConnections.
+  ///
+  /// In es, this message translates to:
+  /// **'Conexiones'**
+  String get navConnections;
+
+  /// No description provided for @navFingerprints.
+  ///
+  /// In es, this message translates to:
+  /// **'Huellas'**
+  String get navFingerprints;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get navSettings;
+
+  /// No description provided for @collapseSidebar.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraer barra lateral'**
+  String get collapseSidebar;
+
+  /// No description provided for @expandSidebar.
+  ///
+  /// In es, this message translates to:
+  /// **'Expandir barra lateral'**
+  String get expandSidebar;
+
+  /// No description provided for @tabConnections.
+  ///
+  /// In es, this message translates to:
+  /// **'Conexiones'**
+  String get tabConnections;
+
+  /// No description provided for @tabSftp.
+  ///
+  /// In es, this message translates to:
+  /// **'SFTP'**
+  String get tabSftp;
+
+  /// No description provided for @tabCloseSession.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar pestaña'**
+  String get tabCloseSession;
+
+  /// No description provided for @dashboardSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por nombre, host, usuario o etiqueta'**
+  String get dashboardSearchHint;
+
+  /// No description provided for @dashboardGridView.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuadrícula'**
+  String get dashboardGridView;
+
+  /// No description provided for @dashboardListView.
+  ///
+  /// In es, this message translates to:
+  /// **'Lista'**
+  String get dashboardListView;
+
+  /// No description provided for @dashboardSortLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Ordenar'**
+  String get dashboardSortLabel;
+
+  /// No description provided for @dashboardSortByName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get dashboardSortByName;
+
+  /// No description provided for @dashboardSortByHost.
+  ///
+  /// In es, this message translates to:
+  /// **'Host'**
+  String get dashboardSortByHost;
+
+  /// No description provided for @dashboardSortByRecent.
+  ///
+  /// In es, this message translates to:
+  /// **'Más recientes'**
+  String get dashboardSortByRecent;
+
+  /// No description provided for @dashboardEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay conexiones'**
+  String get dashboardEmptyTitle;
+
+  /// No description provided for @dashboardEmptyBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea tu primera conexión o una colección para organizar tus servidores.'**
+  String get dashboardEmptyBody;
+
+  /// No description provided for @dashboardNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'Ningún servidor coincide con la búsqueda.'**
+  String get dashboardNoResults;
+
+  /// No description provided for @dashboardClearFilters.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar filtros'**
+  String get dashboardClearFilters;
+
+  /// No description provided for @ungroupedSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin colección'**
+  String get ungroupedSection;
+
+  /// No description provided for @connectionOpenAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Abrir'**
+  String get connectionOpenAction;
+
+  /// No description provided for @typeSsh.
+  ///
+  /// In es, this message translates to:
+  /// **'SSH'**
+  String get typeSsh;
+
+  /// No description provided for @typeSftp.
+  ///
+  /// In es, this message translates to:
+  /// **'SFTP'**
+  String get typeSftp;
+
+  /// No description provided for @sftpTabEmptyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin sesión SFTP'**
+  String get sftpTabEmptyTitle;
+
+  /// No description provided for @sftpTabEmptyBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Abre una conexión de tipo SFTP para explorar sus archivos.'**
+  String get sftpTabEmptyBody;
 }
 
 class _AppLocalizationsDelegate

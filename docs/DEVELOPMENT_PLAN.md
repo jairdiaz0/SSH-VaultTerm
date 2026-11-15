@@ -6,10 +6,11 @@ Estado de cada ítem:
 - `[x]` verificado (evidencia en `docs/TESTING.md`)
 - `[!]` bloqueado (causa anotada)
 
-Entorno de esta máquina (ver `docs/DECISIONS.md` D-001): Flutter 3.47.9 / Dart
-3.13.7 en Windows 11. **No hay Visual Studio C++ ni Android SDK**, así que no se
-puede compilar ni ejecutar la app; la verificación se hace con `flutter analyze`
-y `flutter test` (unitarios, widget, golden, FFI).
+Entorno de esta máquina (ver `docs/DECISIONS.md` D-001): Flutter 3.50.0 stable /
+Dart 3.13.7 en Windows 11. Visual Studio 2026 con C++ instalado permite
+`flutter build windows` y la integración real; **no hay Android SDK**, así que
+Android no se puede compilar. La verificación principal es `flutter analyze`,
+`flutter test` y los tests de integración contra el servidor de pruebas.
 
 ---
 
@@ -154,7 +155,9 @@ y `flutter test` (unitarios, widget, golden, FFI).
   `flutter test integration_test -d windows` con almacén seguro y BD cifrada reales.
 - [!] Android/macOS/Linux: sin toolchain aquí (D-001). Sin verificar en ejecución.
 
-## Ronda 6 (GUI) — estado
+## Ronda 6 (GUI) - estado
+
+Detalle de tareas y especificaciones: `odd/tasks/ronda-6-gui.md`.
 
 - [x] Reset de la aplicación verificado con el flujo real de UI: el árbol se
   sustituye antes de cerrar las bases, se reconstruye el grafo de servicios y se
@@ -162,13 +165,25 @@ y `flutter test` (unitarios, widget, golden, FFI).
 - [x] Reset con catálogo corrupto, sin abrir ninguna base.
 - [x] Marcador de reset pendiente aplicado antes de abrir bases.
 - [x] Solo se borran secretos con prefijos de SSH Client; otros namespaces intactos.
-- [ ] **Fase 1 completa (sistema de diseño neutro, barra superior de pestañas,
-  sidebar 220, dashboard de conexiones, panel de detalles, vista de huellas):
-  NO implementada en esta ronda.** La UI sigue con el sistema de la ronda 3.
-- [ ] Fase 2 (pestañas de sesión múltiples y terminal a pantalla completa): no
-  implementada.
-- [ ] Fase 3 (rediseño SFTP de un panel, tabla nueva, menú contextual, chmod): no
-  implementada.
+- [x] Paleta neutra de la ronda 6, radios 12/10/8, acento `#2563EB`/`#3B82F6`,
+  estados y terminal siempre oscura; contraste AA verificado
+  (`test/app/theme_test.dart`, `test/app/theme_contrast_test.dart`).
+- [x] Barra superior de 44 px con pestañas fijas «Conexiones» y «SFTP» y una
+  pestaña por sesión, con cierre individual y sesiones que siguen vivas al
+  cambiar de pestaña (`test/features/shell/shell_tabs_test.dart`).
+- [x] Sidebar de 220 px contraíble a barra de iconos, con «Conexiones»,
+  «Huellas» y «Ajustes», y perfil/bloqueo al pie; cajón en ventanas estrechas.
+- [x] Dashboard de conexiones: buscador, filtros por etiqueta, vista
+  cuadrícula/lista, orden por nombre/host/recientes, secciones «Favoritos»,
+  «Colecciones» y «Sin colección», tarjetas con menú de editar/favorito/eliminar
+  (`test/features/shell/dashboard_test.dart`).
+- [x] Vista de huellas conocidas en el área principal con borrado por huella.
+- [ ] Panel de detalles de conexión de 360–400 px que sustituya al diálogo de
+  edición (conservando validación y reautenticación).
+- [ ] Rediseño SFTP de un panel (tabla, selección múltiple, menú contextual,
+  chmod y cola de transferencias rediseñada).
+- [ ] Quick connect y badges de sistema operativo: requieren credencial efímera
+  y `osHint` en el modelo; ver `docs/ROADMAP.md`.
 - [ ] Fases 4 y 5 (opcionales): no evaluadas.
 - [!] Android: sigue sin toolchain para compilar.
 

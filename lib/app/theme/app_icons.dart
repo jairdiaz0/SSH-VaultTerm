@@ -19,6 +19,13 @@ abstract final class AppIcons {
   static const logout = LucideIcons.logOut;
   static const login = LucideIcons.logIn;
 
+  static const menu = LucideIcons.menu;
+  static const panelLeft = LucideIcons.panelLeft;
+  static const grid = LucideIcons.layoutGrid;
+  static const list = LucideIcons.list;
+  static const search = LucideIcons.search;
+  static const sort = LucideIcons.arrowUpDown;
+
   static const shield = LucideIcons.shield;
   static const shieldAlert = LucideIcons.shieldAlert;
   static const fingerprint = LucideIcons.fingerprint;

@@ -9,7 +9,9 @@ Registro de verificaciones ejecutadas, con comando y resultado resumido. Un
 - Visual Studio 2026 con C++ instalado: `build windows` e integración real
   disponibles. Android SDK sigue ausente. Ver `docs/DECISIONS.md` D-001.
 
-## 2026-11-15 — Ronda 6 (reset y alcance de GUI)### Línea base
+## 2026-11-15 — Ronda 6 (reset y alcance de GUI)
+
+### Línea base
 ```text
 flutter analyze → No issues found!
 flutter test    → +277 All tests passed!
@@ -27,9 +29,28 @@ flutter test    → +277 All tests passed!
 - `AppServices.dispose` es idempotente y `SshClientApp.dispose` cierra el catálogo.
 
 ### GUI de la ronda 6
-No implementada en esta ronda; el sistema visual sigue siendo el de la ronda 3. El
-detalle de lo pendiente está en `docs/DEVELOPMENT_PLAN.md` (Ronda 6) y
-`docs/ROADMAP.md`. No se marca `[x]` ningún punto de las fases 1–5.
+- **Paleta y radios** (`cf20120`): `test/app/theme_test.dart` comprueba los
+  colores neutros, radios 12/12/10/10/8 y el terminal siempre oscuro
+  (`#0E0E10`); `test/app/theme_contrast_test.dart` mantiene AA 4.5:1 y 3:1 en
+  ambos temas. Se subieron `textSecondary` (`#5F6672` claro, `#AFAFB8` oscuro) y
+  `onError` oscuro para pasar el contraste.
+- **Shell y dashboard**: `test/features/shell/shell_tabs_test.dart` (5 tests)
+  prueba que abrir dos veces la misma conexión reutiliza la pestaña, que cambiar
+  de pestaña conserva las dos sesiones, que cerrar la pestaña activa cae en la
+  vecina y luego en el dashboard, la independencia de secciones/vista fija y la
+  barra superior con cierre de pestaña.
+- `test/features/shell/dashboard_test.dart` (5 tests) prueba el buscador, el
+  filtro por etiqueta, el estado «sin resultados», el cambio cuadrícula/lista, el
+  contraído de la sidebar y la vista de huellas con borrado.
+- `test/features/shell/*` existentes (CRUD, reautenticación, tamaños, móvil)
+  siguen en verde sin cambios en sus claves.
+- Pendiente en esta ronda: panel de detalles de conexión y rediseño SFTP.
+
+### Estado al cierre (shell y dashboard)
+```text
+flutter analyze                → No issues found!
+flutter test -x integration    → +280 All tests passed!
+```
 
 ### Estado al cierre
 ```text

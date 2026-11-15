@@ -75,6 +75,24 @@ Nunca al revés.
   sesión abierta. `SessionGate` se suscribe y decide pantalla.
 - No hay singletons mutables globales. El estado de pantalla vive en el widget.
 
+### Shell de la ronda 6
+
+```text
+HomeShell (StatefulWidget)
+  └── ShellController            (ChangeNotifier, una instancia por perfil abierto)
+        ├── SessionTab[]         (una por conexión abierta)
+        │     └── WorkspaceController  (canal SSH, pty y SFTP de esa sesión)
+        └── sección/vista        (Conexiones | Huellas | dashboard | SFTP | sesión)
+```
+
+- `ShellController` es el único escritor de colecciones y conexiones desde la UI y
+  el dueño de las sesiones abiertas. Cambiar de pestaña solo cambia qué widget se
+  pinta; el `WorkspaceController` de cada pestaña sigue vivo.
+- `ShellController.workspace` devuelve el workspace de la pestaña activa (o el del
+  shell si no hay pestañas), de modo que el código anterior sigue siendo válido.
+- Cerrar una pestaña, bloquear el perfil o borrar una conexión libera su canal
+  (`WorkspaceController.close`) antes de disponer del controlador.
+
 ## 4. Ciclo de vida de una sesión
 
 ```text

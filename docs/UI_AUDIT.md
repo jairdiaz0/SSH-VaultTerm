@@ -1,8 +1,9 @@
-# UI_AUDIT — Ronda 3 (modernización)
+# UI_AUDIT — Ronda 3 (modernización) y ronda 6 (shell)
 
-> Ronda 6: el rediseño solicitado (barra de pestañas, sidebar de 220 px, dashboard
-> de conexiones y panel de detalles) **no está implementado**. Este inventario
-> describe la UI real actual; lo pendiente está en `docs/ROADMAP.md`.
+> Ronda 6 (2026-11-15): sistema neutro, barra superior de pestañas, sidebar de
+> 220 px contraíble, dashboard de conexiones y vista de huellas **implementados**.
+> El panel de detalles de conexión y el rediseño SFTP siguen pendientes; el
+> detalle está en `odd/tasks/ronda-6-gui.md` y `docs/ROADMAP.md`.
 
 Inventario de pantallas y widgets, estilos escritos a mano encontrados y la
 checklist de modernización. Todas las filas quedan revisadas al cierre de la
@@ -16,8 +17,12 @@ ronda; lo no verificable en este entorno se declara.
 | Gate de sesión | `app/session_gate.dart` | Revisado (sin estilos propios) |
 | Bloqueo de perfil | `features/authentication/presentation/lock_screen.dart` | Modernizado (tema, SafeArea global, ancho máximo) |
 | Asistente primer perfil | `features/profiles/presentation/first_run_screen.dart` | Modernizado |
-| Shell de escritorio | `features/shell/presentation/home_shell.dart` | Modernizado (barra, fondo, iconos) |
-| Sidebar | `features/shell/presentation/sidebar.dart` | Modernizado (tarjetas, badge, cabeceras sin mayúsculas, iconos Lucide) |
+| Shell de escritorio | `features/shell/presentation/home_shell.dart` | Ronda 6: barra de 44 px + sidebar contraíble + área de trabajo |
+| Barra superior de pestañas | `features/shell/presentation/top_bar.dart` | Nuevo (pestañas fijas y una por sesión, con cierre) |
+| Sidebar | `features/shell/presentation/sidebar.dart` | Ronda 6: navegación de 220 px contraíble, perfil y bloqueo al pie |
+| Dashboard de conexiones | `features/shell/presentation/dashboard_panel.dart` | Nuevo (buscador, etiquetas, cuadrícula/lista, orden) |
+| Tarjetas de conexión y colección | `features/shell/presentation/dashboard_cards.dart` | Nuevo (tarjeta de 64 px y cabecera de colección con menú) |
+| Vista de huellas | `features/shell/presentation/fingerprints_panel.dart` | Nuevo (lista y borrado por huella) |
 | Workspace / terminal | `features/workspace/presentation/workspace_panel.dart` | Modernizado (tema del terminal, EmptyState, iconos) |
 | Diálogo huella TOFU | `features/workspace/presentation/host_key_dialog.dart` | Modernizado |
 | Explorador SFTP | `features/sftp/presentation/sftp_panel.dart` | Modernizado (ruta editable, hover animado, iconos, tooltips) |
@@ -55,6 +60,13 @@ ronda; lo no verificable en este entorno se declara.
 
 ## 3. Checklist de modernización
 
+- [x] Ronda 6: paleta neutra, radios 12/10/8 y acento azul en ambos temas.
+- [x] Ronda 6: barra superior de 44 px con pestañas fijas y una por sesión.
+- [x] Ronda 6: sidebar de 220 px contraíble con navegación y perfil al pie.
+- [x] Ronda 6: dashboard con buscador, etiquetas, cuadrícula/lista y orden.
+- [x] Ronda 6: vista de huellas en el área principal.
+- [ ] Ronda 6: panel de detalles de conexión de 360–400 px.
+- [ ] Ronda 6: rediseño del explorador SFTP de un panel.
 - [x] Paleta clara y oscura a mano, sin `fromSeed` ni negro puro.
 - [x] `ThemeExtension` con espaciados, radios, duraciones, curvas, estados y
       paleta de terminal.

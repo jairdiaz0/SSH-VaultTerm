@@ -1,123 +1,88 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/theme/app_icons.dart';
-
 import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/models/connection.dart';
-import '../../../shared/models/server_collection.dart';
-import '../../../shared/widgets/status_badge.dart';
-import '../../collections/presentation/collection_dialog.dart';
-import '../../connections/presentation/connection_form_dialog.dart';
-import '../../ssh/domain/ssh_connection_state.dart';
 import 'shell_controller.dart';
 
-/// Left navigation of the desktop shell: profile, favourites, expandable
-/// collections, ungrouped servers and the session status.
+/// Round 6 sidebar: 220 px of navigation (Conexiones, Huellas, Ajustes) with
+/// the profile and the lock at the bottom. Collapses to a 64 px icon rail.
 class Sidebar extends StatelessWidget {
   const Sidebar({
     super.key,
     required this.controller,
     required this.onOpenSettings,
     required this.onLock,
+    this.collapsible = true,
+    this.onNavigate,
   });
 
   final ShellController controller;
   final VoidCallback onOpenSettings;
   final VoidCallback onLock;
 
+  /// The drawer is already narrow, so it never collapses inside itself.
+  final bool collapsible;
+
+  /// Called after a navigation item is tapped, to close the mobile drawer.
+  final VoidCallback? onNavigate;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final favorites = controller.favorites;
-    final collections = controller.collections;
-    final ungrouped = controller.ungrouped;
-
+    final collapsed = collapsible && controller.sidebarCollapsed;
     return Material(
       color: context.colors.surfaceContainerLow,
       child: SizedBox(
-        width: AppLayout.sidebarWidth,
+        width: collapsed ? AppLayout.railWidth : AppLayout.sidebarWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _Header(
+              collapsed: collapsed,
+              collapsible: collapsible,
+              onToggle: controller.toggleSidebar,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            _NavItem(
+              key: const Key('nav-connections'),
+              icon: AppIcons.grid,
+              label: l10n.navConnections,
+              collapsed: collapsed,
+              selected: controller.section == ShellSection.connections,
+              onTap: () {
+                controller.selectSection(ShellSection.connections);
+                onNavigate?.call();
+              },
+            ),
+            _NavItem(
+              key: const Key('nav-fingerprints'),
+              icon: AppIcons.fingerprint,
+              label: l10n.navFingerprints,
+              collapsed: collapsed,
+              selected: controller.section == ShellSection.fingerprints,
+              onTap: () {
+                controller.selectSection(ShellSection.fingerprints);
+                onNavigate?.call();
+              },
+            ),
+            _NavItem(
+              key: const Key('open-settings'),
+              icon: AppIcons.settings,
+              label: l10n.navSettings,
+              collapsed: collapsed,
+              selected: false,
+              onTap: () {
+                onNavigate?.call();
+                onOpenSettings();
+              },
+            ),
+            const Spacer(),
+            Divider(height: 1, color: context.colors.outlineVariant),
+            _Footer(
+              collapsed: collapsed,
               profileName: controller.profileName,
-              onOpenSettings: onOpenSettings,
               onLock: onLock,
-            ),
-            _ConnectionIndicator(controller: controller),
-            const Divider(),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                children: [
-                  if (favorites.isNotEmpty) ...[
-                    _SectionHeader(title: l10n.favoritesSection),
-                    for (final connection in favorites)
-                      _ConnectionTile(
-                        controller: controller,
-                        connection: connection,
-                      ),
-                    const SizedBox(height: AppSpacing.md),
-                  ],
-                  _SectionHeader(title: l10n.collectionsSection),
-                  for (final collection in collections)
-                    _CollectionTile(
-                      controller: controller,
-                      collection: collection,
-                    ),
-                  if (ungrouped.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.md),
-                    _SectionHeader(title: l10n.sidebarServersSection),
-                    for (final connection in ungrouped)
-                      _ConnectionTile(
-                        controller: controller,
-                        connection: connection,
-                      ),
-                  ],
-                  if (favorites.isEmpty &&
-                      collections.isEmpty &&
-                      ungrouped.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: Text(
-                        l10n.emptySidebarHint,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.sm,
-                AppSpacing.sm,
-                AppSpacing.sm,
-                AppSpacing.md,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FilledButton.icon(
-                    key: const Key('new-connection-button'),
-                    onPressed: () => ConnectionFormDialog.show(
-                      context,
-                      controller: controller,
-                    ),
-                    icon: const Icon(AppIcons.add, size: 16),
-                    label: Text(l10n.newConnectionAction),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  TextButton.icon(
-                    key: const Key('new-collection-button'),
-                    onPressed: () =>
-                        CollectionDialog.show(context, controller: controller),
-                    icon: const Icon(AppIcons.folderPlus, size: 16),
-                    label: Text(l10n.newCollectionAction),
-                  ),
-                ],
-              ),
             ),
           ],
         ),
@@ -128,309 +93,202 @@ class Sidebar extends StatelessWidget {
 
 class _Header extends StatelessWidget {
   const _Header({
-    required this.profileName,
-    required this.onOpenSettings,
-    required this.onLock,
+    required this.collapsed,
+    required this.collapsible,
+    required this.onToggle,
   });
 
-  final String profileName;
-  final VoidCallback onOpenSettings;
-  final VoidCallback onLock;
+  final bool collapsed;
+  final bool collapsible;
+  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
-      height: 52,
-      padding: const EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.xs),
+      height: AppLayout.topBarHeight,
+      padding: EdgeInsets.only(
+        left: collapsed ? 0 : AppSpacing.md,
+        right: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: context.colors.outlineVariant),
         ),
       ),
       child: Row(
+        mainAxisAlignment: collapsed
+            ? MainAxisAlignment.center
+            : MainAxisAlignment.start,
         children: [
-          Icon(AppIcons.shield, size: 18, color: context.colors.primary),
+          if (!collapsed) ...[
+            Icon(AppIcons.shield, size: 18, color: context.colors.primary),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                l10n.appTitle,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+          if (collapsible)
+            IconButton(
+              key: const Key('toggle-sidebar'),
+              tooltip: collapsed ? l10n.expandSidebar : l10n.collapseSidebar,
+              iconSize: AppIconSize.sm,
+              onPressed: onToggle,
+              icon: const Icon(AppIcons.panelLeft),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.collapsed,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool collapsed;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final content = Container(
+      height: 36,
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 2,
+      ),
+      padding: EdgeInsets.symmetric(horizontal: collapsed ? 0 : AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: selected ? context.colors.surfaceContainer : null,
+        borderRadius: BorderRadius.circular(AppRadii.chip),
+      ),
+      child: Row(
+        mainAxisAlignment: collapsed
+            ? MainAxisAlignment.center
+            : MainAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: AppIconSize.sm,
+            color: selected
+                ? context.colors.onSurface
+                : context.colors.onSurfaceVariant,
+          ),
+          if (!collapsed) ...[
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                  color: selected
+                      ? context.colors.onSurface
+                      : context.colors.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+    return Tooltip(
+      message: collapsed ? label : '',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadii.chip),
+        child: content,
+      ),
+    );
+  }
+}
+
+class _Footer extends StatelessWidget {
+  const _Footer({
+    required this.collapsed,
+    required this.profileName,
+    required this.onLock,
+  });
+
+  final bool collapsed;
+  final String profileName;
+  final VoidCallback onLock;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (collapsed) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: Column(
+          children: [
+            Icon(
+              AppIcons.users,
+              size: AppIconSize.sm,
+              color: context.colors.onSurfaceVariant,
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            IconButton(
+              key: const Key('lock-session-button'),
+              tooltip: l10n.lockSessionAction,
+              iconSize: AppIconSize.sm,
+              onPressed: onLock,
+              icon: const Icon(AppIcons.lock),
+            ),
+          ],
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.xs,
+        AppSpacing.sm,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            AppIcons.users,
+            size: AppIconSize.sm,
+            color: context.colors.onSurfaceVariant,
+          ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               profileName,
               key: const Key('sidebar-profile-name'),
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
-          ),
-          IconButton(
-            key: const Key('open-settings'),
-            tooltip: l10n.settingsAction,
-            icon: const Icon(AppIcons.settings, size: 18),
-            onPressed: onOpenSettings,
           ),
           IconButton(
             key: const Key('lock-session-button'),
             tooltip: l10n.lockSessionAction,
-            icon: const Icon(AppIcons.lock, size: 18),
+            iconSize: AppIconSize.sm,
             onPressed: onLock,
+            icon: const Icon(AppIcons.lock),
           ),
         ],
       ),
     );
   }
-}
-
-class _ConnectionIndicator extends StatelessWidget {
-  const _ConnectionIndicator({required this.controller});
-
-  final ShellController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final (label, tone) = switch (controller.workspace.status) {
-      SshConnectionStatus.connected => (
-        l10n.connectionStatusConnected,
-        StatusTone.success,
-      ),
-      SshConnectionStatus.connecting ||
-      SshConnectionStatus.awaitingHostKey ||
-      SshConnectionStatus.authenticating => (
-        l10n.connectionStatusConnecting,
-        StatusTone.warning,
-      ),
-      SshConnectionStatus.failed => (
-        l10n.connectionStatusFailed,
-        StatusTone.danger,
-      ),
-      SshConnectionStatus.sessionEnded => (
-        l10n.sessionEndedTitle,
-        StatusTone.warning,
-      ),
-      SshConnectionStatus.disconnected ||
-      SshConnectionStatus.disconnectedUnexpectedly => (
-        l10n.connectionStatusDisconnected,
-        StatusTone.neutral,
-      ),
-    };
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.md,
-        AppSpacing.sm,
-        AppSpacing.md,
-        0,
-      ),
-      child: StatusBadge(label: label, tone: tone),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      AppSpacing.md,
-      AppSpacing.sm,
-      AppSpacing.md,
-      AppSpacing.xs,
-    ),
-    child: Text(
-      title,
-      style: TextStyle(
-        fontSize: 11,
-        letterSpacing: 0.8,
-        fontWeight: FontWeight.w600,
-        color: context.colors.onSurfaceVariant,
-      ),
-    ),
-  );
-}
-
-class _CollectionTile extends StatelessWidget {
-  const _CollectionTile({required this.controller, required this.collection});
-
-  final ShellController controller;
-  final ServerCollection collection;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final connections = controller.connectionsOf(collection);
-    final index = controller.collections.indexOf(collection);
-    final isFirst = index == 0;
-    final isLast = index == controller.collections.length - 1;
-
-    return ExpansionTile(
-      key: Key('collection-tile-${collection.id}'),
-      initiallyExpanded: true,
-      tilePadding: const EdgeInsets.only(
-        left: AppSpacing.md,
-        right: AppSpacing.xs,
-      ),
-      childrenPadding: const EdgeInsets.only(left: AppSpacing.sm),
-      title: Text(collection.name, style: const TextStyle(fontSize: 13)),
-      leading: const Icon(AppIcons.folder, size: 16),
-      trailing: PopupMenuButton<String>(
-        key: Key('collection-menu-${collection.id}'),
-        icon: const Icon(AppIcons.more, size: 16),
-        onSelected: (value) async {
-          switch (value) {
-            case 'rename':
-              await CollectionDialog.show(
-                context,
-                controller: controller,
-                existing: collection,
-              );
-            case 'up':
-              controller.moveCollection(collection, -1);
-            case 'down':
-              controller.moveCollection(collection, 1);
-            case 'delete':
-              final confirmed = await _confirm(
-                context,
-                title: l10n.deleteAction,
-                body: l10n.confirmDeleteCollection(collection.name),
-              );
-              if (confirmed) controller.deleteCollection(collection);
-          }
-        },
-        itemBuilder: (_) => [
-          PopupMenuItem(value: 'rename', child: Text(l10n.renameAction)),
-          PopupMenuItem(
-            value: 'up',
-            enabled: !isFirst,
-            child: Text(l10n.moveUpAction),
-          ),
-          PopupMenuItem(
-            value: 'down',
-            enabled: !isLast,
-            child: Text(l10n.moveDownAction),
-          ),
-          PopupMenuItem(value: 'delete', child: Text(l10n.deleteAction)),
-        ],
-      ),
-      children: [
-        for (final connection in connections)
-          _ConnectionTile(controller: controller, connection: connection),
-        if (connections.isEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              28,
-              AppSpacing.xs,
-              AppSpacing.md,
-              AppSpacing.sm,
-            ),
-            child: Text(
-              l10n.emptyConnectionsMessage,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _ConnectionTile extends StatelessWidget {
-  const _ConnectionTile({required this.controller, required this.connection});
-
-  final ShellController controller;
-  final Connection connection;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return ListTile(
-      key: Key('connection-tile-${connection.id}'),
-      dense: true,
-      onTap: () => controller.connect(context, connection),
-      leading: Icon(
-        connection.favorite
-            ? AppIcons.star
-            : connection.connectionType == ConnectionType.sftp
-            ? AppIcons.folder
-            : AppIcons.terminal,
-        size: 16,
-        color: connection.favorite
-            ? context.tokens.warning
-            : context.colors.onSurfaceVariant,
-      ),
-      title: Text(
-        connection.name,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 13),
-      ),
-      subtitle: Text(
-        '${connection.username}@${connection.hostname}:${connection.port}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.bodySmall,
-      ),
-      trailing: PopupMenuButton<String>(
-        key: Key('connection-menu-${connection.id}'),
-        icon: const Icon(AppIcons.more, size: 16),
-        onSelected: (value) async {
-          switch (value) {
-            case 'edit':
-              await ConnectionFormDialog.show(
-                context,
-                controller: controller,
-                existing: connection,
-              );
-            case 'favorite':
-              controller.toggleFavorite(connection);
-            case 'delete':
-              final confirmed = await _confirm(
-                context,
-                title: l10n.deleteAction,
-                body: l10n.confirmDeleteConnection(connection.name),
-              );
-              if (confirmed) await controller.deleteConnection(connection);
-          }
-        },
-        itemBuilder: (_) => [
-          PopupMenuItem(value: 'edit', child: Text(l10n.editAction)),
-          PopupMenuItem(
-            value: 'favorite',
-            child: Text(
-              connection.favorite
-                  ? l10n.removeFromFavoritesAction
-                  : l10n.addToFavoritesAction,
-            ),
-          ),
-          PopupMenuItem(value: 'delete', child: Text(l10n.deleteAction)),
-        ],
-      ),
-    );
-  }
-}
-
-Future<bool> _confirm(
-  BuildContext context, {
-  required String title,
-  required String body,
-}) async {
-  final l10n = AppLocalizations.of(context);
-  final result = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: Text(body),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(l10n.commonCancel),
-        ),
-        FilledButton(
-          key: const Key('confirm-delete'),
-          onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(backgroundColor: context.colors.error),
-          child: Text(l10n.deleteAction),
-        ),
-      ],
-    ),
-  );
-  return result ?? false;
 }
