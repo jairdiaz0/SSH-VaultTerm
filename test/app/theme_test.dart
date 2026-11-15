@@ -6,21 +6,21 @@ import 'package:ssh_client/app/theme/app_tokens.dart';
 
 void main() {
   test('light palette uses the agreed neutrals', () {
-    expect(AppPalette.light.background, const Color(0xFFF8F9FA));
+    expect(AppPalette.light.background, const Color(0xFFF3F4F6));
     expect(AppPalette.light.surface, const Color(0xFFFFFFFF));
-    expect(AppPalette.light.surfaceVariant, const Color(0xFFF0F1F3));
-    expect(AppPalette.light.border, const Color(0xFFD9DCE1));
-    expect(AppPalette.light.textPrimary, const Color(0xFF24262B));
-    expect(AppPalette.light.iconSecondary, const Color(0xFF858B95));
+    expect(AppPalette.light.surfaceVariant, const Color(0xFFE5E7EB));
+    expect(AppPalette.light.border, const Color(0xFFE4E4E7));
+    expect(AppPalette.light.textPrimary, const Color(0xFF111827));
+    expect(AppPalette.light.iconSecondary, const Color(0xFF5F6672));
     expect(AppPalette.light.brightness, Brightness.light);
   });
 
   test('dark palette avoids pure black and keeps a soft carbon border', () {
-    expect(AppPalette.dark.background, const Color(0xFF111318));
-    expect(AppPalette.dark.surface, const Color(0xFF181A1F));
-    expect(AppPalette.dark.surfaceElevated, const Color(0xFF24262B));
-    expect(AppPalette.dark.border, const Color(0xFF2E3138));
-    expect(AppPalette.dark.textPrimary, const Color(0xFFE8EAED));
+    expect(AppPalette.dark.background, const Color(0xFF09090B));
+    expect(AppPalette.dark.surface, const Color(0xFF151518));
+    expect(AppPalette.dark.surfaceElevated, const Color(0xFF222227));
+    expect(AppPalette.dark.border, const Color(0xFF232328));
+    expect(AppPalette.dark.textPrimary, const Color(0xFFF4F4F5));
     expect(AppPalette.dark.background, isNot(Colors.black));
     expect(AppPalette.dark.surface, isNot(Colors.black));
   });
@@ -29,11 +29,11 @@ void main() {
     for (final theme in [AppTheme.light(), AppTheme.dark()]) {
       final tokens = theme.extension<AppTokens>();
       expect(tokens, isNotNull);
-      expect(tokens!.cardRadius, 18);
-      expect(tokens.dialogRadius, 22);
-      expect(tokens.buttonRadius, 14);
-      expect(tokens.fieldRadius, 12);
-      expect(tokens.chipRadius, 10);
+      expect(tokens!.cardRadius, 12);
+      expect(tokens.dialogRadius, 12);
+      expect(tokens.buttonRadius, 10);
+      expect(tokens.fieldRadius, 10);
+      expect(tokens.chipRadius, 8);
       expect(tokens.fast, const Duration(milliseconds: 150));
       expect(tokens.normal, const Duration(milliseconds: 200));
       expect(tokens.slow, const Duration(milliseconds: 250));
@@ -57,10 +57,10 @@ void main() {
           .extension<AppTokens>()!
           .terminalTheme;
 
-      expect(light.background, AppPalette.light.surface);
-      expect(dark.background, AppPalette.dark.background);
-      expect(alwaysDark.background, AppPalette.dark.background);
-      expect(light.foreground, AppPalette.light.textPrimary);
+      expect(light.background, const Color(0xFF0E0E10));
+      expect(dark.background, const Color(0xFF0E0E10));
+      expect(alwaysDark.background, const Color(0xFF0E0E10));
+      expect(light.foreground, const Color(0xFFF4F4F5));
     },
   );
 

@@ -1,9 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 
-/// Semantic colours for one brightness. Values are hand-picked, not generated.
+/// Semantic colours for one brightness, hand-picked from the round 6 spec.
 ///
 /// Contrast is enforced by `test/app/theme_contrast_test.dart`: text pairs must
-/// reach 4.5:1 and interactive components 3:1.
+/// reach 4.5:1 and interactive components 3:1. Disabled colours are exempt.
 class AppPalette {
   const AppPalette({
     required this.brightness,
@@ -11,6 +11,10 @@ class AppPalette {
     required this.surface,
     required this.surfaceVariant,
     required this.surfaceElevated,
+    required this.workspace,
+    required this.hover,
+    required this.active,
+    required this.popover,
     required this.border,
     required this.textPrimary,
     required this.textSecondary,
@@ -18,6 +22,7 @@ class AppPalette {
     required this.disabled,
     required this.accent,
     required this.onAccent,
+    required this.accentForeground,
     required this.error,
     required this.onError,
     required this.warning,
@@ -27,17 +32,34 @@ class AppPalette {
   });
 
   final Brightness brightness;
+
+  /// Base, top bar and sidebar.
   final Color background;
+
+  /// Cards, inputs and inactive tabs.
   final Color surface;
   final Color surfaceVariant;
   final Color surfaceElevated;
+
+  /// Work area behind cards.
+  final Color workspace;
+  final Color hover;
+  final Color active;
+  final Color popover;
   final Color border;
   final Color textPrimary;
   final Color textSecondary;
   final Color iconSecondary;
+
+  /// Disabled text and elements (WCAG exempt).
   final Color disabled;
+
+  /// Fill accent (primary button, selected row, group tile).
   final Color accent;
   final Color onAccent;
+
+  /// Accent used as text, icon and focus ring.
+  final Color accentForeground;
   final Color error;
   final Color onError;
   final Color warning;
@@ -49,44 +71,55 @@ class AppPalette {
 
   static const light = AppPalette(
     brightness: Brightness.light,
-    background: Color(0xFFF8F9FA),
+    background: Color(0xFFF3F4F6),
     surface: Color(0xFFFFFFFF),
-    surfaceVariant: Color(0xFFF0F1F3),
+    surfaceVariant: Color(0xFFE5E7EB),
     surfaceElevated: Color(0xFFFFFFFF),
-    border: Color(0xFFD9DCE1),
-    textPrimary: Color(0xFF24262B),
-    // #858B95 does not reach AA on light surfaces: this is the readable grey.
-    textSecondary: Color(0xFF565B65),
-    iconSecondary: Color(0xFF858B95),
-    disabled: Color(0xFF858B95),
-    accent: Color(0xFF00697A),
+    workspace: Color(0xFFF9FAFB),
+    hover: Color(0xFFF3F4F6),
+    active: Color(0xFFE5E7EB),
+    popover: Color(0xFFFFFFFF),
+    border: Color(0xFFE4E4E7),
+    textPrimary: Color(0xFF111827),
+    textSecondary: Color(0xFF5F6672),
+    iconSecondary: Color(0xFF5F6672),
+    // Spec says #9CA3AF; raised to AA for placeholders (the test enforces it).
+    disabled: Color(0xFF71717A),
+    accent: Color(0xFF2563EB),
     onAccent: Color(0xFFFFFFFF),
-    error: Color(0xFFB3261E),
+    accentForeground: Color(0xFF2563EB),
+    error: Color(0xFFB91C1C),
     onError: Color(0xFFFFFFFF),
-    warning: Color(0xFF7A5200),
+    warning: Color(0xFFB45309),
     onWarning: Color(0xFFFFFFFF),
-    success: Color(0xFF1B6B45),
+    success: Color(0xFF15803D),
     onSuccess: Color(0xFFFFFFFF),
   );
 
   static const dark = AppPalette(
     brightness: Brightness.dark,
-    background: Color(0xFF111318),
-    surface: Color(0xFF181A1F),
-    surfaceVariant: Color(0xFF1D2026),
-    surfaceElevated: Color(0xFF24262B),
-    border: Color(0xFF2E3138),
-    textPrimary: Color(0xFFE8EAED),
-    textSecondary: Color(0xFFA8AFBA),
-    iconSecondary: Color(0xFF858B95),
-    disabled: Color(0xFF858B95),
-    accent: Color(0xFF3DDDE7),
-    onAccent: Color(0xFF04252A),
-    error: Color(0xFFFF8A80),
-    onError: Color(0xFF3B0906),
-    warning: Color(0xFFE5B45B),
-    onWarning: Color(0xFF2B1D00),
-    success: Color(0xFF4CD69B),
-    onSuccess: Color(0xFF04291B),
+    background: Color(0xFF09090B),
+    surface: Color(0xFF151518),
+    surfaceVariant: Color(0xFF1C1C20),
+    surfaceElevated: Color(0xFF222227),
+    workspace: Color(0xFF0E0E10),
+    hover: Color(0xFF1C1C20),
+    active: Color(0xFF222227),
+    popover: Color(0xFF18181B),
+    border: Color(0xFF232328),
+    textPrimary: Color(0xFFF4F4F5),
+    // Spec says #8E8E98; raised slightly to keep AA on the workspace too.
+    textSecondary: Color(0xFFAFAFB8),
+    iconSecondary: Color(0xFFAFAFB8),
+    disabled: Color(0xFF52525B),
+    accent: Color(0xFF2563EB),
+    onAccent: Color(0xFFFFFFFF),
+    accentForeground: Color(0xFF3B82F6),
+    error: Color(0xFFEF4444),
+    onError: Color(0xFF200606),
+    warning: Color(0xFFF59E0B),
+    onWarning: Color(0xFF1C1200),
+    success: Color(0xFF22C55E),
+    onSuccess: Color(0xFF052E16),
   );
 }

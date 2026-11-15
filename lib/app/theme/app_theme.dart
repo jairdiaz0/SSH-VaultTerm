@@ -51,7 +51,7 @@ abstract final class AppTheme {
         space: 1,
       ),
       appBarTheme: AppBarThemeData(
-        backgroundColor: palette.surface,
+        backgroundColor: palette.background,
         foregroundColor: palette.textPrimary,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
@@ -75,7 +75,7 @@ abstract final class AppTheme {
         ),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: palette.surfaceElevated,
+        backgroundColor: palette.popover,
         surfaceTintColor: Colors.transparent,
         elevation: 2,
         shadowColor: Colors.black.withValues(alpha: 0.18),
@@ -125,7 +125,7 @@ abstract final class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: palette.accent,
+          foregroundColor: palette.accentForeground,
           minimumSize: const Size(0, 48),
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           shape: RoundedRectangleBorder(
@@ -204,9 +204,9 @@ abstract final class AppTheme {
         waitDuration: const Duration(milliseconds: 450),
       ),
       tabBarTheme: TabBarThemeData(
-        labelColor: palette.accent,
+        labelColor: palette.accentForeground,
         unselectedLabelColor: palette.textSecondary,
-        indicatorColor: palette.accent,
+        indicatorColor: palette.accentForeground,
         dividerColor: palette.border,
         labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
         unselectedLabelStyle: const TextStyle(fontSize: 13),
@@ -234,7 +234,7 @@ abstract final class AppTheme {
         ),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: palette.surfaceElevated,
+        backgroundColor: palette.popover,
         contentTextStyle: TextStyle(color: palette.textPrimary, fontSize: 13),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -266,7 +266,7 @@ abstract final class AppTheme {
         ),
       ),
       textSelectionTheme: TextSelectionThemeData(
-        cursorColor: palette.accent,
+        cursorColor: palette.accentForeground,
         selectionColor: palette.accent.withValues(alpha: 0.30),
         selectionHandleColor: palette.accent,
       ),
@@ -291,11 +291,11 @@ abstract final class AppTheme {
     onErrorContainer: palette.textPrimary,
     surface: palette.background,
     onSurface: palette.textPrimary,
-    surfaceContainerLowest: palette.surface,
+    surfaceContainerLowest: palette.workspace,
     surfaceContainerLow: palette.surface,
-    surfaceContainer: palette.surfaceVariant,
-    surfaceContainerHigh: palette.surfaceElevated,
-    surfaceContainerHighest: palette.surfaceElevated,
+    surfaceContainer: palette.hover,
+    surfaceContainerHigh: palette.active,
+    surfaceContainerHighest: palette.popover,
     onSurfaceVariant: palette.textSecondary,
     outline: palette.border,
     outlineVariant: palette.border,
