@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ssh_client/app/app_services.dart';
+import 'package:ssh_client/app/localizations.dart';
 import 'package:ssh_client/app/session_controller.dart';
 import 'package:ssh_client/app/theme/app_theme.dart';
 import 'package:ssh_client/core/security/password_hasher.dart';
@@ -77,7 +78,7 @@ class AppHarness {
   Widget wrap(Widget child) => MaterialApp(
     theme: AppTheme.dark(),
     locale: const Locale('es'),
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    localizationsDelegates: appLocalizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: child,
   );

@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:ssh_client/app/localizations.dart';
 import 'package:ssh_client/app/theme/app_theme.dart';
 import 'package:ssh_client/features/sftp/domain/transfer.dart';
 import 'package:ssh_client/features/sftp/presentation/sftp_controller.dart';
@@ -14,7 +15,7 @@ import '../../support/fake_sftp_gateway.dart';
 Widget host(Widget child) => MaterialApp(
   theme: AppTheme.dark(),
   locale: const Locale('es'),
-  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  localizationsDelegates: appLocalizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: Scaffold(body: SizedBox(width: 900, height: 700, child: child)),
 );

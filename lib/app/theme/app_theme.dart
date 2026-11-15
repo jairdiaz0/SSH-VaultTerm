@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Colour palette from the SPEC (section 4). Dark only: there is no light
 /// theme, so these are the single source of truth for every custom widget.

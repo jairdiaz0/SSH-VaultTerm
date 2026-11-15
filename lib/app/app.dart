@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import 'app_services.dart';
+import 'localizations.dart';
 import 'session_controller.dart';
 import 'session_gate.dart';
 import 'theme/app_theme.dart';
@@ -35,7 +36,7 @@ class _SshClientAppState extends State<SshClientApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark(),
       locale: const Locale('es'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: SessionGate(controller: _controller),
     );

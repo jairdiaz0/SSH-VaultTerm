@@ -356,6 +356,21 @@ flutter test      → +178 All tests passed!
 Pendiente: escritura/lectura real de ficheros vía selector del sistema (no
 ejecutable aquí) y migración de documentos de versiones anteriores (solo existe v1).
 
+## 2026-11-15 — Ronda 3: línea base
+
+Flutter se actualizó a **3.50.0** (Dart 3.13.7), donde `package:flutter/material.dart`
+está deprecado en favor de `package:material_ui/material_ui.dart` (y Cupertino en
+`cupertino_ui`). Se migraron todos los imports y los delegates de localización
+(`lib/app/localizations.dart`), con `material_ui 1.11.0` y `cupertino_ui 1.1.6`.
+
+```text
+flake analizar   → No issues found!
+flutter test     → +204 All tests passed!
+```
+
+Esta es la línea base de la etiqueta `pre-ui-modernization`. Rama de trabajo:
+`ui-modernization`.
+
 ## 2026-11-15 — Ronda de correcciones 1 (primera prueba manual en Windows)
 
 ### Estado global

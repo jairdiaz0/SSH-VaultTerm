@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ssh_client/app/app.dart';
 import 'package:ssh_client/app/app_services.dart';
 import 'package:ssh_client/core/security/password_hasher.dart';

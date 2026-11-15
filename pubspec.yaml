@@ -47,6 +47,8 @@ dependencies:
   # docs/DECISIONS.md as a blocked capability, not simulated.
   file_picker: ^13.3.3
   desktop_drop: ^0.8.4
+  material_ui: ^1.11.0
+  cupertino_ui: ^1.1.6
 
 dev_dependencies:
   flutter_test:
