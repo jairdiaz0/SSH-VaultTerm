@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../app/session_controller.dart';
 import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/widgets/confirm_password_dialog.dart';
 import '../../backup/presentation/backup_actions.dart';
@@ -123,7 +124,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                   ),
                   subtitle: Text(
                     known.fingerprint,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTheme.monoFamily,
                       fontSize: 11,
                     ),
@@ -209,12 +210,12 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(top: 8, bottom: 4, left: 12),
     child: Text(
-      title.toUpperCase(),
-      style: const TextStyle(
+      title,
+      style: TextStyle(
         fontSize: 11,
         letterSpacing: 0.8,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
+        color: context.colors.onSurfaceVariant,
       ),
     ),
   );

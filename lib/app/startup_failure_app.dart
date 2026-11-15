@@ -36,7 +36,10 @@ class StartupFailureApp extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.lock_outline, color: AppColors.danger),
+                        Icon(
+                          Icons.lock_outline,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           describeAppError(l10n, error),

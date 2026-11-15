@@ -1,8 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../app/error_messages.dart';
-import '../../app/theme/app_spacing.dart';
-import '../../app/theme/app_theme.dart';
+import '../../app/theme/app_tokens.dart';
 import '../../core/errors/app_exception.dart';
 import '../../l10n/generated/app_localizations.dart';
 
@@ -105,7 +104,7 @@ class _ConfirmPasswordDialogState extends State<_ConfirmPasswordDialog> {
                 child: Text(
                   _error!,
                   key: const Key('confirm-password-error'),
-                  style: const TextStyle(color: AppColors.danger, fontSize: 12),
+                  style: TextStyle(color: context.colors.error, fontSize: 12),
                 ),
               ),
           ],

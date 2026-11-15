@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../app/theme/app_spacing.dart';
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/connection.dart';
 import '../../../shared/models/server_collection.dart';
@@ -32,7 +31,7 @@ class Sidebar extends StatelessWidget {
     final ungrouped = controller.ungrouped;
 
     return Material(
-      color: AppColors.surfaceSecondary,
+      color: context.colors.surfaceContainerLow,
       child: SizedBox(
         width: AppLayout.sidebarWidth,
         child: Column(
@@ -144,12 +143,14 @@ class _Header extends StatelessWidget {
     return Container(
       height: 52,
       padding: const EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.xs),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: context.colors.outlineVariant),
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.shield_outlined, size: 18, color: AppColors.accent),
+          Icon(Icons.shield_outlined, size: 18, color: context.colors.primary),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
@@ -188,26 +189,26 @@ class _ConnectionIndicator extends StatelessWidget {
     final (status, color) = switch (controller.workspace.status) {
       SshConnectionStatus.connected => (
         l10n.connectionStatusConnected,
-        AppColors.accentSecondary,
+        context.colors.secondary,
       ),
       SshConnectionStatus.connecting ||
       SshConnectionStatus.awaitingHostKey ||
       SshConnectionStatus.authenticating => (
         l10n.connectionStatusConnecting,
-        AppColors.warning,
+        context.tokens.warning,
       ),
       SshConnectionStatus.failed => (
         l10n.connectionStatusFailed,
-        AppColors.danger,
+        context.colors.error,
       ),
       SshConnectionStatus.sessionEnded => (
         l10n.sessionEndedTitle,
-        AppColors.warning,
+        context.tokens.warning,
       ),
       SshConnectionStatus.disconnected ||
       SshConnectionStatus.disconnectedUnexpectedly => (
         l10n.connectionStatusDisconnected,
-        AppColors.textSecondary,
+        context.colors.onSurfaceVariant,
       ),
     };
     return Padding(
@@ -246,12 +247,12 @@ class _SectionHeader extends StatelessWidget {
       AppSpacing.xs,
     ),
     child: Text(
-      title.toUpperCase(),
-      style: const TextStyle(
+      title,
+      style: TextStyle(
         fontSize: 11,
         letterSpacing: 0.8,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
+        color: context.colors.onSurfaceVariant,
       ),
     ),
   );
@@ -362,8 +363,8 @@ class _ConnectionTile extends StatelessWidget {
             : Icons.terminal,
         size: 16,
         color: connection.favorite
-            ? AppColors.warning
-            : AppColors.textSecondary,
+            ? context.tokens.warning
+            : context.colors.onSurfaceVariant,
       ),
       title: Text(
         connection.name,
@@ -435,7 +436,7 @@ Future<bool> _confirm(
         FilledButton(
           key: const Key('confirm-delete'),
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+          style: FilledButton.styleFrom(backgroundColor: context.colors.error),
           child: Text(l10n.deleteAction),
         ),
       ],

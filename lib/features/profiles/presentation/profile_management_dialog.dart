@@ -2,8 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../app/error_messages.dart';
 import '../../../app/session_controller.dart';
-import '../../../app/theme/app_spacing.dart';
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../shared/models/profile.dart';
@@ -87,7 +86,9 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
           ),
           FilledButton(
             key: const Key('confirm-delete-profile'),
-            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colors.error,
+            ),
             onPressed: () => Navigator.of(context).pop(true),
             child: Text(l10n.deleteAction),
           ),
@@ -143,7 +144,7 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                 child: Text(
                   _error!,
                   key: const Key('profile-management-error'),
-                  style: const TextStyle(color: AppColors.danger, fontSize: 12),
+                  style: TextStyle(color: context.colors.error, fontSize: 12),
                 ),
               ),
             Expanded(
@@ -158,8 +159,8 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                             : Icons.radio_button_unchecked,
                         size: 18,
                         color: profile.id == currentId
-                            ? AppColors.accent
-                            : AppColors.textSecondary,
+                            ? context.colors.primary
+                            : context.colors.onSurfaceVariant,
                       ),
                       title: Text(profile.name),
                       subtitle: profile.id == currentId
@@ -178,10 +179,10 @@ class _ProfileManagementDialogState extends State<ProfileManagementDialog> {
                           IconButton(
                             key: Key('delete-profile-${profile.id}'),
                             tooltip: l10n.deleteProfileAction,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.delete_outline,
                               size: 18,
-                              color: AppColors.danger,
+                              color: context.colors.error,
                             ),
                             onPressed: () => _delete(profile),
                           ),
@@ -301,7 +302,7 @@ class _NewProfileDialogState extends State<_NewProfileDialog> {
                 child: Text(
                   _error!,
                   key: const Key('new-profile-error'),
-                  style: const TextStyle(color: AppColors.danger, fontSize: 12),
+                  style: TextStyle(color: context.colors.error, fontSize: 12),
                 ),
               ),
           ],

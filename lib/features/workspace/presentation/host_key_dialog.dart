@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../ssh/domain/host_key_verifier.dart';
 
@@ -30,7 +31,7 @@ Future<void> showHostKeyChangedDialog(
   builder: (context) {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      icon: const Icon(Icons.gpp_bad_outlined, color: AppColors.danger),
+      icon: Icon(Icons.gpp_bad_outlined, color: context.colors.error),
       title: Text(l10n.hostKeyChangedTitle),
       content: Text(l10n.hostKeyChangedBody(hostname)),
       actions: [
@@ -53,7 +54,7 @@ class _HostKeyDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      icon: const Icon(Icons.fingerprint, color: AppColors.accent),
+      icon: Icon(Icons.fingerprint, color: context.colors.primary),
       title: Text(l10n.hostKeyDialogTitle),
       content: SizedBox(
         width: 460,
@@ -78,13 +79,13 @@ class _HostKeyDialog extends StatelessWidget {
             SelectableText(
               challenge.fingerprint,
               key: const Key('host-key-fingerprint'),
-              style: const TextStyle(fontFamily: AppTheme.monoFamily),
+              style: TextStyle(fontFamily: AppTheme.monoFamily),
             ),
             if (challenge.isChanged) ...[
               const SizedBox(height: 12),
               Text(
                 l10n.hostKeyChangedBody(challenge.hostname),
-                style: const TextStyle(color: AppColors.danger),
+                style: TextStyle(color: context.colors.error),
               ),
             ],
           ],

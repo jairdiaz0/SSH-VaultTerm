@@ -14,7 +14,7 @@ void main() {
     expect(find.text('Producción'), findsOneWidget);
     final collections = harness.controller.session!.collections.all();
     expect(collections.single.name, 'Producción');
-    expect(find.text('COLECCIONES'), findsOneWidget);
+    expect(find.text('Colecciones'), findsOneWidget);
   });
 
   testWidgets('creates a password connection and stores its secret apart', (
@@ -99,7 +99,7 @@ void main() {
     await tester.tap(find.text('Añadir a favoritos'));
     await tester.pumpAndSettle();
 
-    expect(find.text('FAVORITOS'), findsOneWidget);
+    expect(find.text('Favoritos'), findsOneWidget);
     expect(find.text('web-01'), findsNWidgets(2));
     expect(
       harness.controller.session!.connections.byId(connection.id)!.favorite,

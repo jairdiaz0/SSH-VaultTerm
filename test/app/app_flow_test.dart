@@ -222,8 +222,8 @@ void main() {
       // Favourites appear twice by design: in Favourites and in its collection.
       expect(find.text('web-01'), findsNWidgets(2));
       expect(find.text('deploy@10.0.0.10:22'), findsNWidgets(2));
-      expect(find.text('FAVORITOS'), findsOneWidget);
-      expect(find.text('COLECCIONES'), findsOneWidget);
+      expect(find.text('Favoritos'), findsOneWidget);
+      expect(find.text('Colecciones'), findsOneWidget);
     },
   );
 }

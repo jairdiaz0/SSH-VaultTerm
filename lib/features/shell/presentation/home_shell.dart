@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/session_controller.dart';
-import '../../../app/theme/app_spacing.dart';
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../settings/presentation/settings_dialog.dart';
 import '../../workspace/presentation/workspace_panel.dart';
@@ -118,7 +117,7 @@ class _HomeShellState extends State<HomeShell> {
           appBar: AppBar(
             title: Row(
               children: [
-                const Icon(Icons.terminal, size: 18, color: AppColors.accent),
+                Icon(Icons.terminal, size: 18, color: context.colors.primary),
                 const SizedBox(width: 8),
                 Text(l10n.appTitle),
               ],

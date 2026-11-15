@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../app/theme/app_theme.dart';
+import '../../../app/theme/app_tokens.dart';
 
 /// Modifier and shortcut bar for touch terminals.
 ///
@@ -40,9 +40,9 @@ class _TerminalKeyBarState extends State<TerminalKeyBar> {
   Widget build(BuildContext context) {
     return Container(
       height: 44,
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceSecondary,
-        border: Border(top: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainerLow,
+        border: Border(top: BorderSide(color: context.colors.outlineVariant)),
       ),
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -71,7 +71,7 @@ class _TerminalKeyBarState extends State<TerminalKeyBar> {
       onPressed: onPressed,
       style: TextButton.styleFrom(
         backgroundColor: active
-            ? AppColors.accent.withValues(alpha: 0.25)
+            ? context.colors.primary.withValues(alpha: 0.20)
             : Colors.transparent,
         minimumSize: const Size(40, 32),
         padding: const EdgeInsets.symmetric(horizontal: 10),
