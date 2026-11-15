@@ -43,16 +43,19 @@ class ProfileService {
   }) async {
     final trimmed = name.trim();
     if (trimmed.isEmpty || trimmed.length > maxNameLength) {
-      fail(AppErrorCode.validation, cause: 'invalid profile name');
+      failWith(AppErrorCode.validation, cause: 'invalid profile name');
     }
     if (password.length < minPasswordLength) {
-      fail(AppErrorCode.validation, cause: 'password too short');
+      failWith(AppErrorCode.validation, cause: 'password too short');
     }
     if (password != passwordConfirmation) {
-      fail(AppErrorCode.validation, cause: 'password confirmation mismatch');
+      failWith(
+        AppErrorCode.validation,
+        cause: 'password confirmation mismatch',
+      );
     }
     if (catalog.profiles.byName(trimmed) != null) {
-      fail(AppErrorCode.conflict, cause: 'profile name already exists');
+      failWith(AppErrorCode.conflict, cause: 'profile name already exists');
     }
 
     final verifier = await hasher.hash(password, params: params);

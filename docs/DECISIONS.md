@@ -142,13 +142,18 @@ disponible en este árbol de dependencias, con la causa documentada.
 ---
 
 ## D-007 — Hash de contraseña de perfil: Argon2id en isolate
-**Fecha:** 2026-11-15 (decisión inicial; se cierra en fase 1)
-**Decisión propuesta:** Argon2id con `cryptography` 2.9.0 ejecutado en un
-isolate (Dart puro, coste alto), sal aleatoria de 16 bytes por perfil y
-parámetros almacenados junto al verificador para poder migrarlos. Alternativa
-documentada si el rendimiento en móvil es inaceptable: PBKDF2-HMAC-SHA256 con
-≥600 000 iteraciones.
-**Pendiente:** validar con vectores de prueba conocidos (RFC 9106) en fase 1.
+**Fecha:** 2026-11-15 (decisión inicial; verificada en fase 1)
+**Decisión:** Argon2id con `cryptography` 2.9.0 ejecutado en un isolate
+(`Isolate.run`), sal aleatoria de 16 bytes por perfil, 32 bytes de tag y
+parámetros (64 MiB, t=3, p=2) persistidos junto al verificador para poder
+migrarlos. Alternativa documentada si el rendimiento en móvil es inaceptable:
+PBKDF2-HMAC-SHA256 con ≥600 000 iteraciones.
+**Verificación:** `matches a reference Argon2id implementation (argon2-cffi)` en
+`test/core/security/password_hasher_test.dart`: el tag coincide con el de
+`argon2-cffi` para un vector fijado (sal, memoria, iteraciones y paralelismo
+constantes). Comparación en tiempo constante sobre el verificador.
+**Consecuencia:** los tests usan `PasswordHasher.direct()` (sin isolate) para no
+pagar el arranque; los widget tests usan un doble de la derivación (D-012).
 
 ---
 
@@ -172,16 +177,68 @@ contraseña de ese perfil. Sin este enlace, tras reiniciar solo sería accesible
 ---
 
 ## D-010 — Estructura de datos en disco
-**Fecha:** 2026-11-15 (decisión inicial para la fase 1)
-**Decisión propuesta:**
+**Fecha:** 2026-11-15 (cerrada en fase 1)
+**Decisión:**
 ```text
-<appSupport>/ssh_client/
-  catalog.db                 # cifrada: perfiles (sin secretos) + metadatos
+<applicationSupport>/ssh_client/
+  catalog.db                    # cifrada: perfiles (sin secretos) + metadatos
   profiles/<profileId>/data.db  # cifrada: colecciones, conexiones, known hosts
 ```
 Claves en Secure Storage:
-- `catalog/key`
+- `catalog/dbKey`
 - `profile/<profileId>/dbKey`
 - `profile/<profileId>/credential/<credentialId>`
 Ningún secreto en SQLite. Las claves nunca se escriben en disco ni en logs.
-**Pendiente:** confirmar rutas por plataforma con `path_provider` en fase 1.
+**Verificación:** rutas resueltas con `path_provider`
+(`getApplicationSupportDirectory`) en `core/storage/app_paths.dart`, fijadas por
+`test/core/storage/app_paths_test.dart` junto con el namespace de secretos.
+**Detalle:** al borrar un perfil se eliminan el fichero y sus sidecars `-wal`/`-shm`
+(el WAL está activo, ver `EncryptedDatabase._configure`).
+
+---
+
+## D-011 — Estado de aplicación sin Riverpod por ahora
+**Fecha:** 2026-11-15
+**Contexto:** el SPEC admite `flutter_riverpod` como auxiliar «solo si hace
+falta». La fase 1 necesita un único estado global (bloqueado/desbloqueado +
+sesión de perfil abierta) y tres pantallas.
+**Decisión:** `SessionController extends ChangeNotifier` como dueño del estado,
+expuesto a la UI con `ListenableBuilder` desde `SessionGate`. `AppServices` es el
+composition root (`bootstrap` en producción, `fromStorage` en tests) y no hay
+ningún singleton mutable global.
+**Consecuencias:** cero código generado y ninguna API nueva para un estado de
+tres valores. `flutter_riverpod` queda **sin usar**; se retirará del
+`pubspec.yaml` si la fase 3 no lo necesita, y añadirlo entonces sería una
+decisión nueva, no un reflejo.
+**Alternativa descartada:** Riverpod ahora, por ceremonia en un estado de tres
+valores.
+
+---
+
+## D-012 — Doble de la derivación Argon2 en widget tests
+**Fecha:** 2026-11-15
+**Contexto:** Argon2 de `cryptography` cede el turno con
+`Future.delayed(Duration(microseconds: 1))` dentro del bucle de cómputo. En la
+zona *fake-async* de `testWidgets` esos temporizadores no avanzan, así que
+cualquier widget test que desbloquee o cree un perfil se cuelga (comprobado: el
+`pumpAndSettle` expira con el indicador de progreso eterno).
+**Decisión:** los widget tests inyectan `testKeyDerivation` (FNV/LCG
+determinista, rápido, distingue contraseñas) en `PasswordHasher(derive: ...)`.
+Argon2id real se verifica aparte, con vector externo, en
+`test/core/security/password_hasher_test.dart`.
+**Consecuencias:** los widget tests prueban el flujo completo (validación,
+gate, apertura/cierre de BD) sin pagar 64 MiB por intento. El doble vive en
+`test/support/app_harness.dart` y no se enlaza desde `lib/`.
+
+---
+
+## D-013 — l10n sin paquete sintético
+**Fecha:** 2026-11-15
+**Contexto:** `synthetic-package` está deprecado en Flutter 3.47 y
+`flutter gen-l10n` avisa de que ya no tiene efecto.
+**Decisión:** `l10n.yaml` con `output-dir: lib/l10n/generated` y
+`nullable-getter: false`. Los ficheros generados se versionan para que
+`flutter analyze` y `flutter test` funcionen sin un paso previo de generación.
+**Consecuencias:** al añadir una cadena hay que ejecutar `flutter gen-l10n`
+(también lo hace `flutter run`/`build` con `generate: true`). Prohibido escribir
+texto visible literal en widgets: todo pasa por `AppLocalizations`.

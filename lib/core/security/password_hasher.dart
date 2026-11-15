@@ -106,7 +106,7 @@ class PasswordHasher {
   static Future<Uint8List> _deriveOnThisIsolate(Argon2Request request) async {
     final params = request.params;
     if (params.memoryKib < 8 * params.parallelism) {
-      fail(AppErrorCode.validation, cause: 'invalid argon2 parameters');
+      failWith(AppErrorCode.validation, cause: 'invalid argon2 parameters');
     }
     final algorithm = Argon2id(
       memory: params.memoryKib,

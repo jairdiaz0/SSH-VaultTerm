@@ -1,0 +1,75 @@
+{
+  "@@locale": "es",
+  "appTitle": "SSH Client",
+  "commonCancel": "Cancelar",
+  "commonClose": "Cerrar",
+  "commonRetry": "Reintentar",
+  "firstRunTitle": "Crea tu primer perfil",
+  "firstRunSubtitle": "La contraseña del perfil protege el acceso a la aplicación. No se puede recuperar: si la olvidas, los datos del perfil quedan inaccesibles.",
+  "profileNameLabel": "Nombre del perfil",
+  "passwordLabel": "Contraseña",
+  "passwordConfirmLabel": "Confirmar contraseña",
+  "createProfileAction": "Crear perfil",
+  "passwordMinLengthHint": "Mínimo {min} caracteres.",
+  "@passwordMinLengthHint": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "lockTitle": "Desbloquear perfil",
+  "lockSubtitle": "Introduce la contraseña de {profile} para continuar.",
+  "@lockSubtitle": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    }
+  },
+  "unlockAction": "Desbloquear",
+  "switchProfileAction": "Cambiar de perfil",
+  "profileSwitcherTitle": "Elige un perfil",
+  "homeTitle": "Sesión desbloqueada",
+  "lockSessionAction": "Bloquear sesión",
+  "signOutAction": "Cerrar sesión",
+  "collectionsSection": "Colecciones",
+  "favoritesSection": "Favoritos",
+  "connectionsSection": "Conexiones",
+  "emptyCollectionsMessage": "Este perfil todavía no tiene colecciones.",
+  "emptyConnectionsMessage": "Este perfil todavía no tiene conexiones.",
+  "connectionCountLabel": "{count, plural, =0{Sin conexiones} =1{1 conexión} other{{count} conexiones}}",
+  "@connectionCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAction": "Ajustes",
+  "errorInvalidCredentials": "Contraseña incorrecta.",
+  "errorAccountLocked": "Demasiados intentos fallidos. Vuelve a intentarlo en {seconds} segundos.",
+  "@errorAccountLocked": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorPasswordMismatch": "Las contraseñas no coinciden.",
+  "errorPasswordTooShort": "La contraseña debe tener al menos {min} caracteres.",
+  "@errorPasswordTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "errorProfileNameEmpty": "Escribe un nombre para el perfil.",
+  "errorProfileNameTaken": "Ya existe un perfil con ese nombre.",
+  "errorValidation": "Revisa los datos introducidos.",
+  "errorConflict": "Ese elemento ya existe.",
+  "errorSecureStorageUnavailable": "El almacén seguro del sistema no está disponible. Sin él no se pueden guardar secretos y la aplicación no puede continuar.",
+  "errorDatabaseFailure": "No se pudo abrir la base de datos cifrada del perfil.",
+  "errorUnknown": "Ha ocurrido un error inesperado."
+}

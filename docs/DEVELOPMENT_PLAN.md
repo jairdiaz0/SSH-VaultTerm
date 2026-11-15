@@ -26,42 +26,53 @@ y `flutter test` (unitarios, widget, golden, FFI).
 
 ## Fase 1 — Backend y seguridad
 ### Núcleo
-- [ ] `core/errors`: jerarquía de errores de dominio y mapeo a mensajes seguros.
-- [ ] `core/utils/logger`: logger sin secretos (nunca contraseñas, llaves, comandos ni salida de terminal).
-- [ ] `core/storage/app_paths`: rutas de datos por plataforma con `path_provider`.
-- [ ] `l10n` base: ARB en español, `AppLocalizations` cableado en `MaterialApp`.
-- [ ] Tema oscuro base con la paleta del SPEC (sin componentes aún).
+- [x] `core/errors`: jerarquía de errores (`AppException`, códigos) y descripción segura sin mensajes de capas bajas.
+- [x] `core/utils/logger`: logger sin secretos (nunca contraseñas, llaves, comandos ni salida de terminal).
+- [x] `core/storage/app_paths`: rutas de datos por plataforma con `path_provider`, WAL/`-shm` incluidas al borrar.
+- [x] `l10n` base: ARB en español (`lib/l10n/app_es.arb`), `gen-l10n` y `AppLocalizations` cableado en `MaterialApp`.
+- [x] Tema oscuro base con la paleta del SPEC y componentes sin elevación ni gradientes.
 
 ### Secretos
-- [ ] Interfaz `SecretStore` + implementación en memoria (tests).
-- [ ] Implementación real sobre `flutter_secure_storage` 11.2.0 (marcada `[~]`: no verificable aquí).
-- [ ] Claves de BD: generación CSPRNG 32 bytes, lectura/escritura en Secure Storage, borrado por perfil.
+- [x] Interfaz `SecretStore` + implementación en memoria (tests).
+- [~] Implementación real sobre `flutter_secure_storage` 11.2.0 (no verificable en ejecución aquí, D-001).
+- [x] Claves de BD: generación CSPRNG 32 bytes, lectura/escritura en Secure Storage, borrado por perfil.
 
 ### Base de datos cifrada
-- [ ] `EncryptedDatabase`: apertura con `PRAGMA key` en crudo, comprobación de `cipher_version`, cierre, borrado.
-- [ ] Migraciones con `PRAGMA user_version` y transacciones (catálogo y perfil).
-- [ ] Esquema del catálogo (perfiles sin secretos, último perfil activo, contadores de bloqueo).
-- [ ] Esquema por perfil (colecciones, conexiones, huellas conocidas, ajustes del perfil).
-- [ ] Repositorios: `ProfileRepository`, `CollectionRepository`, `ConnectionRepository`, `KnownHostRepository`.
-- [ ] Validación de pertenencia al perfil en cada operación (aislamiento real, no solo UI).
+- [x] `EncryptedDatabase`: apertura con `PRAGMA key` en crudo, comprobación de `cipher_version`, cierre, borrado.
+- [x] Migraciones con `PRAGMA user_version` y transacciones (catálogo y perfil); `schemaTooNew` para versiones futuras.
+- [x] Esquema del catálogo (perfiles sin secretos, último perfil activo único, contadores de bloqueo).
+- [x] Esquema por perfil (colecciones, conexiones, huellas conocidas, ajustes del perfil).
+- [x] Repositorios: `ProfileRepository`, `CollectionRepository`, `ConnectionRepository`, `KnownHostRepository`.
+- [x] Validación de pertenencia al perfil en cada operación (aislamiento real, no solo UI).
 
 ### Autenticación local
-- [ ] Argon2id (`cryptography`) en isolate, sal por perfil, parámetros persistidos.
-- [ ] Vectores de prueba y verificación/actualización de parámetros.
-- [ ] Servicio de autenticación: verificador, mensajes genéricos, retardo progresivo persistente.
-- [ ] Sesión: desbloquear, bloquear, cambiar de perfil, cerrar (y cerrar BD + limpiar memoria).
-- [ ] Creación de perfil restringida a sesión desbloqueada; nunca copia datos.
-- [ ] Interruptor de reautenticación por perfil.
+- [x] Argon2id (`cryptography`) en isolate, sal por perfil, parámetros persistidos.
+- [x] Vectores de prueba y verificación/actualización de parámetros (vector de referencia `argon2-cffi`).
+- [x] Servicio de autenticación: verificador, mensajes genéricos, retardo progresivo persistente.
+- [x] Sesión: desbloquear, bloquear, cambiar de perfil, cerrar (y cerrar BD + limpiar memoria).
+- [x] Creación de perfil restringida a sesión desbloqueada; nunca copia datos.
+- [~] Interruptor de reautenticación por perfil: flag persistido (`settings.requireReauthOnEdit`) y
+  `confirmPassword` listos; el control en Ajustes llega en la fase 4.
 
 ### Credenciales
-- [ ] `CredentialService` con namespace `profile/{profileId}/credential/{credentialId}`.
-- [ ] Sólo metadatos en SQLite; secretos exclusivamente en Secure Storage.
-- [ ] Borrado en cascada al borrar perfil/credencial (sin huérfanos).
+- [x] `CredentialService` con namespace `profile/{profileId}/credential/{credentialId}`.
+- [x] Sólo metadatos en SQLite; secretos exclusivamente en Secure Storage.
+- [x] Borrado en cascada al borrar perfil/credencial (sin huérfanos).
+
+### Shell de aplicación (adelanto de la fase 4)
+- [x] Gate de sesión con los tres estados: sin perfiles (primer inicio), bloqueado, desbloqueado.
+- [x] Pantalla de desbloqueo: último perfil, enlace discreto «Cambiar de perfil» (D-008), mensaje
+  genérico de fallo y aviso de espera durante el bloqueo.
+- [x] Asistente del primer perfil con validación local (nombre, longitud mínima, confirmación).
+- [x] Home de solo lectura con colecciones, favoritos y conexiones reales del perfil + bloqueo de sesión.
+- [x] Cierre de sesión real: cierra la BD del perfil y vuelve a la pantalla bloqueada.
+- [!] Golden test con tipografías reales: requiere empaquetar Inter y JetBrains Mono (fase 4).
 
 ### Verificación de fase
-- [ ] Tests unitarios de perfiles, auth, aislamiento, colecciones, conexiones.
-- [ ] Tests de BD: cifrado efectivo, clave incorrecta, migraciones, persistencia, borrado.
-- [ ] `dart format .`, `flutter analyze`, `flutter test` en verde.
+- [x] Tests unitarios de perfiles, auth, aislamiento, colecciones, conexiones.
+- [x] Tests de BD: cifrado efectivo, clave incorrecta, migraciones, persistencia, borrado.
+- [x] Tests de UI: primera ejecución, bloqueo, desbloqueo, mensaje de fallo, cierre de sesión, tema.
+- [x] `dart format .`, `flutter analyze`, `flutter test` en verde (82 tests).
 
 ## Fase 2 — Motor SSH
 - [ ] `SshService` con una única sesión `SSHClient` por conexión y canales separados.

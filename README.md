@@ -6,6 +6,9 @@ los servidores del usuario.
 
 - Requisitos completos: [`docs/SPEC.md`](docs/SPEC.md)
 - Reglas de trabajo: [`AGENTS.md`](AGENTS.md)
+- Arquitectura: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- Base de datos y claves: [`docs/DATABASE.md`](docs/DATABASE.md)
+- Seguridad y modelo de amenazas: [`docs/SECURITY.md`](docs/SECURITY.md)
 - Estado y progreso: [`docs/DEVELOPMENT_PLAN.md`](docs/DEVELOPMENT_PLAN.md)
 - Decisiones técnicas: [`docs/DECISIONS.md`](docs/DECISIONS.md)
 - Verificaciones ejecutadas: [`docs/TESTING.md`](docs/TESTING.md)
@@ -13,9 +16,13 @@ los servidores del usuario.
 
 ## Estado
 
-Fase 0 (auditoría) completada: toolchain verificada, dependencias auditadas con
-licencias, y prueba de concepto de SQLite cifrado con **SQLCipher 4.20.0**
-funcionando. El resto de fases está en curso; consulta el plan para el detalle.
+Fase 0 (auditoría) y fase 1 (backend y seguridad) completadas y verificadas con
+`flutter analyze` y 82 tests: catálogo y bases de datos por perfil cifradas con
+**SQLCipher 4.20.0**, claves en el almacén secreto del sistema, Argon2id
+verificado contra `argon2-cffi`, bloqueo progresivo persistente y el shell de la
+app (primer perfil, desbloqueo, home de solo lectura). Los widget tests nunca
+sustituyen la verificación real: ver `docs/TESTING.md`. El resto de fases está en
+curso; consulta el plan para el detalle.
 
 ## Requisitos para desarrollar
 
@@ -30,6 +37,7 @@ funcionando. El resto de fases está en curso; consulta el plan para el detalle.
 
 ```bash
 flutter pub get
+flutter gen-l10n     # regenera lib/l10n/generated tras editar los .arb
 dart format .
 flutter analyze
 flutter test

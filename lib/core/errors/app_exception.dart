@@ -38,6 +38,6 @@ class AppException implements Exception {
 }
 
 /// Convenience throwers keep call sites short and consistent.
-Never fail(AppErrorCode code, {Object? cause, StackTrace? stackTrace}) {
+Never failWith(AppErrorCode code, {Object? cause, StackTrace? stackTrace}) {
   throw AppException(code, cause: cause, stackTrace: stackTrace);
 }

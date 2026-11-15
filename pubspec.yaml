@@ -16,8 +16,6 @@ dependencies:
   intl: any
 
   # State management
-  flutter_riverpod: ^3.5.0
-
   # SSH / SFTP (phase 2-3)
   dartssh2: ^4.1.0
 
@@ -64,3 +62,4 @@ hooks:
 
 flutter:
   uses-material-design: true
+  generate: true

@@ -36,11 +36,11 @@ class AuthenticationService {
   }) async {
     final profile = catalog.profiles.byId(profileId);
     if (profile == null) {
-      fail(AppErrorCode.notFound, cause: 'profile not found');
+      failWith(AppErrorCode.notFound, cause: 'profile not found');
     }
     final at = now();
     if (policy.isLocked(profile.lockoutUntil, at)) {
-      fail(AppErrorCode.accountLocked);
+      failWith(AppErrorCode.accountLocked);
     }
 
     final ok = await hasher.verify(password, profile.toPasswordVerifier());
@@ -53,12 +53,21 @@ class AuthenticationService {
         now: at,
         lockoutUntil: delay == Duration.zero ? null : at.add(delay),
       );
-      fail(AppErrorCode.invalidCredentials);
+      failWith(AppErrorCode.invalidCredentials);
     }
 
     catalog.profiles.clearFailures(profile.id, now: at);
     catalog.profiles.setLastActive(profile.id, now: at);
     return catalog.profiles.byId(profile.id)!;
+  }
+
+  /// Time left before [profileId] accepts attempts again. Used by the UI to
+  /// explain the wait without exposing the stored counters.
+  Duration lockoutRemaining(String profileId) {
+    final until = catalog.profiles.byId(profileId)?.lockoutUntil;
+    if (until == null) return Duration.zero;
+    final remaining = until.difference(now());
+    return remaining.isNegative ? Duration.zero : remaining;
   }
 
   /// Re-checks the password for a sensitive action without unlocking again and

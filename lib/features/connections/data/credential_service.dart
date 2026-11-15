@@ -50,7 +50,7 @@ class CredentialService {
     required CredentialSecret secret,
   }) async {
     if (secret.isEmpty) {
-      fail(AppErrorCode.validation, cause: 'empty credential');
+      failWith(AppErrorCode.validation, cause: 'empty credential');
     }
     await secrets.write(
       SecretKeys.credential(profileId, credentialId),
