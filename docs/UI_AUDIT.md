@@ -1,5 +1,9 @@
 # UI_AUDIT — Ronda 3 (modernización)
 
+> Ronda 6: el rediseño solicitado (barra de pestañas, sidebar de 220 px, dashboard
+> de conexiones y panel de detalles) **no está implementado**. Este inventario
+> describe la UI real actual; lo pendiente está en `docs/ROADMAP.md`.
+
 Inventario de pantallas y widgets, estilos escritos a mano encontrados y la
 checklist de modernización. Todas las filas quedan revisadas al cierre de la
 ronda; lo no verificable en este entorno se declara.

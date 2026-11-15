@@ -154,6 +154,24 @@ y `flutter test` (unitarios, widget, golden, FFI).
   `flutter test integration_test -d windows` con almacén seguro y BD cifrada reales.
 - [!] Android/macOS/Linux: sin toolchain aquí (D-001). Sin verificar en ejecución.
 
+## Ronda 6 (GUI) — estado
+
+- [x] Reset de la aplicación verificado con el flujo real de UI: el árbol se
+  sustituye antes de cerrar las bases, se reconstruye el grafo de servicios y se
+  vuelve al asistente del primer perfil (`test/app/app_reset_flow_test.dart`).
+- [x] Reset con catálogo corrupto, sin abrir ninguna base.
+- [x] Marcador de reset pendiente aplicado antes de abrir bases.
+- [x] Solo se borran secretos con prefijos de SSH Client; otros namespaces intactos.
+- [ ] **Fase 1 completa (sistema de diseño neutro, barra superior de pestañas,
+  sidebar 220, dashboard de conexiones, panel de detalles, vista de huellas):
+  NO implementada en esta ronda.** La UI sigue con el sistema de la ronda 3.
+- [ ] Fase 2 (pestañas de sesión múltiples y terminal a pantalla completa): no
+  implementada.
+- [ ] Fase 3 (rediseño SFTP de un panel, tabla nueva, menú contextual, chmod): no
+  implementada.
+- [ ] Fases 4 y 5 (opcionales): no evaluadas.
+- [!] Android: sigue sin toolchain para compilar.
+
 ## Ronda 4 (integridad de almacenamiento y terminal)
 
 - [x] Causa raíz del hmac: separación crear/abrir claves, errores tipados

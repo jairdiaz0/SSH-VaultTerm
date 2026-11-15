@@ -17,7 +17,7 @@ los servidores del usuario.
 ## Estado
 
 Fases 0–8 completadas en lo que este entorno permite. `flutter analyze` sin
-incidencias y **277 tests** en verde, incluidos SSH, pty y SFTP reales contra el
+incidencias y **280 tests** en verde, incluidos SSH, pty y SFTP reales contra el
 servidor de pruebas y un test de integración sobre la **app real compilada para
 Windows** (almacén seguro y SQLCipher reales). Implementado: bases de datos
 cifradas con **SQLCipher 4.20.0** y claves en el almacén secreto del sistema,
