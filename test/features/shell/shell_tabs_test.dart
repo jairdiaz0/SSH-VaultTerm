@@ -89,15 +89,18 @@ void main() {
   );
 
   test(
-    'pinned views and sidebar sections are independent of sessions',
+    'sidebar sections and pinned views are independent of sessions',
     () async {
       final harness = await AppHarness.create();
       addTearDown(harness.dispose);
       final shell = await _shell(harness);
 
       shell.openTab(_connection('c1'));
-      shell.showSftp();
-      expect(shell.view, ShellView.sftp);
+      expect(shell.view, ShellView.session);
+
+      // The pinned tab goes back to the dashboard without closing the session.
+      shell.showDashboard();
+      expect(shell.view, ShellView.dashboard);
       expect(shell.section, ShellSection.connections);
       expect(shell.tabs, hasLength(1));
 
@@ -137,7 +140,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('tab-dashboard')), findsOneWidget);
-    expect(find.byKey(const Key('tab-sftp')), findsOneWidget);
+    expect(find.byKey(const Key('tab-sftp')), findsNothing);
     expect(find.byKey(const Key('tab-session-c1')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('tab-session-c1')));
@@ -148,5 +151,41 @@ void main() {
     await tester.pumpAndSettle();
     expect(shell.tabs, isEmpty);
     expect(find.byKey(const Key('tab-session-c1')), findsNothing);
+  });
+
+  testWidgets('a session tab hugs its label and puts close at the right edge', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1400, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    final harness = await AppHarness.create();
+    addTearDown(harness.dispose);
+    final shell = await _shell(harness);
+    shell.openTab(_connection('c1'));
+    shell.showDashboard();
+
+    await tester.pumpWidget(
+      harness.wrap(
+        Scaffold(
+          body: ListenableBuilder(
+            listenable: shell,
+            builder: (context, _) => TopBar(controller: shell),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final tab = tester.getRect(find.byKey(const Key('tab-session-c1')));
+    final close = tester.getRect(find.byKey(const Key('close-tab-c1')));
+
+    // No filler width: a short name plus the close button.
+    expect(tab.width, lessThan(180));
+    // The close button is the rightmost element, with only the tab padding
+    // after it.
+    expect(close.right, greaterThan(tab.center.dx));
+    expect(tab.right - close.right, lessThan(12));
   });
 }

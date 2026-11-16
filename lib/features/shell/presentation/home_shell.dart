@@ -3,12 +3,8 @@ import 'dart:async';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/session_controller.dart';
-import '../../../app/theme/app_icons.dart';
 import '../../../app/theme/app_tokens.dart';
-import '../../../l10n/generated/app_localizations.dart';
-import '../../../shared/widgets/empty_state.dart';
 import '../../settings/presentation/settings_dialog.dart';
-import '../../sftp/presentation/sftp_panel.dart';
 import '../../workspace/presentation/workspace_panel.dart';
 import 'dashboard_panel.dart';
 import 'fingerprints_panel.dart';
@@ -178,24 +174,16 @@ class _HomeShellState extends State<HomeShell> {
     if (shell.section == ShellSection.fingerprints) {
       return FingerprintsPanel(controller: shell);
     }
-    final l10n = AppLocalizations.of(context);
     final tab = shell.activeTab;
     switch (shell.view) {
       case ShellView.dashboard:
         return DashboardPanel(controller: shell);
-      case ShellView.sftp:
-        final sftp = tab?.workspace.sftp;
-        if (sftp == null) {
-          return EmptyState(
-            icon: AppIcons.folder,
-            title: l10n.sftpTabEmptyTitle,
-            message: l10n.sftpTabEmptyBody,
-          );
-        }
-        return SftpPanel(controller: sftp);
       case ShellView.session:
         if (tab == null) return DashboardPanel(controller: shell);
-        return WorkspacePanel(controller: tab.workspace);
+        return WorkspacePanel(
+          controller: tab.workspace,
+          onDismiss: () => shell.closeTab(tab.id),
+        );
     }
   }
 }

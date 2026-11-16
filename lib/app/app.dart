@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../core/storage/app_reset_service.dart';
 import '../core/storage/secure_storage_secret_store.dart';
+import '../core/storage/windows_secret_store_path.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'app_runtime.dart';
 import 'app_services.dart';
@@ -19,8 +20,8 @@ class SshClientApp extends StatefulWidget {
   const SshClientApp({
     super.key,
     required this.services,
+    required this.rebuildServices,
     this.themeController,
-    this.rebuildServices,
   });
 
   final AppServices services;
@@ -28,9 +29,12 @@ class SshClientApp extends StatefulWidget {
   /// Appearance preference loaded before the first frame. Tests may omit it.
   final ThemeController? themeController;
 
-  /// Builds a fresh service graph after the application has been reset. When
-  /// absent (unit/widget tests) the reset action is not offered.
-  final Future<AppServices> Function()? rebuildServices;
+  /// Builds a fresh service graph after the application has been reset.
+  ///
+  /// Required on purpose: when it was optional, the production entry point
+  /// forgot to pass it and "Restablecer la aplicación" failed with the generic
+  /// reset message while deleting nothing.
+  final Future<AppServices> Function() rebuildServices;
 
   @override
   State<SshClientApp> createState() => _SshClientAppState();
@@ -53,9 +57,6 @@ class _SshClientAppState extends State<SshClientApp> {
 
   Future<void> _resetApplication() async {
     final rebuild = widget.rebuildServices;
-    if (rebuild == null) {
-      throw StateError('reset is not available without a services factory');
-    }
     final paths = _services.paths;
     final keys = _services.keys;
     // Replace the tree first: no widget may touch the databases while they are
@@ -89,14 +90,11 @@ class _SshClientAppState extends State<SshClientApp> {
 
   static String? _windowsSecureStorageFile() {
     if (!Platform.isWindows) return null;
-    final roaming = Platform.environment['APPDATA'];
-    if (roaming == null || roaming.isEmpty) return null;
-    return '\\\\dev.sshclient\\\\ssh_client\\\\flutter_secure_storage.dat';
+    return windowsSecretStoreFile(Platform.environment);
   }
 
   @override
   Widget build(BuildContext context) {
-    final canReset = widget.rebuildServices != null;
     if (_resetting) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -107,9 +105,7 @@ class _SshClientAppState extends State<SshClientApp> {
     return AppThemeScope(
       controller: _theme,
       child: AppRuntime(
-        resetApplication: canReset
-            ? _resetApplication
-            : () async => throw StateError('reset unavailable'),
+        resetApplication: _resetApplication,
         child: ListenableBuilder(
           listenable: _theme,
           builder: (context, _) => MaterialApp(

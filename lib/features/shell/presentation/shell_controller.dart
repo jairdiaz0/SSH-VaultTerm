@@ -14,7 +14,7 @@ import '../../workspace/presentation/workspace_controller.dart';
 enum ShellSection { connections, fingerprints }
 
 /// What the workspace area is showing.
-enum ShellView { dashboard, sftp, session }
+enum ShellView { dashboard, session }
 
 /// One open session, kept alive while the user moves between tabs.
 ///
@@ -101,8 +101,6 @@ class ShellController extends ChangeNotifier {
   /// returns the shell workspace, never null.
   WorkspaceController get workspace => activeTab?.workspace ?? _homeWorkspace;
 
-  bool get hasSftp => activeTab?.workspace.sftp != null;
-
   /// Whether editing connections or credentials must ask for the profile
   /// password again. Read from the catalog, so the toggle takes effect at once.
   bool get requireReauthOnEdit {
@@ -119,12 +117,6 @@ class ShellController extends ChangeNotifier {
   void showDashboard() {
     _section = ShellSection.connections;
     _view = ShellView.dashboard;
-    notifyListeners();
-  }
-
-  void showSftp() {
-    _section = ShellSection.connections;
-    _view = ShellView.sftp;
     notifyListeners();
   }
 
@@ -168,10 +160,16 @@ class ShellController extends ChangeNotifier {
 
   /// Opens [connection] in its own tab, or reuses the tab that already holds
   /// it. A live session is never reopened: the tab is only brought to front.
+  ///
+  /// Dialogs are bound to the navigator, not to the caller's context: the
+  /// dashboard card that starts the connection is unmounted as soon as the
+  /// session tab is shown, and a defunct context would silently refuse the host
+  /// key (the connection then ended as "host key rejected").
   Future<void> connect(BuildContext context, Connection connection) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
     final tab = openTab(connection);
     if (tab.workspace.isConnected || tab.workspace.isBusy) return;
-    await connectAndExplain(context, tab.workspace, connection);
+    await connectAndExplain(navigator.context, tab.workspace, connection);
     _notify();
   }
 

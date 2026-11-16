@@ -50,7 +50,74 @@ void main() {
     await tester.tap(find.byKey(const Key('connection-save-button')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('connection-form-error')), findsOneWidget);
+    // The error is attached to the offending field, not to a line at the end.
+    final host = tester.widget<TextField>(
+      find.byKey(const Key('connection-host-field')),
+    );
+    expect(host.decoration!.errorText, isNotNull);
+    expect(find.byKey(const Key('connection-form-error')), findsNothing);
+    expect(harness.controller.session!.connections.all(), isEmpty);
+  });
+
+  testWidgets('stores the port typed in the form', (tester) async {
+    final harness = await pumpShell(tester);
+    addTearDown(harness.dispose);
+
+    await tester.tap(find.byKey(const Key('new-connection-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('connection-name-field')), 'x');
+    await tester.enterText(
+      find.byKey(const Key('connection-host-field')),
+      '10.0.0.9',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-port-field')),
+      '2222',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-user-field')),
+      'deploy',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-password-field')),
+      'secret-password',
+    );
+    await tester.tap(find.byKey(const Key('connection-save-button')));
+    await tester.pumpAndSettle();
+
+    expect(harness.controller.session!.connections.all().single.port, 2222);
+  });
+
+  testWidgets('rejects a port outside the valid range', (tester) async {
+    final harness = await pumpShell(tester);
+    addTearDown(harness.dispose);
+
+    await tester.tap(find.byKey(const Key('new-connection-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('connection-name-field')), 'x');
+    await tester.enterText(
+      find.byKey(const Key('connection-host-field')),
+      '10.0.0.9',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-port-field')),
+      '70000',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-user-field')),
+      'deploy',
+    );
+    await tester.enterText(
+      find.byKey(const Key('connection-password-field')),
+      'secret-password',
+    );
+    await tester.tap(find.byKey(const Key('connection-save-button')));
+    await tester.pumpAndSettle();
+
+    final port = tester.widget<TextField>(
+      find.byKey(const Key('connection-port-field')),
+    );
+    expect(port.decoration!.errorText, isNotNull);
     expect(harness.controller.session!.connections.all(), isEmpty);
   });
 

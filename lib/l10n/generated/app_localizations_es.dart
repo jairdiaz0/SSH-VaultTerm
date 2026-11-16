@@ -801,9 +801,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tabConnections => 'Conexiones';
 
   @override
-  String get tabSftp => 'SFTP';
-
-  @override
   String get tabCloseSession => 'Cerrar pestaña';
 
   @override
@@ -854,9 +851,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get typeSftp => 'SFTP';
 
   @override
-  String get sftpTabEmptyTitle => 'Sin sesión SFTP';
+  String get sftpInvalidName => 'El nombre no puede contener «/».';
 
   @override
-  String get sftpTabEmptyBody =>
-      'Abre una conexión de tipo SFTP para explorar sus archivos.';
+  String serversCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count servidores',
+      one: '1 servidor',
+      zero: 'Ningún servidor',
+    );
+    return '$_temp0';
+  }
 }

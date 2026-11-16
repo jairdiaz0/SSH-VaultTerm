@@ -577,3 +577,33 @@ negocio ni las claves que usan los tests.
 **Consecuencias:** una sesión por conexión, sin fugas al cambiar de pestaña; el
 panel de detalles y el rediseño SFTP quedan como tareas siguientes en
 `odd/tasks/ronda-6-gui.md`. Los tests de shell existentes pasan sin cambios.
+
+---
+
+## D-031 - Correcciones de la prueba manual de la ronda 6
+**Fecha:** 2026-11-15
+**Contexto:** la prueba manual en Windows destapó fallos que los tests no cubrían:
+el diálogo de huella no aparecía, "Restablecer la aplicación" fallaba siempre, los
+switches no se veían en oscuro y los iconos de respaldo estaban al revés.
+**Decisiones:**
+- Los diálogos que se abren durante una conexión se enlazan al `Navigator`, no al
+  widget que inició la conexión. La tarjeta del dashboard desaparece al mostrar la
+  pestaña de la sesión y su contexto deja de ser válido.
+- `SshClientApp.rebuildServices` pasa a ser **obligatorio**. Era opcional y `main`
+  no lo pasaba: el reset lanzaba `reset unavailable` en producción mientras los
+  tests (que sí lo pasaban) seguían en verde.
+- La ruta del almacén DPAPI se calcula en `windowsSecretStoreFile()` con
+  `package:path`; antes era una cadena con barras escapadas y sin `%APPDATA%`.
+- El reset borra primero las claves y después el archivo del almacén, para no
+  recrear el fichero mientras se enumeran claves.
+- La pestaña de sesión se dimensiona por contenido (`mainAxisSize.min`), con el
+  cierre inmediatamente después del nombre.
+- Los switches usan texto secundario como pulgar y contorno cuando están apagados
+  y relleno de acento cuando están encendidos; se verifica el contraste ≥ 3:1.
+- La validación de formularios es por campo (`errorText`) y los errores de
+  servicio se muestran en un aviso con icono; nunca un texto suelto al final.
+- Cerrar una sesión finalizada cierra su pestaña y vuelve al dashboard.
+**Consecuencias:** los cinco fallos tienen test de regresión (dos unitarios, tres
+de widget y dos de integración real). El script de reset se niega a ejecutarse con
+la app abierta y verifica lo borrado. La pestaña fija «SFTP» desaparece: el
+explorador se abre desde una conexión de tipo SFTP.

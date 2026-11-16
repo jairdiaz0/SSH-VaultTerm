@@ -166,7 +166,10 @@ class CollectionHeader extends StatelessWidget {
               style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ),
-          Text('$total', style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            l10n.serversCount(total),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           PopupMenuButton<String>(
             key: Key('collection-menu-${collection.id}'),
             iconSize: AppIconSize.sm,

@@ -124,7 +124,16 @@ void main() {
       }
     });
 
-    await tester.pumpWidget(SshClientApp(services: services));
+    await tester.pumpWidget(
+      SshClientApp(
+        services: services,
+        rebuildServices: () => AppServices.fromStorage(
+          secrets: secrets,
+          paths: AppPaths(temp.path),
+          hasher: PasswordHasher(),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     // First run.
@@ -229,5 +238,42 @@ void main() {
       () => panel.controller.path.endsWith('/opencode_sandbox'),
     );
     expect(find.byType(SftpPanel), findsOneWidget);
+
+    // Full reset with the real secure storage and the real encrypted
+    // databases: it must return to the first-run wizard and say nothing about a
+    // partial failure.
+    await tester.tap(find.byKey(const Key('open-settings')));
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byKey(const Key('reset-app-button')),
+      find.byType(ListView).last,
+      const Offset(0, -250),
+    );
+    await tester.ensureVisible(find.byKey(const Key('reset-app-button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('reset-app-button')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('reset-word-field')),
+      'RESTABLECER',
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('reset-confirm-word')));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(const Key('confirm-password-field')),
+      _password,
+    );
+    await tester.tap(find.byKey(const Key('confirm-password-submit')));
+    await pumpUntil(
+      tester,
+      () => find
+          .byKey(const Key('first-run-submit-button'))
+          .evaluate()
+          .isNotEmpty,
+    );
+
+    expect(find.byKey(const Key('new-connection-button')), findsNothing);
+    expect(find.textContaining('No se pudo restablecer'), findsNothing);
   });
 }

@@ -45,6 +45,7 @@ Rama: `ronda-6-gui`. Runner: `flutter test` (etiqueta `integration` aparte).
 | T6 | Vista de huellas en el área principal | S6 | inline | [x] `test/features/shell/dashboard_test.dart` |
 | T7 | Panel de detalles de conexión | S5 | inline | [ ] |
 | T8 | Rediseño SFTP de un panel | S4 | inline | [ ] |
+| T9 | Correcciones de la prueba manual (pestañas, huella, reset, switches, iconos, validación) | S2, S5, S7, S9 | inline | [x] ver L9–L11 |
 
 ## Log
 
@@ -70,3 +71,18 @@ Rama: `ronda-6-gui`. Runner: `flutter test` (etiqueta `integration` aparte).
 - L8 (2026-11-15): el buscador del dashboard filtra por nombre, host, usuario y
   etiqueta; los filtros por etiqueta aparecen solo si hay etiquetas guardadas.
   No se persiste la vista cuadrícula/lista: es estado de pantalla.
+- L9 (2026-11-15, prueba manual del usuario): se corrigieron, cada uno con test:
+  pestaña «SFTP» eliminada; pestaña de sesión ajustada al contenido; diálogo de
+  huella ligado al navegador (antes se perdía al cambiar de vista y la conexión
+  terminaba en «huella no aceptada»); switches legibles en ambos temas; reset
+  in-app (faltaba `rebuildServices` en `main` y la ruta DPAPI estaba mal
+  escapada); iconos de exportar/importar; script de reset con comprobación de
+  proceso y verificación de borrado.
+- L10 (2026-11-15): el puerto del formulario se usa al conectar
+  (`test/features/ssh/ssh_service_port_test.dart`) y el tipo SSH/SFTP decide
+  terminal o explorador (integración real). Validación por campo en conexión,
+  primer perfil y nombres del SFTP.
+- L11 (2026-11-15): verificación final: `flutter analyze` limpio,
+  `flutter test -x integration` → +291, `flutter test integration_test -d windows`
+  → +2 contra `192.168.100.129` con `agente_test`, incluido el reset completo al
+  final del test de escritorio.

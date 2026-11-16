@@ -16,6 +16,8 @@ void main() {
       find.byType(ListView).last,
       const Offset(0, -200),
     );
+    await tester.ensureVisible(find.byKey(const Key('reset-app-button')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('reset-app-button')));
     await tester.pumpAndSettle();
 
@@ -55,6 +57,8 @@ void main() {
       find.byType(ListView).last,
       const Offset(0, -200),
     );
+    await tester.ensureVisible(find.byKey(const Key('storage-status-button')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('storage-status-button')));
     await tester.pumpAndSettle();
 

@@ -25,6 +25,11 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
   bool _busy = false;
   String? _message;
 
+  /// Per-field messages, so the user sees which of the three fields is wrong.
+  String? _nameError;
+  String? _passwordError;
+  String? _confirmationError;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -41,23 +46,36 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
     final confirmation = _confirmationController.text;
 
     if (name.isEmpty) {
-      setState(() => _message = l10n.errorProfileNameEmpty);
+      setState(() {
+        _nameError = l10n.errorProfileNameEmpty;
+        _passwordError = null;
+        _confirmationError = null;
+      });
       return;
     }
     if (password.length < profilePasswordMinLength) {
-      setState(
-        () => _message = l10n.errorPasswordTooShort(profilePasswordMinLength),
-      );
+      setState(() {
+        _nameError = null;
+        _passwordError = l10n.errorPasswordTooShort(profilePasswordMinLength);
+        _confirmationError = null;
+      });
       return;
     }
     if (password != confirmation) {
-      setState(() => _message = l10n.errorPasswordMismatch);
+      setState(() {
+        _nameError = null;
+        _passwordError = null;
+        _confirmationError = l10n.errorPasswordMismatch;
+      });
       return;
     }
 
     setState(() {
       _busy = true;
       _message = null;
+      _nameError = null;
+      _passwordError = null;
+      _confirmationError = null;
     });
 
     try {
@@ -106,8 +124,14 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
                       controller: _nameController,
                       enabled: !_busy,
                       textInputAction: TextInputAction.next,
+                      onChanged: (_) {
+                        if (_nameError != null) {
+                          setState(() => _nameError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         labelText: l10n.profileNameLabel,
+                        errorText: _nameError,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -117,11 +141,17 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
                       enabled: !_busy,
                       obscureText: true,
                       textInputAction: TextInputAction.next,
+                      onChanged: (_) {
+                        if (_passwordError != null) {
+                          setState(() => _passwordError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         labelText: l10n.passwordLabel,
                         helperText: l10n.passwordMinLengthHint(
                           profilePasswordMinLength,
                         ),
+                        errorText: _passwordError,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -132,8 +162,14 @@ class _FirstRunScreenState extends State<FirstRunScreen> {
                       obscureText: true,
                       textInputAction: TextInputAction.done,
                       onSubmitted: (_) => _submit(),
+                      onChanged: (_) {
+                        if (_confirmationError != null) {
+                          setState(() => _confirmationError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         labelText: l10n.passwordConfirmLabel,
+                        errorText: _confirmationError,
                       ),
                     ),
                     if (_message != null) ...[

@@ -23,8 +23,7 @@ modelo o de contrato; se documentan para que nadie los dé por hechos.
   `SftpFileAttrs.mode` a un formulario rwx y probar chmod contra el servidor.
 - **Quick connect** de la barra del dashboard: para conectar sin guardar hace
   falta una credencial efímera (hoy `SshService.connect` carga la credencial por
-  id del almacén). Es una decisión de seguridad, no de UI.
-- **Badges de sistema operativo**: necesitan `osHint` en `Connection` y detección
+  id del almacén). Es una decisión de seguridad, no de UI.- **Badges de sistema operativo**: necesitan `osHint` en `Connection` y detección
   `cat /etc/os-release`; implican migración de esquema y `formatVersion` de
   backups.
 - Pestañas de sesión y SFTP de doble panel (fases 4 y 5 de la ronda 6).

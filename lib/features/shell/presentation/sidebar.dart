@@ -175,7 +175,7 @@ class _NavItem extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(horizontal: collapsed ? 0 : AppSpacing.sm),
       decoration: BoxDecoration(
-        color: selected ? context.colors.surfaceContainer : null,
+        color: selected ? context.colors.surfaceContainer : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadii.chip),
       ),
       child: Row(
@@ -183,6 +183,16 @@ class _NavItem extends StatelessWidget {
             ? MainAxisAlignment.center
             : MainAxisAlignment.start,
         children: [
+          if (selected && !collapsed)
+            Container(
+              width: 2,
+              height: 16,
+              margin: const EdgeInsets.only(right: AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: context.colors.primary,
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
           Icon(
             icon,
             size: AppIconSize.sm,

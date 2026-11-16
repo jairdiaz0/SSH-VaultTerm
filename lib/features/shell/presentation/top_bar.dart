@@ -6,8 +6,9 @@ import '../../../l10n/generated/app_localizations.dart';
 import '../../ssh/domain/ssh_connection_state.dart';
 import 'shell_controller.dart';
 
-/// Round 6 top bar: a 44 px strip with the pinned sections and one closable
-/// tab per live session. Sessions keep running when another tab is shown.
+/// Round 6 top bar: a 44 px strip with the pinned connections view and one
+/// closable tab per live session. Sessions keep running when another tab is
+/// shown.
 class TopBar extends StatelessWidget {
   const TopBar({super.key, required this.controller, this.onOpenMenu});
 
@@ -45,13 +46,6 @@ class TopBar extends StatelessWidget {
             selected: controller.view == ShellView.dashboard,
             onTap: controller.showDashboard,
           ),
-          _PinnedTab(
-            key: const Key('tab-sftp'),
-            icon: AppIcons.folder,
-            label: l10n.tabSftp,
-            selected: controller.view == ShellView.sftp,
-            onTap: controller.showSftp,
-          ),
           if (tabs.isNotEmpty)
             Container(
               width: 1,
@@ -61,6 +55,7 @@ class TopBar extends StatelessWidget {
           Expanded(
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
               itemCount: tabs.length,
               separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.xs),
               itemBuilder: (context, index) {
@@ -140,6 +135,8 @@ class _PinnedTab extends StatelessWidget {
   }
 }
 
+/// One session tab: icon, state dot, name and the close button right after the
+/// name, so the tab is only as wide as its content.
 class _SessionTab extends StatelessWidget {
   const _SessionTab({
     super.key,
@@ -189,7 +186,7 @@ class _SessionTab extends StatelessWidget {
           top: Radius.circular(AppRadii.field),
         ),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 220),
+          height: AppLayout.topBarHeight,
           padding: const EdgeInsets.only(
             left: AppSpacing.sm,
             right: AppSpacing.xs,
@@ -203,18 +200,20 @@ class _SessionTab extends StatelessWidget {
             ),
           ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: AppIconSize.sm, color: color),
-              const SizedBox(width: AppSpacing.xs),
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 6),
               SizedBox(
-                width: 8,
-                height: 8,
+                width: 6,
+                height: 6,
                 child: DecoratedBox(
                   decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Flexible(
+              const SizedBox(width: 6),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 160),
                 child: Text(
                   label,
                   maxLines: 1,
@@ -226,13 +225,22 @@ class _SessionTab extends StatelessWidget {
                   ),
                 ),
               ),
-              IconButton(
-                key: Key('close-tab-$tabId'),
-                tooltip: l10n.tabCloseSession,
-                visualDensity: VisualDensity.compact,
-                iconSize: 14,
-                onPressed: onClose,
-                icon: const Icon(AppIcons.close),
+              const SizedBox(width: 4),
+              Tooltip(
+                message: l10n.tabCloseSession,
+                child: InkResponse(
+                  key: Key('close-tab-$tabId'),
+                  onTap: onClose,
+                  radius: 12,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      AppIcons.close,
+                      size: 12,
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

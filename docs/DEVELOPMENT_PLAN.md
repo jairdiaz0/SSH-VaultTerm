@@ -187,6 +187,42 @@ Detalle de tareas y especificaciones: `odd/tasks/ronda-6-gui.md`.
 - [ ] Fases 4 y 5 (opcionales): no evaluadas.
 - [!] Android: sigue sin toolchain para compilar.
 
+## Ronda 6 (GUI) - correcciones de la prueba manual
+
+Verificación: `flutter analyze` limpio, `flutter test -x integration` → +291,
+`flutter test integration_test -d windows` → +2 contra `192.168.100.129`
+(usuario `agente_test`), y arranque real del binario en Windows.
+
+- [x] Pestaña fija «SFTP» eliminada: solo queda «Conexiones» como vista fija.
+- [x] Pestaña de sesión ajustada al contenido: icono, punto de estado, nombre y
+  cierre a la derecha, sin espacio sobrante (`test/features/shell/shell_tabs_test.dart`).
+- [x] **Huella no solicitada**: el diálogo se abría con el contexto de la tarjeta
+  del dashboard, que se desmonta al mostrar la pestaña de la sesión; ahora se usa
+  el contexto del navegador. Test que falla con el código anterior y pasa con el
+  nuevo (`test/features/shell/host_key_prompt_test.dart`).
+- [x] Switches visibles en claro y oscuro: pulgar y contorno con el color de texto
+  secundario (apagado) y relleno de acento con pulgar claro (encendido); contraste
+  ≥ 3:1 comprobado en `test/app/theme_contrast_test.dart`.
+- [x] **Restablecer la aplicación**: `main` no pasaba la fábrica de servicios, así
+  que el reset lanzaba `reset unavailable` y no borraba nada. Ahora
+  `SshClientApp.rebuildServices` es obligatorio (error de compilación si falta) y
+  la ruta del almacén DPAPI se calcula con `windowsSecretStoreFile`, con test.
+- [x] Iconos de exportar/importar intercambiados: exportar sube (`upload`),
+  importar baja (`download`), con test (`test/features/settings/settings_icons_test.dart`).
+- [x] Script de reset: se niega a ejecutarse con la app abierta, verifica lo
+  borrado y sale con error si queda algo. Probado con la app abierta (rechaza) y
+  cerrada (borra catálogo, perfiles, DPAPI y preferencias; el arranque siguiente
+  crea un catálogo nuevo con `profiles/` vacío).
+- [x] El puerto escrito en el formulario se usa al conectar (`ssh_service_port_test`)
+  y el tipo SSH/SFTP decide terminal o explorador (integración real).
+- [x] Validación por campo en el formulario de conexión (nombre, host, puerto,
+  usuario y credencial), en el asistente del primer perfil y en los diálogos de
+  nombre del SFTP; los errores de servicio se muestran como aviso con icono.
+- [x] Cerrar una sesión finalizada cierra su pestaña y vuelve al dashboard.
+- [ ] Panel de detalles de conexión de 360–400 px.
+- [ ] Rediseño SFTP de un panel (tabla, selección múltiple, chmod).
+- [ ] Quick connect y badges de sistema operativo (`osHint` en el modelo).
+
 ## Ronda 4 (integridad de almacenamiento y terminal)
 
 - [x] Causa raíz del hmac: separación crear/abrir claves, errores tipados

@@ -101,6 +101,32 @@ void main() {
         );
       });
 
+      test('the switch states stay identifiable', () {
+        // Off: the thumb and the outline use the secondary text colour, which
+        // must read against both the row background and the track.
+        for (final (label, background) in [
+          ('surface', palette.surface),
+          ('background', palette.background),
+          ('workspace', palette.workspace),
+        ]) {
+          expectContrast(
+            palette.textSecondary,
+            background,
+            3,
+            'switch off thumb on $label',
+          );
+        }
+        expectContrast(
+          palette.textSecondary,
+          palette.surfaceVariant,
+          3,
+          'switch off thumb on track',
+        );
+        // On: an accent track with an on-accent thumb.
+        expectContrast(palette.accent, palette.surface, 3, 'switch on track');
+        expectContrast(palette.onAccent, palette.accent, 3, 'switch on thumb');
+      });
+
       test('terminal foreground and ANSI colours stay legible', () {
         final tokens = (palette.isDark ? AppTheme.dark() : AppTheme.light())
             .extension<AppTokens>()!;

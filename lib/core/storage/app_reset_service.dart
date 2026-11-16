@@ -156,9 +156,6 @@ class AppResetService {
   /// Removes databases, sidecars, staging/backup directories and this app's
   /// secrets. Call it with every database handle already closed.
   Future<void> reset({List<String> extraFiles = const []}) async {
-    for (final file in extraFiles) {
-      _deleteFile(file);
-    }
     _deleteFile(paths.catalogDatabase);
     _deleteFile('${paths.catalogDatabase}-wal');
     _deleteFile('${paths.catalogDatabase}-shm');
@@ -166,7 +163,12 @@ class AppResetService {
     _deleteDirectory(Directory(p.join(paths.root, 'profiles')));
     _deleteDirectory(Directory(paths.stagingRoot));
     _deleteDirectory(Directory(paths.backupRoot));
+    // Keys go before the platform store file: deleting the file first would
+    // make the store recreate an empty one while it is enumerated.
     await _deleteOwnSecrets();
+    for (final file in extraFiles) {
+      _deleteFile(file);
+    }
     _deleteFile(paths.resetMarker);
   }
 
@@ -209,12 +211,15 @@ class AppResetService {
   }
 
   void _deleteFile(String path) {
-    final file = File(path);
-    if (!file.existsSync()) return;
     try {
+      final file = File(path);
+      if (!file.existsSync()) return;
       file.deleteSync();
     } on FileSystemException {
       _markPendingReset();
+    } on ArgumentError {
+      // A malformed or unreachable path is not a reset failure: the databases
+      // and the keys are still removed below.
     }
   }
 

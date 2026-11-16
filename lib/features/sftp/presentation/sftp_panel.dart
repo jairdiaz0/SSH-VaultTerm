@@ -542,11 +542,26 @@ class _TextPromptDialogState extends State<_TextPromptDialog> {
   late final TextEditingController _text = TextEditingController(
     text: widget.initial,
   );
+  String? _error;
 
   @override
   void dispose() {
     _text.dispose();
     super.dispose();
+  }
+
+  void _submit() {
+    final l10n = AppLocalizations.of(context);
+    final value = _text.text.trim();
+    if (value.isEmpty) {
+      setState(() => _error = l10n.fieldRequired);
+      return;
+    }
+    if (value.contains('/')) {
+      setState(() => _error = l10n.sftpInvalidName);
+      return;
+    }
+    Navigator.of(context).pop(value);
   }
 
   @override
@@ -560,8 +575,14 @@ class _TextPromptDialogState extends State<_TextPromptDialog> {
           key: const Key('sftp-text-field'),
           controller: _text,
           autofocus: true,
-          decoration: InputDecoration(labelText: widget.label),
-          onSubmitted: (value) => Navigator.of(context).pop(value),
+          decoration: InputDecoration(
+            labelText: widget.label,
+            errorText: _error,
+          ),
+          onChanged: (_) {
+            if (_error != null) setState(() => _error = null);
+          },
+          onSubmitted: (_) => _submit(),
         ),
       ),
       actions: [
@@ -571,7 +592,7 @@ class _TextPromptDialogState extends State<_TextPromptDialog> {
         ),
         FilledButton(
           key: const Key('sftp-text-save'),
-          onPressed: () => Navigator.of(context).pop(_text.text),
+          onPressed: _submit,
           child: Text(l10n.saveAction),
         ),
       ],

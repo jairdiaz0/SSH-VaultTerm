@@ -355,15 +355,28 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: AppSpacing.sm, bottom: AppSpacing.xs),
-    child: Text(
-      label,
-      style: TextStyle(
-        fontSize: 11,
-        letterSpacing: 0.8,
-        fontWeight: FontWeight.w600,
-        color: context.colors.onSurfaceVariant,
-      ),
+    padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xs),
+    child: Row(
+      children: [
+        Container(
+          width: 3,
+          height: 14,
+          decoration: BoxDecoration(
+            color: context.colors.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            letterSpacing: 0.4,
+            fontWeight: FontWeight.w700,
+            color: context.colors.onSurface,
+          ),
+        ),
+      ],
     ),
   );
 }

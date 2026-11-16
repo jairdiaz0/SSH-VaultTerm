@@ -162,17 +162,27 @@ abstract final class AppTheme {
         ),
       ),
       switchTheme: SwitchThemeData(
+        // The switch has to be identifiable at a glance in both themes: a dark
+        // thumb on a dark track was invisible. Off uses the secondary text
+        // colour as thumb and outline (>= 4.5:1 against the surface); on uses
+        // the accent fill with an on-accent thumb.
         thumbColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? palette.accent
-              : palette.surface,
+              ? palette.onAccent
+              : palette.textSecondary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? palette.accent.withValues(alpha: 0.45)
+              ? palette.accent
               : palette.surfaceVariant,
         ),
-        trackOutlineColor: WidgetStatePropertyAll(palette.border),
+        trackOutlineColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? palette.accent
+              : palette.textSecondary,
+        ),
+        trackOutlineWidth: const WidgetStatePropertyAll(1.5),
+        materialTapTargetSize: MaterialTapTargetSize.padded,
       ),
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith(

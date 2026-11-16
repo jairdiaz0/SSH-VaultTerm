@@ -1499,12 +1499,6 @@ abstract class AppLocalizations {
   /// **'Conexiones'**
   String get tabConnections;
 
-  /// No description provided for @tabSftp.
-  ///
-  /// In es, this message translates to:
-  /// **'SFTP'**
-  String get tabSftp;
-
   /// No description provided for @tabCloseSession.
   ///
   /// In es, this message translates to:
@@ -1601,17 +1595,17 @@ abstract class AppLocalizations {
   /// **'SFTP'**
   String get typeSftp;
 
-  /// No description provided for @sftpTabEmptyTitle.
+  /// No description provided for @sftpInvalidName.
   ///
   /// In es, this message translates to:
-  /// **'Sin sesión SFTP'**
-  String get sftpTabEmptyTitle;
+  /// **'El nombre no puede contener «/».'**
+  String get sftpInvalidName;
 
-  /// No description provided for @sftpTabEmptyBody.
+  /// No description provided for @serversCount.
   ///
   /// In es, this message translates to:
-  /// **'Abre una conexión de tipo SFTP para explorar sus archivos.'**
-  String get sftpTabEmptyBody;
+  /// **'{count, plural, =0{Ningún servidor} =1{1 servidor} other{{count} servidores}}'**
+  String serversCount(int count);
 }
 
 class _AppLocalizationsDelegate

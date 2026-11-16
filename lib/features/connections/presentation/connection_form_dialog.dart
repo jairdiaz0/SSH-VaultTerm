@@ -75,6 +75,14 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
   String? _privateKeyPem;
   String? _keyStatus;
   String? _error;
+
+  /// Per-field messages: the form is long, so a single line at the bottom was
+  /// easy to miss and did not say which field was wrong.
+  String? _nameError;
+  String? _hostError;
+  String? _portError;
+  String? _userError;
+  String? _credentialError;
   bool _saving = false;
 
   @override
@@ -130,24 +138,35 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
     final name = _name.text.trim();
     final host = _host.text.trim();
     final user = _user.text.trim();
-    final port = int.tryParse(_port.text.trim());
+    final portText = _port.text.trim();
+    final port = int.tryParse(portText);
 
-    if (name.isEmpty || host.isEmpty || user.isEmpty) {
-      setState(() => _error = l10n.fieldRequired);
-      return;
-    }
-    if (host.contains(RegExp(r'[\s/@]')) || host.contains('://')) {
-      setState(() => _error = l10n.invalidHost);
-      return;
-    }
-    if (port == null || port < 1 || port > 65535) {
-      setState(() => _error = l10n.invalidPort);
-      return;
-    }
+    setState(() {
+      _nameError = name.isEmpty ? l10n.fieldRequired : null;
+      _hostError = host.isEmpty
+          ? l10n.fieldRequired
+          : (host.contains(RegExp(r'[\s/@]')) || host.contains('://'))
+          ? l10n.invalidHost
+          : null;
+      _userError = user.isEmpty ? l10n.fieldRequired : null;
+      _portError = portText.isEmpty
+          ? l10n.fieldRequired
+          : (port == null || port < 1 || port > 65535)
+          ? l10n.invalidPort
+          : null;
+      _error = null;
+    });
+    final hasFieldError =
+        _nameError != null ||
+        _hostError != null ||
+        _userError != null ||
+        _portError != null;
+    if (hasFieldError || port == null) return;
 
     setState(() {
       _saving = true;
       _error = null;
+      _credentialError = null;
     });
 
     if (widget.controller.requireReauthOnEdit) {
@@ -178,7 +197,7 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
           if (!keep) {
             setState(() {
               _saving = false;
-              _error = l10n.credentialRequired;
+              _credentialError = l10n.credentialRequired;
             });
             return;
           }
@@ -198,7 +217,7 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
           if (!keep) {
             setState(() {
               _saving = false;
-              _error = l10n.credentialRequired;
+              _credentialError = l10n.credentialRequired;
             });
             return;
           }
@@ -274,6 +293,10 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                 controller: _name,
                 label: l10n.connectionNameLabel,
                 autofocus: true,
+                errorText: _nameError,
+                onChanged: (_) {
+                  if (_nameError != null) setState(() => _nameError = null);
+                },
               ),
               const SizedBox(height: 12),
               Row(
@@ -284,16 +307,28 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                       key: 'connection-host-field',
                       controller: _host,
                       label: l10n.connectionHostLabel,
+                      errorText: _hostError,
+                      onChanged: (_) {
+                        if (_hostError != null) {
+                          setState(() => _hostError = null);
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
                   SizedBox(
-                    width: 100,
+                    width: 110,
                     child: _field(
                       key: 'connection-port-field',
                       controller: _port,
                       label: l10n.connectionPortLabel,
                       keyboardType: TextInputType.number,
+                      errorText: _portError,
+                      onChanged: (_) {
+                        if (_portError != null) {
+                          setState(() => _portError = null);
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -303,6 +338,10 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                 key: 'connection-user-field',
                 controller: _user,
                 label: l10n.connectionUserLabel,
+                errorText: _userError,
+                onChanged: (_) {
+                  if (_userError != null) setState(() => _userError = null);
+                },
               ),
               const SizedBox(height: 16),
               Text(
@@ -366,6 +405,12 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                   label: l10n.passwordLabel,
                   obscureText: true,
                   helper: _existing == null ? null : l10n.passwordKeepHint,
+                  errorText: _credentialError,
+                  onChanged: (_) {
+                    if (_credentialError != null) {
+                      setState(() => _credentialError = null);
+                    }
+                  },
                 )
               else ...[
                 Row(
@@ -373,7 +418,7 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                     OutlinedButton.icon(
                       key: const Key('connection-import-key'),
                       onPressed: _saving ? null : _importKey,
-                      icon: const Icon(AppIcons.upload, size: 16),
+                      icon: const Icon(AppIcons.folderOpen, size: 16),
                       label: Text(l10n.privateKeyImportAction),
                     ),
                     const SizedBox(width: 12),
@@ -386,6 +431,18 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                     ),
                   ],
                 ),
+                if (_credentialError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.xs),
+                    child: Text(
+                      _credentialError!,
+                      key: const Key('connection-credential-error'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.colors.error,
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 12),
                 _field(
                   key: 'connection-passphrase-field',
@@ -427,10 +484,35 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
                 contentPadding: EdgeInsets.zero,
               ),
               if (_error != null)
-                Text(
-                  _error!,
+                Container(
                   key: const Key('connection-form-error'),
-                  style: const TextStyle(fontSize: 12),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: context.colors.error.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadii.chip),
+                    border: Border.all(
+                      color: context.colors.error.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        AppIcons.error,
+                        size: AppIconSize.sm,
+                        color: context.colors.error,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.colors.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
             ],
           ),
@@ -457,13 +539,20 @@ class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
     bool autofocus = false,
     bool obscureText = false,
     String? helper,
+    String? errorText,
     TextInputType? keyboardType,
+    ValueChanged<String>? onChanged,
   }) => TextField(
     key: Key(key),
     controller: controller,
     autofocus: autofocus,
     obscureText: obscureText,
     keyboardType: keyboardType,
-    decoration: InputDecoration(labelText: label, helperText: helper),
+    onChanged: onChanged,
+    decoration: InputDecoration(
+      labelText: label,
+      helperText: helper,
+      errorText: errorText,
+    ),
   );
 }

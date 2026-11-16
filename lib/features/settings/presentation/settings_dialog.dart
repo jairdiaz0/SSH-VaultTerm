@@ -332,7 +332,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       services: controller.services,
                       controller: controller,
                     ).export(context),
-                    icon: const Icon(AppIcons.download, size: 16),
+                    icon: const Icon(AppIcons.upload, size: 16),
                     label: Text(l10n.exportBackupAction),
                   ),
                   const SizedBox(height: 6),
@@ -342,7 +342,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       services: controller.services,
                       controller: controller,
                     ).import(context, onLock: _lockAndClose),
-                    icon: const Icon(AppIcons.upload, size: 16),
+                    icon: const Icon(AppIcons.download, size: 16),
                     label: Text(l10n.importBackupAction),
                   ),
                 ],
@@ -385,15 +385,32 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 8, bottom: 4, left: 12),
-    child: Text(
-      title,
-      style: TextStyle(
-        fontSize: 11,
-        letterSpacing: 0.8,
-        fontWeight: FontWeight.w600,
-        color: context.colors.onSurfaceVariant,
-      ),
+    padding: const EdgeInsets.only(
+      top: AppSpacing.lg,
+      bottom: AppSpacing.xs,
+      left: AppSpacing.md,
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 3,
+          height: 14,
+          decoration: BoxDecoration(
+            color: context.colors.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 12,
+            letterSpacing: 0.4,
+            fontWeight: FontWeight.w700,
+            color: context.colors.onSurface,
+          ),
+        ),
+      ],
     ),
   );
 }

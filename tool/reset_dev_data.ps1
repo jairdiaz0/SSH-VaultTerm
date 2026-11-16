@@ -106,6 +106,17 @@ if (-not $hasWork) {
     exit 0
 }
 
+# A running app keeps SQLite handles open: deleting then fails halfway and the
+# next start still shows the old profiles. Refuse instead of lying.
+$running = @(Get-Process -Name 'ssh_client' -ErrorAction SilentlyContinue)
+if ($running.Count -gt 0) {
+    Write-Host ''
+    Write-Host 'La aplicación SSH Client está en ejecución.' -ForegroundColor Red
+    Write-Host 'Ciérrala antes de borrar los datos de desarrollo.' -ForegroundColor Red
+    Write-Host '  Stop-Process -Name ssh_client' -ForegroundColor Yellow
+    exit 1
+}
+
 if (-not $Force) {
     Write-Host ''
     $answer = Read-Host 'Escribe BORRAR para confirmar (cualquier otra cosa cancela)'
@@ -115,18 +126,63 @@ if (-not $Force) {
     }
 }
 
+$failures = @()
 foreach ($credential in $credentials) {
-    [void][SshClientCreds]::CredDelete($credential, 1, 0)
+    try {
+        if (-not [SshClientCreds]::CredDelete($credential, 1, 0)) {
+            $failures += "credencial $credential"
+        }
+    } catch {
+        $failures += "credencial $credential"
+    }
 }
 foreach ($dir in @($dataDir, $legacyDataDir)) {
-    if (Test-Path $dir) { Remove-Item -Path $dir -Recurse -Force }
+    if (Test-Path $dir) {
+        try {
+            Remove-Item -Path $dir -Recurse -Force
+        } catch {
+            $failures += $dir
+        }
+    }
 }
 if ($namespace -eq '' -and (Test-Path $secureStorageFile)) {
-    Remove-Item -Path $secureStorageFile -Force
+    try {
+        Remove-Item -Path $secureStorageFile -Force
+    } catch {
+        $failures += $secureStorageFile
+    }
 }
 foreach ($prefs in $prefsCandidates) {
-    if (Test-Path $prefs) { Remove-Item -Path $prefs -Force }
+    if (Test-Path $prefs) {
+        try {
+            Remove-Item -Path $prefs -Force
+        } catch {
+            $failures += $prefs
+        }
+    }
+}
+
+# Verify instead of assuming: a locked file used to leave the data behind while
+# the script still reported success.
+$leftovers = @()
+foreach ($dir in @($dataDir, $legacyDataDir)) {
+    if (Test-Path $dir) { $leftovers += $dir }
+}
+if ($namespace -eq '' -and (Test-Path $secureStorageFile)) { $leftovers += $secureStorageFile }
+foreach ($prefs in $prefsCandidates) {
+    if (Test-Path $prefs) { $leftovers += $prefs }
+}
+
+if ($leftovers.Count -gt 0) {
+    Write-Host ''
+    Write-Host 'No se pudo borrar todo. Queda:' -ForegroundColor Red
+    $leftovers | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+    if ($failures.Count -gt 0) {
+        Write-Host 'Causa probable: un archivo está en uso. Cierra la aplicación e inténtalo de nuevo.' -ForegroundColor Yellow
+    }
+    exit 1
 }
 
 Write-Host ''
 Write-Host "Borrados $($files.Count) archivos, $($credentials.Count) credenciales y el almacén de claves si existía." -ForegroundColor Green
+Write-Host 'Al abrir la aplicación aparecerá el asistente del primer perfil.' -ForegroundColor Green

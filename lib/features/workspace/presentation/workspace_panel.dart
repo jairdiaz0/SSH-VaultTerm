@@ -19,9 +19,13 @@ import 'workspace_controller.dart';
 /// View of the open connection: terminal for SSH, file explorer for SFTP.
 /// One connection shows one view; there is no split panel.
 class WorkspacePanel extends StatelessWidget {
-  const WorkspacePanel({super.key, required this.controller});
+  const WorkspacePanel({super.key, required this.controller, this.onDismiss});
 
   final WorkspaceController controller;
+
+  /// Called after the ended session is dismissed, so the shell can close its
+  /// tab instead of leaving an empty workspace behind.
+  final VoidCallback? onDismiss;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,7 @@ class WorkspacePanel extends StatelessWidget {
               _ErrorBanner(code: controller.errorCode!),
             Expanded(
               child: ended
-                  ? _SessionEnded(controller: controller)
+                  ? _SessionEnded(controller: controller, onDismiss: onDismiss)
                   : _content(connection),
             ),
             SizedBox(
@@ -109,9 +113,10 @@ class _EmptyWorkspace extends StatelessWidget {
 }
 
 class _SessionEnded extends StatelessWidget {
-  const _SessionEnded({required this.controller});
+  const _SessionEnded({required this.controller, this.onDismiss});
 
   final WorkspaceController controller;
+  final VoidCallback? onDismiss;
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +165,10 @@ class _SessionEnded extends StatelessWidget {
                 const SizedBox(width: AppSpacing.sm),
                 OutlinedButton(
                   key: const Key('session-close'),
-                  onPressed: controller.dismiss,
+                  onPressed: () {
+                    controller.dismiss();
+                    onDismiss?.call();
+                  },
                   child: Text(l10n.closeWorkspaceAction),
                 ),
               ],

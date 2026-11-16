@@ -33,7 +33,15 @@ Future<void> main() async {
       );
     }
     final services = await AppServices.bootstrap(logger: logger);
-    runApp(SshClientApp(services: services, themeController: themeController));
+    runApp(
+      SshClientApp(
+        services: services,
+        themeController: themeController,
+        // Rebuilds the whole service graph after "Restablecer la aplicación".
+        // Without it the reset action throws and nothing is deleted.
+        rebuildServices: () => AppServices.bootstrap(logger: logger),
+      ),
+    );
   } on AppException catch (error) {
     logger.error('startup_failed', {'code': error.code.name});
     runApp(StartupFailureApp(error: error));

@@ -76,6 +76,58 @@ flutter test    → +280 All tests passed!
   incidencia** porque `192.168.100.129:22` no era alcanzable en ese momento; la
   suite offline (`flutter test -x integration`) pasa con 270 tests.
 
+## 2026-11-15 — Ronda 6 (correcciones de la prueba manual)
+
+### Línea base
+```text
+flutter analyze                              → No issues found!
+flutter test -x integration                  → +291 All tests passed!
+flutter test integration_test -d windows     → +2 All tests passed!
+flutter build windows --debug                → ✓ ssh_client.exe
+```
+
+### Servidor real
+`192.168.100.129:22`, usuario `agente_test` (`.env.test`). El test de integración
+de escritorio crea el perfil, crea una conexión SSH y otra SFTP, acepta la huella,
+escribe en la terminal, sale, navega a `~/opencode_sandbox` y termina con el
+**reset completo** de la aplicación, que debe volver al asistente del primer
+perfil.
+
+### Fallos encontrados y su causa
+- **Huella no solicitada** (`No has aceptado la huella…`): el diálogo se abría con
+  el `BuildContext` de la tarjeta del dashboard. Al abrir la conexión, la pestaña
+  de sesión sustituye al dashboard y ese contexto queda desmontado, así que el
+  diálogo no llegaba a mostrarse y la confirmación se resolvía como rechazo. Se
+  arregla capturando el contexto del `Navigator` antes de cambiar de vista.
+  `test/features/shell/host_key_prompt_test.dart` lo reproduce: con el contexto de
+  la tarjeta no aparece `host-key-accept`; con el del navegador, sí.
+- **Restablecer la aplicación** (`No se pudo restablecer por completo…`): `main`
+  construía `SshClientApp` sin `rebuildServices`, de modo que el reset lanzaba
+  `StateError('reset unavailable')` y no borraba nada. Ahora el parámetro es
+  obligatorio (el compilador impide olvidarlo) y el test de integración de
+  escritorio hace el reset con almacén seguro y bases reales.
+- **Ruta del almacén DPAPI**: se construía como `'\\\\dev.sshclient\\\\...'`, sin
+  `%APPDATA%` y con barras duplicadas. Ahora `windowsSecretStoreFile()` la compone
+  con `package:path` y tiene test propio.
+- **Script de reset**: funcionaba, pero podía dejar datos si la app estaba abierta
+  (archivos bloqueados). Ahora comprueba el proceso, borra con captura de errores
+  y **verifica** que no quede nada; si queda, sale con código 1. Probado en ambos
+  escenarios.
+- **Iconos de respaldo**: exportar usaba la flecha hacia abajo e importar la de
+  arriba; intercambiados y cubiertos por test.
+- **Switches**: en oscuro el pulgar era `surface` sobre un carril `surfaceVariant`
+  (invisibles). Ahora apagado = pulgar/contorno en texto secundario; encendido =
+  carril de acento con pulgar claro.
+- **Pestaña de sesión**: usaba `Flexible` dentro de un ancho máximo, dejando hueco
+  a la derecha; ahora se ajusta al contenido y el cierre va tras el nombre.
+
+### Validación de datos
+- Formulario de conexión: mensajes por campo (nombre, host, puerto 1–65535,
+  usuario, credencial) y aviso con icono para errores de servicio.
+- Primer perfil: nombre, longitud de contraseña y confirmación con `errorText`.
+- SFTP: nombre de carpeta/renombrado no vacío y sin `/`.
+- Colección y gestión de perfiles ya mostraban su error en rojo junto al campo.
+
 ## 2026-11-15 - Ronda 4 (integridad de almacenamiento)
 
 ### Línea base de la ronda
