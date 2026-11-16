@@ -564,6 +564,8 @@ negocio ni las claves que usan los tests.
 - Las pestañas fijas son «Conexiones» (dashboard) y «SFTP» (explorador de la sesión
   activa). Si la sesión activa no es SFTP, la pestaña muestra un estado vacío: no se
   abre un canal SFTP nuevo sobre una sesión SSH, porque sería lógica nueva.
+  *Revisado en D-031: la pestaña fija «SFTP» se retiró por petición del usuario; el
+  explorador se abre desde una conexión de tipo SFTP.*
 - La sidebar es solo navegación; el contenido (colecciones, servidores, acciones)
   pasa al dashboard. Se conservan todas las claves `Key(...)` de los tests
   (`new-connection-button`, `new-collection-button`, `connection-tile-*`,

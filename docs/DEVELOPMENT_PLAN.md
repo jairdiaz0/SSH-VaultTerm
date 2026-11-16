@@ -168,9 +168,9 @@ Detalle de tareas y especificaciones: `odd/tasks/ronda-6-gui.md`.
 - [x] Paleta neutra de la ronda 6, radios 12/10/8, acento `#2563EB`/`#3B82F6`,
   estados y terminal siempre oscura; contraste AA verificado
   (`test/app/theme_test.dart`, `test/app/theme_contrast_test.dart`).
-- [x] Barra superior de 44 px con pestañas fijas «Conexiones» y «SFTP» y una
-  pestaña por sesión, con cierre individual y sesiones que siguen vivas al
-  cambiar de pestaña (`test/features/shell/shell_tabs_test.dart`).
+- [x] Barra superior de 44 px con la vista fija «Conexiones» y una pestaña por
+  sesión, con cierre individual y sesiones que siguen vivas al cambiar de
+  pestaña (`test/features/shell/shell_tabs_test.dart`).
 - [x] Sidebar de 220 px contraíble a barra de iconos, con «Conexiones»,
   «Huellas» y «Ajustes», y perfil/bloqueo al pie; cajón en ventanas estrechas.
 - [x] Dashboard de conexiones: buscador, filtros por etiqueta, vista
