@@ -1,0 +1,6 @@
+# Integration tests need the dedicated test server. They are tagged so a local
+# `flutter test -x integration` stays offline, and they self-skip when
+# `.env.test` is missing (see `test/support/ssh_test_server.dart`).
+tags:
+  integration:
+    timeout: 3x

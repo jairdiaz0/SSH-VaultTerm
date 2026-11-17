@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Light plate behind the black terminal mark of the launcher icon. Without
+     it the mark disappears on dark wallpapers and in dark launchers. -->
+<resources>
+    <color name="ic_launcher_background">#F6F7F9</color>
+</resources>

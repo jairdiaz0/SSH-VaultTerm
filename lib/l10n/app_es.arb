@@ -1,0 +1,402 @@
+{
+  "@@locale": "es",
+  "appTitle": "SSH-VaultTerm",
+  "commonCancel": "Cancelar",
+  "commonClose": "Cerrar",
+  "commonRetry": "Reintentar",
+  "firstRunTitle": "Crea tu primer perfil",
+  "firstRunSubtitle": "La contraseña del perfil protege el acceso a la aplicación. No se puede recuperar: si la olvidas, los datos del perfil quedan inaccesibles.",
+  "profileNameLabel": "Nombre del perfil",
+  "passwordLabel": "Contraseña",
+  "passwordConfirmLabel": "Confirmar contraseña",
+  "createProfileAction": "Crear perfil",
+  "passwordMinLengthHint": "Mínimo {min} caracteres.",
+  "@passwordMinLengthHint": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "lockTitle": "Desbloquear perfil",
+  "lockSubtitle": "Introduce la contraseña de {profile} para continuar.",
+  "@lockSubtitle": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    }
+  },
+  "unlockAction": "Desbloquear",
+  "confirmAction": "Confirmar",
+  "confirmPasswordTitle": "Confirma tu contraseña",
+  "confirmPasswordBody": "El perfil pide tu contraseña para continuar.",
+  "exportPasswordBody": "Introduce la contraseña del perfil para leer los secretos y crear el archivo.",
+  "switchProfileAction": "Cambiar de perfil",
+  "profileSwitcherTitle": "Elige un perfil",
+  "homeTitle": "Sesión desbloqueada",
+  "lockSessionAction": "Bloquear sesión",
+  "signOutAction": "Cerrar sesión",
+  "collectionsSection": "Colecciones",
+  "favoritesSection": "Favoritos",
+  "connectionsSection": "Conexiones",
+  "emptyCollectionsMessage": "Este perfil todavía no tiene colecciones.",
+  "emptyConnectionsMessage": "Este perfil todavía no tiene conexiones.",
+  "connectionCountLabel": "{count, plural, =0{Sin conexiones} =1{1 conexión} other{{count} conexiones}}",
+  "@connectionCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAction": "Ajustes",
+  "errorInvalidCredentials": "Contraseña incorrecta.",
+  "errorAccountLocked": "Demasiados intentos fallidos. Vuelve a intentarlo en {seconds} segundos.",
+  "@errorAccountLocked": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "errorPasswordMismatch": "Las contraseñas no coinciden.",
+  "errorPasswordTooShort": "La contraseña debe tener al menos {min} caracteres.",
+  "@errorPasswordTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "errorProfileNameEmpty": "Escribe un nombre para el perfil.",
+  "errorProfileNameTaken": "Ya existe un perfil con ese nombre.",
+  "errorValidation": "Revisa los datos introducidos.",
+  "errorConflict": "Ese elemento ya existe.",
+  "errorSecureStorageUnavailable": "El almacén seguro del sistema no está disponible. Sin él no se pueden guardar secretos y la aplicación no puede continuar.",
+  "errorDatabaseFailure": "No se pudo abrir la base de datos cifrada del perfil.",
+"errorDatabaseKeyMismatch": "La clave guardada no corresponde a estos datos cifrados. Si no necesitas recuperarlos, restablece la aplicación.",
+  "errorDatabaseKeyOrphan": "Hay una clave guardada sin base de datos asociada. Restablece la aplicación para empezar de cero.",
+  "errorHostKeyRejected": "No has aceptado la huella del servidor. La conexión se ha cancelado.",
+  "errorHostKeyChanged": "La huella del servidor ha cambiado desde la última conexión. La conexión se ha bloqueado para protegerte. Si el cambio es legítimo, borra la huella guardada para ese servidor y vuelve a conectar.",
+  "errorAuthFailed": "El servidor rechazó las credenciales. Comprueba el usuario y el método de acceso.",
+  "errorNetworkUnreachable": "No se pudo alcanzar el servidor. Comprueba el host, el puerto y tu red.",
+  "errorConnectionTimeout": "El servidor no respondió a tiempo.",
+  "errorConnectionFailed": "No se pudo establecer la conexión SSH.",
+  "errorConnectionLost": "La conexión con el servidor se interrumpió inesperadamente.",
+  "errorCredentialMissing": "Esta conexión no tiene credenciales guardadas. Edita la conexión y vuelve a introducirlas.",
+  "errorPrivateKeyInvalid": "La llave privada no es válida o está dañada.",
+  "errorPrivateKeyPassphraseRequired": "Esta llave privada está protegida con una frase de contraseña.",
+  "errorPrivateKeyPassphraseInvalid": "La frase de contraseña de la llave no es correcta.",
+  "errorPrivateKeyUnsupportedFormat": "Formato de llave no soportado. Se admiten llaves OpenSSH, RSA PKCS#1 y EC SEC1.",
+  "errorSftpPermissionDenied": "El servidor denegó el permiso para esa operación.",
+  "errorSftpNotFound": "La ruta remota no existe o ya no está disponible.",
+  "errorSftpFailure": "El servidor rechazó la operación de archivos.",
+  "errorTransferCancelled": "Transferencia cancelada.",
+  "errorTransferFailed": "La transferencia falló.",
+  "errorBackupInvalid": "El archivo de respaldo no es válido o está incompleto.",
+  "errorBackupVersionUnsupported": "Este respaldo se creó con una versión más reciente de la aplicación.",
+  "errorBackupReadFailed": "No se pudo leer el archivo de respaldo.",
+  "errorBackupWriteFailed": "No se pudo escribir el archivo de respaldo.",
+  "sftpEmptyFolder": "Esta carpeta está vacía.",
+  "sftpNewFolderTitle": "Nueva carpeta",
+  "folderNameLabel": "Nombre de la carpeta",
+  "uploadAction": "Subir archivos",
+  "downloadAction": "Descargar",
+  "showHiddenAction": "Mostrar archivos ocultos",
+  "hideHiddenAction": "Ocultar archivos ocultos",
+  "transferQueueTitle": "Transferencias",
+  "transferUploadLabel": "Subida",
+  "transferDownloadLabel": "Descarga",
+  "transferPending": "Pendiente",
+  "transferRunning": "En curso",
+  "transferCompleted": "Finalizada",
+  "transferFailed": "Fallida",
+  "transferCancelled": "Cancelada",
+  "cancelAction": "Cancelar",
+  "renameTitle": "Renombrar",
+  "newNameLabel": "Nuevo nombre",
+  "sftpOpenFailed": "No se pudo abrir el explorador de archivos del servidor.",
+  "sftpChooseFolderFirst": "Elige una carpeta de destino.",
+  "sftpFolderCreated": "Carpeta creada.",
+  "sftpRenamed": "Elemento renombrado.",
+  "sftpDeleted": "Elemento eliminado.",
+  "sftpUploadStarted": "Subida en curso.",
+  "sftpDownloadStarted": "Descarga en curso.",
+  "advancedSection": "Avanzado",
+  "storageStatusAction": "Estado del almacenamiento",
+  "storageStatusTitle": "Estado del almacenamiento",
+  "storageCatalogLabel": "Catálogo cifrado",
+  "storageCatalogOk": "abre correctamente",
+  "storageCatalogKeyMissing": "clave ausente",
+  "storageCatalogError": "error: {code}",
+  "@storageCatalogError": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "storageProfileLabel": "{id} · archivo {file} · clave {key} · {state}",
+  "@storageProfileLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "file": {
+        "type": "String"
+      },
+      "key": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "storagePresent": "sí",
+  "storageAbsent": "no",
+  "storagePendingReset": "Hay un restablecimiento pendiente; se completará al reiniciar.",
+  "storageLegacy": "Se detectaron datos antiguos en Roaming. No se abren; usa Restablecer para limpiarlos.",
+  "resetApplicationAction": "Restablecer la aplicación",
+  "resetWarningTitle": "Restablecer la aplicación",
+  "resetWarningBody": "Se borrarán TODOS los perfiles, conexiones, credenciales, huellas y las claves de las bases de datos. La aplicación volverá a mostrarse como recién instalada. Esta acción no se puede deshacer.",
+  "resetTypeWord": "Escribe RESTABLECER para continuar",
+  "resetWord": "RESTABLECER",
+  "resetConfirmAction": "Restablecer",
+  "resetFailed": "No se pudo restablecer por completo. Cierra la aplicación y vuelve a abrirla; si el problema continúa, usa tool/reset_dev_data.ps1.",
+  "backupSection": "Respaldos",
+  "exportBackupAction": "Exportar respaldo",
+  "importBackupAction": "Importar respaldo",
+  "exportWarningTitle": "Advertencia de seguridad",
+  "exportWarningBody": "ADVERTENCIA DE SEGURIDAD. El archivo de respaldo contendrá información sensible, incluidas contraseñas SSH, llaves privadas y frases de contraseña. El archivo JSON NO estará cifrado ni protegido por la aplicación. Cualquier persona con acceso al archivo podría conectarse a tus servidores. Guárdalo en un lugar seguro y no lo compartas. Además incluye el verificador de la contraseña de perfil, que podría someterse a fuerza bruta.",
+  "exportConfirmAction": "Entiendo los riesgos y quiero exportar",
+  "exportDone": "Respaldo exportado.",
+  "exportFailed": "No se pudo exportar el respaldo.",
+  "importTitle": "Importar respaldo",
+  "importSummary": "{profiles} perfiles · {connections} conexiones · {credentials} credenciales",
+  "@importSummary": {
+    "placeholders": {
+      "profiles": {
+        "type": "int"
+      },
+      "connections": {
+        "type": "int"
+      },
+      "credentials": {
+        "type": "int"
+      }
+    }
+  },
+  "importModeMerge": "Fusionar",
+  "importModeMergeHelp": "Crea lo que falta y actualiza por identificador. Conserva los datos locales que no estén en el respaldo.",
+  "importModeReplaceProfile": "Reemplazar un perfil",
+  "importModeReplaceAll": "Reemplazar todos",
+  "importReplaceWarning": "Se borrarán los perfiles actuales antes de importar. La sesión se bloqueará.",
+  "importTargetProfile": "Perfil a reemplazar",
+  "importConfirmAction": "Importar",
+  "importDone": "Respaldo importado.",
+  "importFailed": "No se pudo importar el respaldo. No se ha cambiado nada.",
+  "connectionTypeLabel": "Tipo de conexión",
+  "connectionTypeSsh": "SSH · terminal",
+  "connectionTypeSftp": "SFTP · archivos",
+  "refreshAction": "Refrescar",
+  "backAction": "Atrás",
+  "forwardAction": "Adelante",
+  "upOneLevelAction": "Subir un nivel",
+  "moreActions": "Más acciones",
+  "sessionEndedTitle": "Sesión finalizada",
+  "sessionEndedBody": "El shell remoto ha terminado. Puedes reconectar o cerrar la sesión.",
+  "sessionEndedUnexpected": "La conexión se interrumpió de forma inesperada.",
+  "closeWorkspaceAction": "Cerrar sesión",
+  "connectionStatusConnected": "Conectado",
+  "connectionStatusConnecting": "Conectando…",
+  "connectionStatusDisconnected": "Desconectado",
+  "connectionStatusFailed": "Error de conexión",
+  "newConnectionAction": "Nueva conexión",
+  "newCollectionAction": "Nueva colección",
+  "editAction": "Editar",
+  "deleteAction": "Eliminar",
+  "renameAction": "Renombrar",
+  "moveUpAction": "Subir",
+  "moveDownAction": "Bajar",
+  "addToFavoritesAction": "Añadir a favoritos",
+  "removeFromFavoritesAction": "Quitar de favoritos",
+  "emptySidebarHint": "Crea una colección y añade tu primer servidor.",
+  "sidebarServersSection": "Servidores",
+  "connectionFormNewTitle": "Nueva conexión",
+  "connectionFormEditTitle": "Editar conexión",
+  "connectionNameLabel": "Nombre",
+  "connectionHostLabel": "Host o IP",
+  "connectionPortLabel": "Puerto",
+  "connectionUserLabel": "Usuario",
+  "authMethodLabel": "Método de acceso",
+  "authPasswordLabel": "Contraseña",
+  "authPrivateKeyLabel": "Llave privada",
+  "privateKeyImportAction": "Importar llave…",
+  "privateKeyLoaded": "Llave {type} cargada.",
+  "@privateKeyLoaded": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "privateKeyLoadedEncrypted": "Llave {type} cifrada cargada.",
+  "@privateKeyLoadedEncrypted": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "passphraseLabel": "Frase de contraseña de la llave",
+  "passphraseOptionalHint": "Déjala vacía si la llave no está protegida.",
+  "descriptionLabel": "Descripción",
+  "collectionLabel": "Colección",
+  "noCollectionOption": "Sin colección",
+  "favoriteLabel": "Favorito",
+  "saveAction": "Guardar",
+  "passwordKeepHint": "Déjala vacía para conservar la guardada.",
+  "fieldRequired": "Este campo es obligatorio.",
+  "invalidHost": "Escribe un host o una dirección IP, sin esquema ni barras.",
+  "invalidPort": "El puerto debe estar entre 1 y 65535.",
+  "credentialRequired": "Introduce una contraseña o importa una llave.",
+  "connectionSaved": "Conexión guardada.",
+  "connectionDeleted": "Conexión eliminada.",
+  "collectionNameLabel": "Nombre de la colección",
+  "collectionFormNewTitle": "Nueva colección",
+  "collectionFormEditTitle": "Renombrar colección",
+  "collectionDeletedConnectionsKept": "Colección eliminada. Sus conexiones siguen disponibles sin colección.",
+  "confirmDeleteConnection": "¿Eliminar «{name}»? También se borrará su credencial guardada.",
+  "@confirmDeleteConnection": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmDeleteCollection": "¿Eliminar «{name}»? Las conexiones no se borran.",
+  "@confirmDeleteCollection": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "hostKeyDialogTitle": "Huella del servidor",
+  "hostKeyUnknownBody": "Es la primera conexión a {host}. Comprueba que la huella coincide con la del servidor antes de aceptar.",
+  "@hostKeyUnknownBody": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "hostKeyFingerprintLabel": "Huella SHA-256",
+  "hostKeyKeyTypeLabel": "Tipo de clave",
+  "hostKeyAcceptAction": "Confiar y conectar",
+  "hostKeyChangedTitle": "La huella del servidor ha cambiado",
+  "hostKeyChangedBody": "La huella guardada para {host} no coincide con la que presenta ahora. Puede ser un ataque de intermediario, así que la conexión se ha bloqueado.",
+  "@hostKeyChangedBody": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "hostKeyForgetAction": "Borrar huella guardada",
+  "hostKeyForgotten": "Huella borrada. Vuelve a conectar para confirmar la nueva.",
+  "workspaceEmptyTitle": "Sin sesión",
+  "workspaceEmptyBody": "Elige un servidor en la barra lateral para abrir una terminal.",
+  "terminalTab": "Terminal",
+  "filesTab": "Archivos",
+  "disconnectAction": "Desconectar",
+  "reconnectAction": "Reconectar",
+  "maximizePanelAction": "Maximizar panel",
+  "restoreSplitAction": "Restaurar división",
+  "settingsTitle": "Ajustes",
+  "securitySection": "Seguridad",
+  "knownHostsTitle": "Huellas conocidas",
+  "knownHostsEmpty": "No hay huellas guardadas en este perfil.",
+  "knownHostsEntry": "{host}:{port} · {type}",
+  "@knownHostsEntry": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      },
+      "port": {
+        "type": "int"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSection": "Perfil",
+  "appearanceSection": "Apariencia",
+  "themeLabel": "Tema",
+  "themeSystem": "Sistema",
+  "themeLight": "Claro",
+  "themeDark": "Oscuro",
+  "terminalAlwaysDark": "Terminal siempre oscura",
+  "terminalAlwaysDarkHelp": "Usa la paleta oscura del terminal aunque la interfaz esté en claro.",
+  "manageProfilesAction": "Gestionar perfiles",
+  "profilesTitle": "Perfiles",
+  "currentProfileLabel": "Perfil activo",
+  "deleteProfileAction": "Eliminar perfil",
+  "confirmDeleteProfile": "¿Eliminar el perfil «{name}»? Se borrarán sus conexiones, huellas y credenciales, y no se puede deshacer.",
+  "@confirmDeleteProfile": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profilePasswordPrompt": "Contraseña del perfil «{name}»",
+  "@profilePasswordPrompt": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCreated": "Perfil creado.",
+  "profileDeleted": "Perfil eliminado.",
+  "requireReauthLabel": "Requerir contraseña al editar",
+  "requireReauthHelp": "Pide la contraseña del perfil al guardar conexiones o credenciales.",
+  "reauthPromptTitle": "Confirma tu contraseña",
+  "reauthPromptBody": "Este perfil pide la contraseña antes de guardar cambios en conexiones o credenciales.",
+  "errorUnknown": "Ha ocurrido un error inesperado.",
+  "navConnections": "Conexiones",
+  "navFingerprints": "Huellas",
+  "navSettings": "Ajustes",
+  "collapseSidebar": "Contraer barra lateral",
+  "expandSidebar": "Expandir barra lateral",
+  "tabConnections": "Conexiones",
+  "tabCloseSession": "Cerrar pestaña",
+  "dashboardSearchHint": "Buscar por nombre, host, usuario o etiqueta",
+  "dashboardGridView": "Cuadrícula",
+  "dashboardListView": "Lista",
+  "dashboardSortLabel": "Ordenar",
+  "dashboardSortByName": "Nombre",
+  "dashboardSortByHost": "Host",
+  "dashboardSortByRecent": "Más recientes",
+  "dashboardEmptyTitle": "Aún no hay conexiones",
+  "dashboardEmptyBody": "Crea tu primera conexión o una colección para organizar tus servidores.",
+  "dashboardNoResults": "Ningún servidor coincide con la búsqueda.",
+  "dashboardClearFilters": "Limpiar filtros",
+  "ungroupedSection": "Sin colección",
+  "connectionOpenAction": "Abrir",
+  "typeSsh": "SSH",
+  "typeSftp": "SFTP",
+  "sftpInvalidName": "El nombre no puede contener «/».",
+  "serversCount": "{count, plural, =0{Ningún servidor} =1{1 servidor} other{{count} servidores}}",
+  "@serversCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

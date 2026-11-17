@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SSH-VaultTerm keeps its encrypted databases and the credentials in the platform
+  keystore out of cloud backups and device-to-device transfers. A restored
+  database without its key is unreadable, so backing it up only creates broken
+  installations; moving machines is done with the JSON export.
+-->
+<full-backup-content>
+    <exclude domain="database" path="." />
+    <exclude domain="sharedpref" path="." />
+    <exclude domain="file" path="." />
+    <exclude domain="external" path="." />
+</full-backup-content>

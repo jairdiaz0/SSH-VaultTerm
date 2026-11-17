@@ -1,0 +1,558 @@
+import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../app/error_messages.dart';
+import '../../../app/theme/app_icons.dart';
+import '../../../app/theme/app_tokens.dart';
+import '../../../core/errors/app_exception.dart';
+import '../../../l10n/generated/app_localizations.dart';
+import '../../../shared/models/connection.dart';
+import '../../../shared/widgets/confirm_password_dialog.dart';
+import '../../connections/data/credential_service.dart';
+import '../../shell/presentation/shell_controller.dart';
+import '../../ssh/domain/private_key_inspector.dart';
+
+/// Creates or edits a connection and its credential.
+///
+/// Secrets go straight to the platform secret store: this dialog never writes a
+/// password or a private key to the profile database, and never logs one.
+class ConnectionFormDialog extends StatefulWidget {
+  const ConnectionFormDialog({
+    super.key,
+    required this.controller,
+    this.existing,
+  });
+
+  final ShellController controller;
+  final Connection? existing;
+
+  static Future<bool> show(
+    BuildContext context, {
+    required ShellController controller,
+    Connection? existing,
+  }) async {
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (_) =>
+          ConnectionFormDialog(controller: controller, existing: existing),
+    );
+    return saved ?? false;
+  }
+
+  @override
+  State<ConnectionFormDialog> createState() => _ConnectionFormDialogState();
+}
+
+class _ConnectionFormDialogState extends State<ConnectionFormDialog> {
+  late final Connection? _existing = widget.existing;
+  late final TextEditingController _name = TextEditingController(
+    text: _existing?.name ?? '',
+  );
+  late final TextEditingController _host = TextEditingController(
+    text: _existing?.hostname ?? '',
+  );
+  late final TextEditingController _port = TextEditingController(
+    text: '${_existing?.port ?? 22}',
+  );
+  late final TextEditingController _user = TextEditingController(
+    text: _existing?.username ?? '',
+  );
+  late final TextEditingController _password = TextEditingController();
+  late final TextEditingController _passphrase = TextEditingController();
+  late final TextEditingController _description = TextEditingController(
+    text: _existing?.description ?? '',
+  );
+
+  late AuthenticationType _authType =
+      _existing?.authType ?? AuthenticationType.password;
+  late ConnectionType _connectionType =
+      _existing?.connectionType ?? ConnectionType.ssh;
+  late String? _collectionId = _existing?.collectionId;
+  late bool _favorite = _existing?.favorite ?? false;
+  String? _privateKeyPem;
+  String? _keyStatus;
+  String? _error;
+
+  /// Per-field messages: the form is long, so a single line at the bottom was
+  /// easy to miss and did not say which field was wrong.
+  String? _nameError;
+  String? _hostError;
+  String? _portError;
+  String? _userError;
+  String? _credentialError;
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    for (final controller in [
+      _name,
+      _host,
+      _port,
+      _user,
+      _password,
+      _passphrase,
+      _description,
+    ]) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _importKey() async {
+    final l10n = AppLocalizations.of(context);
+    final files = await FilePicker.pickFiles();
+    if (files.isEmpty) return;
+
+    final bytes = await files.first.readAsBytes();
+    if (bytes.isEmpty) {
+      setState(() => _error = l10n.errorPrivateKeyInvalid);
+      return;
+    }
+    final pem = utf8.decode(bytes, allowMalformed: true);
+    setState(() {
+      _privateKeyPem = pem;
+      _error = null;
+      _keyStatus = _describeKey(l10n, pem);
+    });
+  }
+
+  String _describeKey(AppLocalizations l10n, String pem) {
+    if (PrivateKeyInspector.requiresPassphrase(pem)) {
+      return l10n.privateKeyLoadedEncrypted('OpenSSH');
+    }
+    try {
+      return l10n.privateKeyLoaded(
+        PrivateKeyInspector.inspect(pem).displayType,
+      );
+    } on AppException catch (error) {
+      _error = describeAppError(l10n, error);
+      return '';
+    }
+  }
+
+  Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
+    final name = _name.text.trim();
+    final host = _host.text.trim();
+    final user = _user.text.trim();
+    final portText = _port.text.trim();
+    final port = int.tryParse(portText);
+
+    setState(() {
+      _nameError = name.isEmpty ? l10n.fieldRequired : null;
+      _hostError = host.isEmpty
+          ? l10n.fieldRequired
+          : (host.contains(RegExp(r'[\s/@]')) || host.contains('://'))
+          ? l10n.invalidHost
+          : null;
+      _userError = user.isEmpty ? l10n.fieldRequired : null;
+      _portError = portText.isEmpty
+          ? l10n.fieldRequired
+          : (port == null || port < 1 || port > 65535)
+          ? l10n.invalidPort
+          : null;
+      _error = null;
+    });
+    final hasFieldError =
+        _nameError != null ||
+        _hostError != null ||
+        _userError != null ||
+        _portError != null;
+    if (hasFieldError || port == null) return;
+
+    setState(() {
+      _saving = true;
+      _error = null;
+      _credentialError = null;
+    });
+
+    if (widget.controller.requireReauthOnEdit) {
+      final confirmed = await showConfirmPasswordDialog(
+        context,
+        title: l10n.reauthPromptTitle,
+        body: l10n.reauthPromptBody,
+        onConfirm: widget.controller.verifyPassword,
+      );
+      if (!mounted) return;
+      if (!confirmed) {
+        setState(() => _saving = false);
+        return;
+      }
+    }
+
+    final credentials = widget.controller.services.credentials;
+    final profileId = widget.controller.session.profile.id;
+    final credentialId = _existing?.credentialId ?? const Uuid().v4();
+
+    try {
+      if (_authType == AuthenticationType.password) {
+        final password = _password.text;
+        if (password.isEmpty) {
+          final keep =
+              _existing != null &&
+              _existing.authType == AuthenticationType.password;
+          if (!keep) {
+            setState(() {
+              _saving = false;
+              _credentialError = l10n.credentialRequired;
+            });
+            return;
+          }
+        } else {
+          await credentials.save(
+            profileId: profileId,
+            credentialId: credentialId,
+            secret: CredentialSecret(password: password),
+          );
+        }
+      } else {
+        final pem = _privateKeyPem;
+        if (pem == null) {
+          final keep =
+              _existing != null &&
+              _existing.authType == AuthenticationType.privateKey;
+          if (!keep) {
+            setState(() {
+              _saving = false;
+              _credentialError = l10n.credentialRequired;
+            });
+            return;
+          }
+        } else {
+          final passphrase = _passphrase.text;
+          final info = PrivateKeyInspector.inspect(pem, passphrase: passphrase);
+          setState(() => _keyStatus = info.displayType);
+          await credentials.save(
+            profileId: profileId,
+            credentialId: credentialId,
+            secret: CredentialSecret(
+              privateKeyPem: pem,
+              passphrase: passphrase.isEmpty ? null : passphrase,
+            ),
+          );
+        }
+      }
+
+      final now = DateTime.now();
+      final connections = widget.controller.session.connections;
+      final description = _description.text.trim();
+      final connection = Connection(
+        id: _existing?.id ?? const Uuid().v4(),
+        collectionId: _collectionId,
+        name: name,
+        hostname: host,
+        port: port,
+        username: user,
+        authType: _authType,
+        connectionType: _connectionType,
+        credentialId: credentialId,
+        description: description.isEmpty ? null : description,
+        tags: _existing?.tags ?? const [],
+        favorite: _favorite,
+        position: _existing?.position ?? connections.nextPosition(),
+        createdAt: _existing?.createdAt ?? now,
+        updatedAt: now,
+      );
+      if (_existing == null) {
+        connections.insert(connection);
+      } else {
+        connections.update(connection);
+      }
+      widget.controller.reload();
+      if (mounted) Navigator.of(context).pop(true);
+    } on AppException catch (error) {
+      setState(() {
+        _saving = false;
+        _error = describeAppError(l10n, error);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final collections = widget.controller.collections;
+    return AlertDialog(
+      title: Text(
+        _existing == null
+            ? l10n.connectionFormNewTitle
+            : l10n.connectionFormEditTitle,
+      ),
+      content: SizedBox(
+        width: 480,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _field(
+                key: 'connection-name-field',
+                controller: _name,
+                label: l10n.connectionNameLabel,
+                autofocus: true,
+                errorText: _nameError,
+                onChanged: (_) {
+                  if (_nameError != null) setState(() => _nameError = null);
+                },
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: _field(
+                      key: 'connection-host-field',
+                      controller: _host,
+                      label: l10n.connectionHostLabel,
+                      errorText: _hostError,
+                      onChanged: (_) {
+                        if (_hostError != null) {
+                          setState(() => _hostError = null);
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: 110,
+                    child: _field(
+                      key: 'connection-port-field',
+                      controller: _port,
+                      label: l10n.connectionPortLabel,
+                      keyboardType: TextInputType.number,
+                      errorText: _portError,
+                      onChanged: (_) {
+                        if (_portError != null) {
+                          setState(() => _portError = null);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _field(
+                key: 'connection-user-field',
+                controller: _user,
+                label: l10n.connectionUserLabel,
+                errorText: _userError,
+                onChanged: (_) {
+                  if (_userError != null) setState(() => _userError = null);
+                },
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.connectionTypeLabel,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Wrap(
+                spacing: AppSpacing.sm,
+                children: [
+                  ChoiceChip(
+                    key: const Key('type-ssh-chip'),
+                    label: Text(l10n.connectionTypeSsh),
+                    selected: _connectionType == ConnectionType.ssh,
+                    onSelected: (_) => setState(() {
+                      _connectionType = ConnectionType.ssh;
+                    }),
+                  ),
+                  ChoiceChip(
+                    key: const Key('type-sftp-chip'),
+                    label: Text(l10n.connectionTypeSftp),
+                    selected: _connectionType == ConnectionType.sftp,
+                    onSelected: (_) => setState(() {
+                      _connectionType = ConnectionType.sftp;
+                    }),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.authMethodLabel,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: [
+                  ChoiceChip(
+                    key: const Key('auth-password-chip'),
+                    label: Text(l10n.authPasswordLabel),
+                    selected: _authType == AuthenticationType.password,
+                    onSelected: (_) => setState(() {
+                      _authType = AuthenticationType.password;
+                    }),
+                  ),
+                  ChoiceChip(
+                    key: const Key('auth-key-chip'),
+                    label: Text(l10n.authPrivateKeyLabel),
+                    selected: _authType == AuthenticationType.privateKey,
+                    onSelected: (_) => setState(() {
+                      _authType = AuthenticationType.privateKey;
+                    }),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (_authType == AuthenticationType.password)
+                _field(
+                  key: 'connection-password-field',
+                  controller: _password,
+                  label: l10n.passwordLabel,
+                  obscureText: true,
+                  helper: _existing == null ? null : l10n.passwordKeepHint,
+                  errorText: _credentialError,
+                  onChanged: (_) {
+                    if (_credentialError != null) {
+                      setState(() => _credentialError = null);
+                    }
+                  },
+                )
+              else ...[
+                Row(
+                  children: [
+                    OutlinedButton.icon(
+                      key: const Key('connection-import-key'),
+                      onPressed: _saving ? null : _importKey,
+                      icon: const Icon(AppIcons.folderOpen, size: 16),
+                      label: Text(l10n.privateKeyImportAction),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _keyStatus ?? '',
+                        key: const Key('connection-key-status'),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+                if (_credentialError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: AppSpacing.xs),
+                    child: Text(
+                      _credentialError!,
+                      key: const Key('connection-credential-error'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.colors.error,
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 12),
+                _field(
+                  key: 'connection-passphrase-field',
+                  controller: _passphrase,
+                  label: l10n.passphraseLabel,
+                  obscureText: true,
+                  helper: l10n.passphraseOptionalHint,
+                ),
+              ],
+              const SizedBox(height: 12),
+              _field(
+                key: 'connection-description-field',
+                controller: _description,
+                label: l10n.descriptionLabel,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String?>(
+                key: const Key('connection-collection-field'),
+                initialValue: _collectionId,
+                decoration: InputDecoration(labelText: l10n.collectionLabel),
+                items: [
+                  DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text(l10n.noCollectionOption),
+                  ),
+                  for (final collection in collections)
+                    DropdownMenuItem<String?>(
+                      value: collection.id,
+                      child: Text(collection.name),
+                    ),
+                ],
+                onChanged: (value) => setState(() => _collectionId = value),
+              ),
+              SwitchListTile(
+                key: const Key('connection-favorite-switch'),
+                value: _favorite,
+                onChanged: (value) => setState(() => _favorite = value),
+                title: Text(l10n.favoriteLabel),
+                contentPadding: EdgeInsets.zero,
+              ),
+              if (_error != null)
+                Container(
+                  key: const Key('connection-form-error'),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: context.colors.error.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadii.chip),
+                    border: Border.all(
+                      color: context.colors.error.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        AppIcons.error,
+                        size: AppIconSize.sm,
+                        color: context.colors.error,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: context.colors.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.of(context).pop(false),
+          child: Text(l10n.commonCancel),
+        ),
+        FilledButton(
+          key: const Key('connection-save-button'),
+          onPressed: _saving ? null : _save,
+          child: Text(l10n.saveAction),
+        ),
+      ],
+    );
+  }
+
+  Widget _field({
+    required String key,
+    required TextEditingController controller,
+    required String label,
+    bool autofocus = false,
+    bool obscureText = false,
+    String? helper,
+    String? errorText,
+    TextInputType? keyboardType,
+    ValueChanged<String>? onChanged,
+  }) => TextField(
+    key: Key(key),
+    controller: controller,
+    autofocus: autofocus,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+    onChanged: onChanged,
+    decoration: InputDecoration(
+      labelText: label,
+      helperText: helper,
+      errorText: errorText,
+    ),
+  );
+}

@@ -1,0 +1,123 @@
+import '../core/database/database_key_store.dart';
+import '../core/errors/app_exception.dart';
+import '../core/security/password_hasher.dart';
+import '../core/storage/app_paths.dart';
+import '../core/storage/secret_store.dart';
+import '../core/storage/secure_storage_secret_store.dart';
+import '../core/utils/app_logger.dart';
+import '../features/authentication/data/authentication_service.dart';
+import '../features/authentication/data/security_settings_service.dart';
+import '../features/backup/data/backup_export_service.dart';
+import '../features/backup/data/backup_exporter.dart';
+import '../features/connections/data/credential_service.dart';
+import '../features/profiles/data/catalog_store.dart';
+import '../features/profiles/data/profile_service.dart';
+import '../features/ssh/data/ssh_service.dart';
+import 'profile_session.dart';
+
+/// Composition root: every long-lived service the UI is allowed to touch.
+///
+/// Widgets never build databases or secrets themselves; they receive this
+/// object (production: [AppServices.bootstrap]; tests: an instance wired to a
+/// temporary directory and an in-memory secret store).
+class AppServices {
+  AppServices({
+    required this.paths,
+    required this.secrets,
+    required this.keys,
+    required this.hasher,
+    required this.catalog,
+    required this.profiles,
+    required this.auth,
+    required this.credentials,
+    required this.securitySettings,
+    required this.backupExport,
+    AppLogger? logger,
+  }) : logger = logger ?? AppLogger();
+
+  final AppPaths paths;
+  final SecretStore secrets;
+  final DatabaseKeyStore keys;
+  final PasswordHasher hasher;
+  final CatalogStore catalog;
+  final ProfileService profiles;
+  final AuthenticationService auth;
+  final CredentialService credentials;
+  final SecuritySettingsService securitySettings;
+  final BackupExportService backupExport;
+  final AppLogger logger;
+
+  /// SSH engine for the open [session].
+  ///
+  /// One place builds it, so every caller gets the profile id, the profile's
+  /// known-host store and the redacting logger without repeating the wiring.
+  SshService sshFor(ProfileSession session) => SshService(
+    profileId: session.profile.id,
+    credentials: credentials,
+    knownHosts: session.knownHosts,
+    logger: logger,
+  );
+
+  /// Wires the real platform storage. Throws [AppErrorCode.secureStorageUnavailable]
+  /// when the OS keystore cannot be used: there is no plaintext fallback.
+  static Future<AppServices> bootstrap({AppLogger? logger}) async {
+    final secrets = SecureStorageSecretStore();
+    if (!await secrets.isAvailable()) {
+      failWith(AppErrorCode.secureStorageUnavailable);
+    }
+    final paths = await AppPaths.resolve();
+    return fromStorage(secrets: secrets, paths: paths, logger: logger);
+  }
+
+  /// Same wiring as [bootstrap] but with injected platform pieces, so tests and
+  /// bootstrap share one code path.
+  static Future<AppServices> fromStorage({
+    required SecretStore secrets,
+    required AppPaths paths,
+    AppLogger? logger,
+    PasswordHasher? hasher,
+  }) async {
+    final keys = DatabaseKeyStore(secrets: secrets);
+    final catalog = await CatalogStore.open(paths: paths, keys: keys);
+    final effectiveHasher = hasher ?? PasswordHasher();
+    final auth = AuthenticationService(
+      catalog: catalog,
+      hasher: effectiveHasher,
+    );
+    final credentials = CredentialService(secrets: secrets);
+    return AppServices(
+      paths: paths,
+      secrets: secrets,
+      keys: keys,
+      hasher: effectiveHasher,
+      catalog: catalog,
+      profiles: ProfileService(
+        catalog: catalog,
+        keys: keys,
+        hasher: effectiveHasher,
+        paths: paths,
+      ),
+      auth: auth,
+      credentials: credentials,
+      securitySettings: SecuritySettingsService(catalog: catalog, auth: auth),
+      backupExport: BackupExportService(
+        exporter: BackupExporter(
+          catalog: catalog,
+          paths: paths,
+          keys: keys,
+          credentials: credentials,
+        ),
+        auth: auth,
+      ),
+      logger: logger,
+    );
+  }
+
+  bool _disposed = false;
+
+  void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    catalog.close();
+  }
+}
