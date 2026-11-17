@@ -6,11 +6,12 @@ Estado de cada ítem:
 - `[x]` verificado (evidencia en `docs/TESTING.md`)
 - `[!]` bloqueado (causa anotada)
 
-Entorno de esta máquina (ver `docs/DECISIONS.md` D-001): Flutter 3.50.0 stable /
-Dart 3.13.7 en Windows 11. Visual Studio 2026 con C++ instalado permite
-`flutter build windows` y la integración real; **no hay Android SDK**, así que
-Android no se puede compilar. La verificación principal es `flutter analyze`,
-`flutter test` y los tests de integración contra el servidor de pruebas.
+Entorno de esta máquina (ver `docs/DECISIONS.md` D-001 y D-032): Flutter 3.50.0
+stable / Dart 3.14.0 en Windows 11 26H2. Visual Studio 2026 con C++ instalado
+permite `flutter build windows`; **hay Android SDK 36 con emulador API 37**, así
+que Windows y Android se compilan y se verifican; macOS y Linux no se pueden
+compilar aquí. La verificación principal es `flutter analyze`, `flutter test` y
+los tests de integración contra el servidor de pruebas.
 
 ---
 
@@ -265,6 +266,29 @@ Verificación: `flutter analyze` limpio, `flutter test -x integration` → +291,
 ## Fase 8 — Revisión final
 - [x] `flutter pub get`, `dart format .`, `flutter analyze`, `flutter test` limpios.
 - [x] Tests de integración SSH/SFTP contra el servidor de pruebas.
-- [!] Compilar las plataformas posibles: imposible en este entorno (sin Visual Studio C++,
-  sin Android SDK, D-001). Ver informe final.
+- [x] Compilar las plataformas posibles: Windows (exe + instalador) y Android
+  (APK universal y por ABI) compilados y ejecutados. macOS y Linux siguen sin
+  toolchain aquí (D-001, D-032). Evidencia en `docs/TESTING.md` y `docs/BUILD.md`.
 - [x] Informe final de la sección 19 del SPEC (`docs/FINAL_REPORT.md`).
+
+## Ronda de empaquetado (iconos, builds e instalador)
+
+- [x] Iconos generados desde `icons/terminal-icon.svg` con placa clara para no
+  perderse en modo oscuro (`tool/build_icons.ps1`).
+- [x] `.ico` de Windows con 9 tamaños, entradas DIB, todas legibles por el
+  cargador del sistema.
+- [x] Icono adaptativo de Android con capas `background`, `foreground` y
+  `monochrome`, más `mipmap` heredados para API 24-25.
+- [x] `FileDescription` y título de ventana a «SSH Client»; `CompanyName` y
+  `ProductName` intactos para no mover los datos del usuario (D-032).
+- [x] Etiqueta de Android «SSH Client».
+- [x] Instalador de Inno Setup por usuario, con `AppId` fijo, versión leída del
+  `VERSIONINFO` y tarea opcional «Empezar de cero».
+- [x] Instalación y desinstalación silenciosas verificadas de extremo a extremo.
+- [x] APK instalado y arrancado en emulador API 37; icono comprobado en la
+  pantalla de recientes.
+- [x] `tool/build_release.ps1` para reproducir los artefactos.
+- [x] `docs/BUILD.md` con el procedimiento y lo que se verificó.
+- [!] Firma de release de Android: pendiente de un keystore propio. Hoy se firma
+  con la clave de depuración, suficiente para probar y no para publicar.
+- [!] macOS y Linux: sin toolchain en este entorno.

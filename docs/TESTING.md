@@ -738,11 +738,85 @@ Pendiente: teclado virtual real, latches Ctrl/Alt aplicados al teclado del siste
 scroll y selección táctil, y selectores nativos. Todo eso exige dispositivo o
 emulador Android, que este entorno no tiene (D-001).
 
-## Pendiente de verificación (bloqueado por el entorno, D-001)
-- **Android, macOS y Linux**: sin toolchain aquí; no compilados ni ejecutados.
-  Windows sí: `flutter build windows --release` y el test de integración real.
+## 2026-11-17 — Ronda de empaquetado (iconos, builds e instalador)
+
+### Línea base
+```text
+dart --version                    → 3.14.0
+flutter analyze                   → No issues found! (124,2 s)
+flutter test -x integration       → +291 All tests passed!
+```
+
+### Iconos — `tool/build_icons.ps1`
+- Rasteriza `icons/terminal-icon.svg` a 1024 px con Edge headless, compone cada
+  tamaño sobre placa clara `#F6F7F9` y escribe `.ico` y `mipmap`.
+- `.ico` de Windows: 9 tamaños (16, 20, 24, 32, 40, 48, 64, 128, 256), 381038
+  bytes, entradas DIB sin comprimir. Cada entrada se cargó con
+  `System.Drawing.Icon` sin error; con entradas PNG de 256 el cargador fallaba.
+- Android: `ic_launcher.png` en 48-192 px, `ic_launcher_foreground.png` y
+  `ic_launcher_monochrome.png` en 108-432 px.
+
+### Windows
+```text
+flutter build windows --release  → ✓ ssh_client.exe (439296 bytes)
+VERSIONINFO                      → FileVersion 0.1.0+1, FileDescription "SSH Client",
+                                   ProductName ssh_client, CompanyName dev.sshclient
+icono del exe                    → ExtractAssociatedIcon devuelve 32 px
+pwsh -File tool/build_release.ps1 -Target windows -SkipIcons
+                                 → exe 0,4 MB + setup 14,3 MB
+```
+- `CompanyName` y `ProductName` se dejaron intactos a propósito: `path_provider`
+  deriva `%APPDATA%\<empresa>\<producto>` de ellos (D-032).
+
+### Instalador — `tool/installer/ssh-client.iss`
+```text
+ISCC (Inno Setup 7.1.1)          → ssh-client-0.1.0.1-windows-x64-setup.exe (14957625 bytes)
+VERSIONINFO del setup            → FileVersion 0.1.0.1, Description "SSH Client Setup"
+setup /VERYSILENT /DIR=<temp>    → exit 0, 32 archivos instalados
+exe instalado                    → arranca, título «SSH Client», asistente «Crea tu primer perfil»
+unins000.exe /VERYSILENT         → exit 0, carpeta y clave de desinstalación eliminadas
+                                   sin accesos directos ni entradas de menú restantes
+```
+- El primer arranque del exe instalado se hizo con la carpeta de datos real vacía
+  (`tool/reset_dev_data.ps1 -Force`) y creó solo `profiles/` vacío y `catalog.db`:
+  no hay perfiles ni datos sembrados.
+- Arrancar con `SSH_CLIENT_DATA_DIR` vacío pero el almacén DPAPI real presente
+  muestra «Hay una clave guardada sin base de datos asociada»; es el
+  comportamiento esperado de las dos carpetas desincronizadas.
+
+### Android
+```text
+flutter build apk --release                → app-release.apk (75,6 MB)
+flutter build apk --release --split-per-abi→ arm64 27,6 MB / armv7 24,8 MB / x86_64 29,7 MB
+aapt dump badging                          → label "SSH Client", minSdk 24, targetSdk 36,
+                                             icono adaptativo
+aapt2 dump xmltree (adaptive-icon)         → capas background, foreground y monochrome
+apksigner verify                           → CN=Android Debug (clave de depuración)
+adb install app-x86_64-release.apk         → Success (emulador Medium_Phone_API_37.0)
+am start                                   → asistente «Crea tu primer perfil», sin datos
+pantalla de recientes                      → icono adaptativo circular, marca legible
+```
+- El emulador tardó ~4 minutos en pasar de `offline` a `device`; hubo que
+  reiniciar el servidor `adb` una vez. No es un fallo de la app.
+- Después de la prueba: app desinstalada, emulador apagado y directorios
+  temporales borrados.
+
+### Android — migración automática del toolchain
+`flutter build` actualizó por su cuenta AGP 9.1.0 → 9.1.1, Gradle 9.3.1 → 9.5.0
+y fijó `ndkVersion = "30.0.16248370"` en `android/app/build.gradle.kts` (más una
+línea en blanco final). No son cambios manuales. Los avisos de AGP 9.3.1 / Kotlin
+2.4.20 recomendados y el de `desktop_drop` (KGP) son informativos: el build
+termina en verde.
+
+## Pendiente de verificación (bloqueado por el entorno)
+- **macOS y Linux**: sin toolchain aquí; no compilados ni ejecutados. Windows y
+  Android sí (ver la ronda del 2026-11-17 y `docs/BUILD.md`).
+- **Firma real de Android**: el release usa la clave de depuración. Publicar exige
+  un keystore propio y `android/key.properties`; no se ha creado (custodiar un
+  secreto es una decisión del usuario).
 - Teclado virtual, scroll/selección táctil y selectores nativos de Android: exigen
-  dispositivo o emulador.
+  dispositivo físico o emulador con interacción; solo se comprobó el arranque y el
+  icono en el emulador.
 - Arrastrar y soltar real del sistema operativo: sin gesto automatizable.
 - Drag and drop de salida: bloqueado por dependencias (D-006), no simulado.
 - Golden tests con tipografías reales: los assets existen y el tema los aplica,

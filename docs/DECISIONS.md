@@ -6,7 +6,8 @@ fecha, contexto, decisión, consecuencias y verificación.
 ---
 
 ## D-001 — Entorno de verificación: Windows compilable, Android SDK ausente
-**Fecha:** 2026-11-15 (actualizado el 2026-11-15 tras la primera prueba manual)
+**Fecha:** 2026-11-15 (actualizado el 2026-11-15 tras la primera prueba manual;
+revisado el 2026-11-17: el SDK de Android ya está instalado, ver D-032)
 **Contexto:** `flutter doctor -v` en la máquina de desarrollo (Windows 11 26H2):
 - Flutter 3.47.9 stable, Dart 3.13.7, `windows-x64`.
 - **Visual Studio Community 2026 18.12 con el workload de C++ está instalado**:
@@ -31,6 +32,10 @@ no se simulan.
 - El aviso de `flutter pub get` «Building with plugins requires symlink support»
   (Developer Mode desactivado) no bloquea `pub get`, `analyze`, `test` ni
   `build windows`.
+
+> **Actualización 2026-11-17:** el Android SDK 36 y un emulador API 37 ya están
+> instalados; Android compila y se ejecuta (D-032). macOS y Linux siguen sin
+> toolchain. La versión de Flutter vigente es 3.50.0 / Dart 3.14.0.
 
 **Verificación:** `flutter build windows --release` y `flutter test
 integration_test/app_windows_test.dart -d windows` (ver `docs/TESTING.md`).
@@ -609,3 +614,45 @@ switches no se veían en oscuro y los iconos de respaldo estaban al revés.
 de widget y dos de integración real). El script de reset se niega a ejecutarse con
 la app abierta y verifica lo borrado. La pestaña fija «SFTP» desaparece: el
 explorador se abre desde una conexión de tipo SFTP.
+
+---
+
+## D-032 - Empaquetado: iconos, instalador de Windows y APK
+**Fecha:** 2026-11-17
+**Contexto:** el usuario entregó el arte del icono (`icons/`) y pidió builds de
+Windows con instalador (Inno Setup 7.1.1) y de Android, ambos arrancando vacíos,
+sin perfiles ni datos sembrados. El arte es una marca **negra**.
+**Decisiones:**
+- Cada icono se compone sobre una **placa clara redondeada** (`#F6F7F9`). Sobre
+  transparencia la marca negra desaparece en una barra de tareas o lanzador
+  oscuro; la placa la mantiene visible en oscuro y se funde con el fondo en
+  claro, donde se ve la marca original. No se invierte el arte.
+- Los iconos se **generan**, no se editan a mano: `tool/build_icons.ps1`
+  rasteriza el SVG con Edge headless y escribe el `.ico` y los `mipmap`.
+- El `.ico` usa entradas **DIB sin comprimir en todos los tamaños** (16-256),
+  incluido 256: las entradas PNG ahorran bytes pero algunos lectores las
+  rechazan, y el compilador de Inno Setup también las necesita legibles.
+- Android usa **icono adaptativo** con `background` (color de la placa),
+  `foreground` (marca en la zona segura) y `monochrome` (iconos temáticos de
+  Android 13+), más `mipmap` heredados para API 24-25.
+- **`CompanyName` y `ProductName` del ejecutable se dejan intactos**
+  (`dev.sshclient` / `ssh_client`). `path_provider` deriva
+  `%APPDATA%\<empresa>\<producto>` de ellos: cambiarlos movería el archivo DPAPI
+  de las claves y las preferencias de toda instalación existente. Solo cambian
+  `FileDescription` («SSH Client»), el título de la ventana y la etiqueta de
+  Android.
+- El instalador es **por usuario** (`PrivilegesRequired=lowest`), con `AppId`
+  fijo `{79B09999-D946-42E3-AB86-A7DF44FD4280}` y versión leída del
+  `VERSIONINFO` que Flutter escribe desde `pubspec.yaml` (`0.1.0+1` →
+  `0.1.0.1`). Si falta el release, el script no compila.
+- La tarea **«Empezar de cero»** borra las dos carpetas de datos de este usuario
+  y está **desmarcada**; desinstalar no borra datos.
+- El APK de release se firma con la **clave de depuración** que trae el template
+  de Flutter. Sirve para instalar y probar; publicar exige un keystore propio y
+  `android/key.properties`, que es una decisión del usuario y queda pendiente.
+  No se inventó un keystore ni se desactivó ninguna comprobación.
+**Consecuencias:** `tool/build_release.ps1` reproduce los artefactos,
+`docs/BUILD.md` documenta el procedimiento y lo verificado, y
+`docs/TESTING.md` (2026-11-17) registra cada comprobación. Windows y Android
+quedan compilados y ejecutados; macOS y Linux siguen sin toolchain aquí.
+Cambiar `CompanyName` en el futuro obliga a migrar los datos del usuario.
