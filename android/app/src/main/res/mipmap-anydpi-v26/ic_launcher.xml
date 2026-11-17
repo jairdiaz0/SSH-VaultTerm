@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon (API 26+): the launcher masks the two layers, so the plate
+     lives in the background layer and the black mark in the foreground. The
+     monochrome layer lets Android 13+ theme the icon with the system colours,
+     which is what keeps it visible on dark wallpapers. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome" />
+</adaptive-icon>

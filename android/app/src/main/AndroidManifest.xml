@@ -1,8 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+        <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="ssh_client"
+        android:label="SSH Client"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"`n        android:allowBackup="false"`n        android:fullBackupContent="@xml/backup_rules"`n        android:dataExtractionRules="@xml/data_extraction_rules">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -43,3 +47,5 @@
         </intent>
     </queries>
 </manifest>
+
+

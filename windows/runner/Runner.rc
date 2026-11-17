@@ -90,7 +90,11 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "dev.sshclient" "\0"
-            VALUE "FileDescription", "ssh_client" "\0"
+            // What Task Manager and "Apps & features" show. CompanyName and
+            // ProductName stay untouched: path_provider derives the Roaming
+            // app folder from them, and changing one would orphan the stored
+            // keys of every existing installation.
+            VALUE "FileDescription", "SSH Client" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "ssh_client" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 dev.sshclient. All rights reserved." "\0"
