@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:ssh_client/core/storage/windows_secret_store_path.dart';
+import 'package:ssh_vault_term/core/storage/windows_secret_store_path.dart';
 
 void main() {
   test('the Windows key store lives in the roaming app-support folder', () {

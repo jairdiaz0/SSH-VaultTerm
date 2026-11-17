@@ -5,12 +5,12 @@ import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/sftp/data/sftp_service.dart';
-import 'package:ssh_client/features/sftp/data/transfer_queue.dart';
-import 'package:ssh_client/features/sftp/domain/posix_path.dart';
-import 'package:ssh_client/features/sftp/domain/transfer.dart';
-import 'package:ssh_client/features/ssh/data/ssh_connection.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/sftp/data/sftp_service.dart';
+import 'package:ssh_vault_term/features/sftp/data/transfer_queue.dart';
+import 'package:ssh_vault_term/features/sftp/domain/posix_path.dart';
+import 'package:ssh_vault_term/features/sftp/domain/transfer.dart';
+import 'package:ssh_vault_term/features/ssh/data/ssh_connection.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../support/ssh_integration_harness.dart';
@@ -50,7 +50,7 @@ void main() {
 
     setUp(() {
       harness = SshIntegrationHarness.create(config);
-      local = Directory.systemTemp.createTempSync('ssh_client_sftp_');
+      local = Directory.systemTemp.createTempSync('ssh_vault_term_sftp_');
     });
 
     tearDown(() {

@@ -1,10 +1,10 @@
-import 'package:ssh_client/app/app_services.dart';
-import 'package:ssh_client/app/profile_session.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/ssh/data/ssh_connection.dart';
-import 'package:ssh_client/features/ssh/data/ssh_service.dart';
-import 'package:ssh_client/features/ssh/domain/host_key_verifier.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/app/app_services.dart';
+import 'package:ssh_vault_term/app/profile_session.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/ssh/data/ssh_connection.dart';
+import 'package:ssh_vault_term/features/ssh/data/ssh_service.dart';
+import 'package:ssh_vault_term/features/ssh/domain/host_key_verifier.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 
 /// Real services with a fake SSH engine: it asks for the host key exactly like
 /// the real one does, then fails, so no socket is needed.

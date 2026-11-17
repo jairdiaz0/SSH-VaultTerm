@@ -98,7 +98,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In es, this message translates to:
-  /// **'SSH Client'**
+  /// **'SSH-VaultTerm'**
   String get appTitle;
 
   /// No description provided for @commonCancel.

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/session_controller.dart';
-import 'package:ssh_client/features/shell/presentation/home_shell.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/app/session_controller.dart';
+import 'package:ssh_vault_term/features/shell/presentation/home_shell.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 
 import '../../support/app_harness.dart';
 import '../../support/fake_ssh_services.dart';

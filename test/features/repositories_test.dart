@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:ssh_client/core/database/encrypted_database.dart';
-import 'package:ssh_client/core/database/schemas.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/collections/data/collection_repository.dart';
-import 'package:ssh_client/features/connections/data/connection_repository.dart';
-import 'package:ssh_client/features/ssh/data/known_host_repository.dart';
-import 'package:ssh_client/shared/models/connection.dart';
-import 'package:ssh_client/shared/models/known_host.dart';
-import 'package:ssh_client/shared/models/server_collection.dart';
+import 'package:ssh_vault_term/core/database/encrypted_database.dart';
+import 'package:ssh_vault_term/core/database/schemas.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/collections/data/collection_repository.dart';
+import 'package:ssh_vault_term/features/connections/data/connection_repository.dart';
+import 'package:ssh_vault_term/features/ssh/data/known_host_repository.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
+import 'package:ssh_vault_term/shared/models/known_host.dart';
+import 'package:ssh_vault_term/shared/models/server_collection.dart';
 
 void main() {
   late Database db;

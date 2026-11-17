@@ -3,13 +3,13 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:ssh_client/core/database/encrypted_database.dart';
-import 'package:ssh_client/core/database/schemas.dart';
-import 'package:ssh_client/features/connections/data/connection_repository.dart';
-import 'package:ssh_client/features/ssh/data/known_host_repository.dart';
-import 'package:ssh_client/features/ssh/domain/host_key_verifier.dart';
-import 'package:ssh_client/shared/models/connection.dart';
-import 'package:ssh_client/shared/models/known_host.dart';
+import 'package:ssh_vault_term/core/database/encrypted_database.dart';
+import 'package:ssh_vault_term/core/database/schemas.dart';
+import 'package:ssh_vault_term/features/connections/data/connection_repository.dart';
+import 'package:ssh_vault_term/features/ssh/data/known_host_repository.dart';
+import 'package:ssh_vault_term/features/ssh/domain/host_key_verifier.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
+import 'package:ssh_vault_term/shared/models/known_host.dart';
 
 Uint8List fingerprintOf(String value) => Uint8List.fromList(utf8.encode(value));
 

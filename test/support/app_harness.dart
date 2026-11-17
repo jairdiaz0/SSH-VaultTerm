@@ -4,14 +4,14 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/app_services.dart';
-import 'package:ssh_client/app/localizations.dart';
-import 'package:ssh_client/app/session_controller.dart';
-import 'package:ssh_client/app/theme/app_theme.dart';
-import 'package:ssh_client/app/theme/theme_controller.dart';
-import 'package:ssh_client/core/security/password_hasher.dart';
-import 'package:ssh_client/core/storage/app_paths.dart';
-import 'package:ssh_client/l10n/generated/app_localizations.dart';
+import 'package:ssh_vault_term/app/app_services.dart';
+import 'package:ssh_vault_term/app/localizations.dart';
+import 'package:ssh_vault_term/app/session_controller.dart';
+import 'package:ssh_vault_term/app/theme/app_theme.dart';
+import 'package:ssh_vault_term/app/theme/theme_controller.dart';
+import 'package:ssh_vault_term/core/security/password_hasher.dart';
+import 'package:ssh_vault_term/core/storage/app_paths.dart';
+import 'package:ssh_vault_term/l10n/generated/app_localizations.dart';
 
 import 'in_memory_secret_store.dart';
 import 'test_context.dart';
@@ -57,7 +57,9 @@ class AppHarness {
     ThemeMode mode = ThemeMode.dark,
     bool alwaysDarkTerminal = false,
   }) async {
-    final root = Directory.systemTemp.createTempSync('ssh_client_app_test_');
+    final root = Directory.systemTemp.createTempSync(
+      'ssh_vault_term_app_test_',
+    );
     final services = await AppServices.fromStorage(
       secrets: InMemorySecretStore(),
       paths: AppPaths(root.path),

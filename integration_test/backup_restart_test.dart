@@ -2,18 +2,18 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:ssh_client/app/app_services.dart';
-import 'package:ssh_client/app/profile_session.dart';
-import 'package:ssh_client/core/security/password_hasher.dart';
-import 'package:ssh_client/core/storage/app_paths.dart';
-import 'package:ssh_client/core/storage/app_reset_service.dart';
-import 'package:ssh_client/core/storage/secure_storage_secret_store.dart';
-import 'package:ssh_client/features/backup/data/backup_importer.dart';
-import 'package:ssh_client/features/backup/domain/backup_document.dart';
-import 'package:ssh_client/features/connections/data/credential_service.dart';
-import 'package:ssh_client/shared/models/connection.dart';
-import 'package:ssh_client/shared/models/known_host.dart';
-import 'package:ssh_client/shared/models/server_collection.dart';
+import 'package:ssh_vault_term/app/app_services.dart';
+import 'package:ssh_vault_term/app/profile_session.dart';
+import 'package:ssh_vault_term/core/security/password_hasher.dart';
+import 'package:ssh_vault_term/core/storage/app_paths.dart';
+import 'package:ssh_vault_term/core/storage/app_reset_service.dart';
+import 'package:ssh_vault_term/core/storage/secure_storage_secret_store.dart';
+import 'package:ssh_vault_term/features/backup/data/backup_importer.dart';
+import 'package:ssh_vault_term/features/backup/domain/backup_document.dart';
+import 'package:ssh_vault_term/features/connections/data/credential_service.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
+import 'package:ssh_vault_term/shared/models/known_host.dart';
+import 'package:ssh_vault_term/shared/models/server_collection.dart';
 
 const _password = 'round4 restart password';
 
@@ -30,7 +30,9 @@ void main() {
   testWidgets('import with real secure storage survives a cold start', (
     tester,
   ) async {
-    final root = Directory.systemTemp.createTempSync('ssh_client_backup_it_');
+    final root = Directory.systemTemp.createTempSync(
+      'ssh_vault_term_backup_it_',
+    );
     final namespace = 'backup_it_${DateTime.now().microsecondsSinceEpoch}';
 
     addTearDown(() async {

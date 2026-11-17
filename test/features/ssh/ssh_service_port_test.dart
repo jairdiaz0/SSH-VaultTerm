@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/core/utils/app_logger.dart';
-import 'package:ssh_client/features/connections/data/credential_service.dart';
-import 'package:ssh_client/features/ssh/data/ssh_service.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/core/utils/app_logger.dart';
+import 'package:ssh_vault_term/features/connections/data/credential_service.dart';
+import 'package:ssh_vault_term/features/ssh/data/ssh_service.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 
 import '../../support/app_harness.dart';
 import '../../support/test_context.dart';

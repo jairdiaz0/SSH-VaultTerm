@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/authentication/domain/lockout_policy.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/authentication/domain/lockout_policy.dart';
 
 import '../../support/test_context.dart';
 

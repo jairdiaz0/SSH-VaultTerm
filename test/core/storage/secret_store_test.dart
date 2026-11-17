@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/storage/secret_store.dart';
+import 'package:ssh_vault_term/core/storage/secret_store.dart';
 
 import '../../support/in_memory_secret_store.dart';
 

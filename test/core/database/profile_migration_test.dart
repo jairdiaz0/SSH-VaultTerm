@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
-import 'package:ssh_client/core/database/schemas.dart';
+import 'package:ssh_vault_term/core/database/schemas.dart';
 
 /// v1 had no connection_type column; migration v2 must add it with `ssh`.
 const _v1Connections = '''

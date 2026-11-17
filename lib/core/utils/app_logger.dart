@@ -65,6 +65,6 @@ class AppLogger {
   }
 
   static void _developerSink(String line) {
-    developer.log(line, name: 'ssh_client');
+    developer.log(line, name: 'ssh_vault_term');
   }
 }

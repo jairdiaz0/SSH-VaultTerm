@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/security/password_hasher.dart';
+import 'package:ssh_vault_term/core/security/password_hasher.dart';
 
 void main() {
   // Deliberately cheap parameters: these tests exercise correctness, not cost.

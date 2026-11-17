@@ -12,7 +12,7 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get appTitle => 'SSH Client';
+  String get appTitle => 'SSH-VaultTerm';
 
   @override
   String get commonCancel => 'Cancelar';

@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/sftp/data/transfer_queue.dart';
-import 'package:ssh_client/features/sftp/domain/remote_entry.dart';
-import 'package:ssh_client/features/sftp/domain/transfer.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/sftp/data/transfer_queue.dart';
+import 'package:ssh_vault_term/features/sftp/domain/remote_entry.dart';
+import 'package:ssh_vault_term/features/sftp/domain/transfer.dart';
 
 /// In-memory gateway: simulates chunks, failures and cancellation without SFTP.
 class FakeSftpGateway implements SftpGateway {

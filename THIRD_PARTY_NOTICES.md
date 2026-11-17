@@ -1,4 +1,4 @@
-# THIRD_PARTY_NOTICES — SSH Client
+# THIRD_PARTY_NOTICES — SSH-VaultTerm
 
 Registro de dependencias de terceros: versión, licencia y motivo. Se actualiza
 cuando se añade o retira una dependencia.

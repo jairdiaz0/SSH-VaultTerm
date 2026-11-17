@@ -60,7 +60,7 @@ class BackupActions {
           .replaceAll(RegExp(r'[^0-9]'), '')
           .substring(0, 14);
       final saved = await FilePicker.saveFile(
-        fileName: 'ssh-client-backup-$stamp.json',
+        fileName: 'ssh-vaultterm-backup-$stamp.json',
         bytes: utf8.encode(encoded!),
         mimeType: 'application/json',
       );

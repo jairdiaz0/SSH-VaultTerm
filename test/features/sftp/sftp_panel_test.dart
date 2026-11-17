@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/localizations.dart';
-import 'package:ssh_client/app/theme/app_theme.dart';
-import 'package:ssh_client/features/sftp/domain/transfer.dart';
-import 'package:ssh_client/features/sftp/presentation/sftp_controller.dart';
-import 'package:ssh_client/features/sftp/presentation/sftp_panel.dart';
-import 'package:ssh_client/l10n/generated/app_localizations.dart';
+import 'package:ssh_vault_term/app/localizations.dart';
+import 'package:ssh_vault_term/app/theme/app_theme.dart';
+import 'package:ssh_vault_term/features/sftp/domain/transfer.dart';
+import 'package:ssh_vault_term/features/sftp/presentation/sftp_controller.dart';
+import 'package:ssh_vault_term/features/sftp/presentation/sftp_panel.dart';
+import 'package:ssh_vault_term/l10n/generated/app_localizations.dart';
 
 import '../../support/fake_sftp_gateway.dart';
 

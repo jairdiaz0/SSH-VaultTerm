@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/core/storage/secret_store.dart';
-import 'package:ssh_client/features/backup/data/backup_export_service.dart';
-import 'package:ssh_client/features/backup/data/backup_exporter.dart';
-import 'package:ssh_client/features/backup/domain/backup_document.dart';
-import 'package:ssh_client/features/connections/data/credential_service.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/core/storage/secret_store.dart';
+import 'package:ssh_vault_term/features/backup/data/backup_export_service.dart';
+import 'package:ssh_vault_term/features/backup/data/backup_exporter.dart';
+import 'package:ssh_vault_term/features/backup/domain/backup_document.dart';
+import 'package:ssh_vault_term/features/connections/data/credential_service.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 
 import '../../support/in_memory_secret_store.dart';
 import '../../support/test_context.dart';

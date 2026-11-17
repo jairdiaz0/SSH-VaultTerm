@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/ssh/domain/ssh_error_mapper.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/ssh/domain/ssh_error_mapper.dart';
 
 void main() {
   group('mapSshError', () {

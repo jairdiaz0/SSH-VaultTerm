@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/features/sftp/domain/remote_entry.dart';
+import 'package:ssh_vault_term/features/sftp/domain/remote_entry.dart';
 
 RemoteEntry entry({
   String name = 'file.txt',

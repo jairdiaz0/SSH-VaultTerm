@@ -1,7 +1,12 @@
-# DECISIONS — SSH Client
+# DECISIONS — SSH-VaultTerm
 
 Decisiones técnicas con su justificación y evidencia. Formato: `D-XXX` con
 fecha, contexto, decisión, consecuencias y verificación.
+
+Registro histórico: se conserva en orden cronológico y sin reescribir entradas
+antiguas. Algunas referencian documentos internos de desarrollo (`SPEC`,
+`DEVELOPMENT_PLAN`, `TESTING`, `BUILD`) que no forman parte del repositorio
+público; las rutas de código y los tests citados sí existen.
 
 ---
 
@@ -639,7 +644,7 @@ sin perfiles ni datos sembrados. El arte es una marca **negra**.
   (`dev.sshclient` / `ssh_client`). `path_provider` deriva
   `%APPDATA%\<empresa>\<producto>` de ellos: cambiarlos movería el archivo DPAPI
   de las claves y las preferencias de toda instalación existente. Solo cambian
-  `FileDescription` («SSH Client»), el título de la ventana y la etiqueta de
+  `FileDescription` («SSH-VaultTerm»), el título de la ventana y la etiqueta de
   Android.
 - El instalador es **por usuario** (`PrivilegesRequired=lowest`), con `AppId`
   fijo `{79B09999-D946-42E3-AB86-A7DF44FD4280}` y versión leída del
@@ -651,8 +656,6 @@ sin perfiles ni datos sembrados. El arte es una marca **negra**.
   de Flutter. Sirve para instalar y probar; publicar exige un keystore propio y
   `android/key.properties`, que es una decisión del usuario y queda pendiente.
   No se inventó un keystore ni se desactivó ninguna comprobación.
-**Consecuencias:** `tool/build_release.ps1` reproduce los artefactos,
-`docs/BUILD.md` documenta el procedimiento y lo verificado, y
-`docs/TESTING.md` (2026-11-17) registra cada comprobación. Windows y Android
-quedan compilados y ejecutados; macOS y Linux siguen sin toolchain aquí.
+**Consecuencias:** `tool/build_release.ps1` reproduce los artefactos. Windows y
+Android quedan compilados y ejecutados; macOS y Linux siguen sin toolchain aquí.
 Cambiar `CompanyName` en el futuro obliga a migrar los datos del usuario.

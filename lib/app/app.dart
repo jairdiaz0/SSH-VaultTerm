@@ -16,8 +16,8 @@ import 'theme/theme_controller.dart';
 
 /// Root widget. Holds the session controller for the app's lifetime and can
 /// rebuild the whole service graph after a full reset.
-class SshClientApp extends StatefulWidget {
-  const SshClientApp({
+class SshVaultTermApp extends StatefulWidget {
+  const SshVaultTermApp({
     super.key,
     required this.services,
     required this.rebuildServices,
@@ -37,10 +37,10 @@ class SshClientApp extends StatefulWidget {
   final Future<AppServices> Function() rebuildServices;
 
   @override
-  State<SshClientApp> createState() => _SshClientAppState();
+  State<SshVaultTermApp> createState() => _SshVaultTermAppState();
 }
 
-class _SshClientAppState extends State<SshClientApp> {
+class _SshVaultTermAppState extends State<SshVaultTermApp> {
   late AppServices _services = widget.services;
   late SessionController _controller = SessionController(services: _services);
   bool _resetting = false;

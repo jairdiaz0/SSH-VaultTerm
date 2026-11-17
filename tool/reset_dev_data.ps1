@@ -1,4 +1,4 @@
-# Deletes the local development data of SSH Client so the app starts as a fresh
+# Deletes the local development data of SSH-VaultTerm so the app starts as a fresh
 # install: encrypted databases, the Windows secure-storage file that holds the
 # database keys, and any leftover Credential Manager entries of this app.
 #
@@ -42,7 +42,7 @@ Add-Type -TypeDefinition @'
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-public static class SshClientCreds {
+public static class SshVaultTermCreds {
     [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern bool CredEnumerate(string filter, int flags, out int count, out IntPtr credentials);
     [DllImport("advapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -65,9 +65,9 @@ public static class SshClientCreds {
 '@
 
 # Fallback for older plugin versions that used Credential Manager.
-$credentials = @([SshClientCreds]::List('ssh_client_*'))
+$credentials = @([SshVaultTermCreds]::List('ssh_client_*'))
 
-Write-Host 'Datos de desarrollo de SSH Client' -ForegroundColor Cyan
+Write-Host 'Datos de desarrollo de SSH-VaultTerm' -ForegroundColor Cyan
 Write-Host "Directorio de datos: $dataDir"
 
 Write-Host ''
@@ -108,12 +108,12 @@ if (-not $hasWork) {
 
 # A running app keeps SQLite handles open: deleting then fails halfway and the
 # next start still shows the old profiles. Refuse instead of lying.
-$running = @(Get-Process -Name 'ssh_client' -ErrorAction SilentlyContinue)
+$running = @(Get-Process -Name 'ssh_vault_term' -ErrorAction SilentlyContinue)
 if ($running.Count -gt 0) {
     Write-Host ''
-    Write-Host 'La aplicación SSH Client está en ejecución.' -ForegroundColor Red
+    Write-Host 'La aplicación SSH-VaultTerm está en ejecución.' -ForegroundColor Red
     Write-Host 'Ciérrala antes de borrar los datos de desarrollo.' -ForegroundColor Red
-    Write-Host '  Stop-Process -Name ssh_client' -ForegroundColor Yellow
+    Write-Host '  Stop-Process -Name ssh_vault_term' -ForegroundColor Yellow
     exit 1
 }
 
@@ -129,7 +129,7 @@ if (-not $Force) {
 $failures = @()
 foreach ($credential in $credentials) {
     try {
-        if (-not [SshClientCreds]::CredDelete($credential, 1, 0)) {
+        if (-not [SshVaultTermCreds]::CredDelete($credential, 1, 0)) {
             $failures += "credencial $credential"
         }
     } catch {

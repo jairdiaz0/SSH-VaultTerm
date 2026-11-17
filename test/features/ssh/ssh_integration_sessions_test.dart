@@ -4,9 +4,9 @@ library;
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/features/ssh/data/ssh_connection.dart';
-import 'package:ssh_client/features/ssh/domain/ssh_connection_state.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/features/ssh/data/ssh_connection.dart';
+import 'package:ssh_vault_term/features/ssh/domain/ssh_connection_state.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../support/ssh_integration_harness.dart';
@@ -30,7 +30,7 @@ void main() {
         password: config.password,
       );
       final comment = 'opencode-test-${const Uuid().v4()}';
-      final keys = Directory.systemTemp.createTempSync('ssh_client_key_');
+      final keys = Directory.systemTemp.createTempSync('ssh_vault_term_key_');
       final privateKeyFile = File('${keys.path}${Platform.pathSeparator}id');
       final generated = await Process.run('ssh-keygen', [
         '-q',

@@ -1,4 +1,4 @@
-# ARCHITECTURE — SSH Client
+# ARCHITECTURE — SSH-VaultTerm
 
 Estructura modular por *features*, sin sobreingeniería. La UI nunca ejecuta SQL
 ni gestiona conexiones SSH: usa servicios y repositorios.
@@ -11,37 +11,43 @@ lib/
   app/
     app.dart                # MaterialApp: tema, l10n, SessionGate
     app_services.dart       # composition root (bootstrap / fromStorage) + sshFor
+    app_runtime.dart        # runtime inyectable (reloj, ids, entorno)
     profile_session.dart    # ensambla la BD del perfil y sus repositorios
     session_controller.dart # estado bloqueado/desbloqueado + sesión de perfil
     session_gate.dart       # elige pantalla según el estado
     error_messages.dart     # AppErrorCode -> mensaje localizado
     startup_failure_app.dart
-    theme/app_theme.dart    # paleta y componentes base
+    theme/                  # paleta, tokens, iconos y controlador de tema
   core/
     database/               # EncryptedDatabase, migraciones, esquemas
     errors/                 # AppException + códigos
     security/               # Argon2id, CSPRNG, comparación en tiempo constante
-    storage/                # SecretStore, AppPaths, implementación real
+    storage/                # SecretStore, AppPaths, reset
     utils/                  # logger redactado
     widgets/                # widgets compartidos (InlineMessage)
   features/
-    authentication/         # data/ domain/ presentation/: desbloqueo y bloqueo
-    profiles/               # data/ domain/ presentation/: catálogo y reglas
-    collections/            # data/: repositorio de colecciones
-    connections/            # data/: repositorios de conexiones y credenciales
-    ssh/                    # domain/: reglas puras (TOFU, llaves, errores)
-                            # data/: SshService, SshConnection, repositorio
-    shell/                  # presentation/: home del perfil desbloqueado
+    authentication/         # desbloqueo, bloqueo progresivo, reautenticación
+    backup/                 # exportación e importación JSON transaccional
+    collections/            # colecciones de servidores
+    connections/            # conexiones y credenciales
+    profiles/               # catálogo de perfiles y sus reglas
+    settings/               # ajustes, huellas y reautenticación
+    sftp/                   # explorador, cola de transferencias y rutas POSIX
+    shell/                  # home del perfil: sidebar, pestañas y paneles
+    ssh/                    # sesión SSH, TOFU, llaves y mapeo de errores
+    terminal/               # PTY real sobre xterm
+    workspace/              # estado de una sesión abierta y diálogo de host key
   shared/
+    format/                 # formato de tamaños
     models/                 # Profile, ServerCollection, Connection, KnownHost
+    widgets/                # diálogos y widgets reutilizables
   l10n/
     app_es.arb              # cadenas en español (plantilla)
     generated/              # salida de gen-l10n (versionada)
 ```
 
-Fases 3–7 añadirán `features/terminal`, `features/sftp`, `features/backup` y
-`features/settings` con la misma forma: `data/` (servicios y repositorios),
-`domain/` (reglas puras), `presentation/` (widgets).
+Cada feature repite la misma forma: `data/` (servicios y repositorios),
+`domain/` (reglas puras) y `presentation/` (widgets).
 
 ### Dónde va un modelo
 
@@ -75,7 +81,7 @@ Nunca al revés.
   sesión abierta. `SessionGate` se suscribe y decide pantalla.
 - No hay singletons mutables globales. El estado de pantalla vive en el widget.
 
-### Shell de la ronda 6
+### Shell, pestañas y paneles
 
 ```text
 HomeShell (StatefulWidget)
@@ -105,7 +111,7 @@ bloqueo manual / cierre → ProfileSession.close() → handle cerrado → pantal
 Invariantes:
 
 - Un solo perfil abierto a la vez; abrir otro cierra el anterior.
-- Las credenciales no se cargan al desbloquear: solo al conectar (fase 2).
+- Las credenciales no se cargan al desbloquear: solo al conectar.
 - La app siempre arranca bloqueada.
 
 ## 5. Errores y textos

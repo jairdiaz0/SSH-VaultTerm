@@ -1,7 +1,7 @@
-# DATABASE — SSH Client
+# DATABASE — SSH-VaultTerm
 
 Esquema, migraciones y claves de las bases de datos cifradas. Complementa
-`docs/SPEC.md` (secciones 5 y 6) y `docs/SECURITY.md`.
+`docs/ARCHITECTURE.md` y `docs/SECURITY.md`.
 
 ## 1. Ficheros en disco
 
@@ -192,4 +192,4 @@ decir, basura inútil en lugar de datos legibles.
 y `test/poc/encrypted_sqlite_poc_test.dart` cubren: cifrado efectivo (marcadores
 sensibles ausentes del fichero), fallo con clave incorrecta, apertura correcta,
 migraciones idempotentes, `schemaTooNew`, aislamiento entre perfiles (mismo id en
-dos perfiles), cascadas y borrado. Evidencia en `docs/TESTING.md`.
+dos perfiles), cascadas y borrado. Evidencia: esa misma suite en verde.

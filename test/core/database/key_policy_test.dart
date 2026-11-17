@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/app/profile_session.dart';
-import 'package:ssh_client/core/database/database_key_store.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/core/security/secure_random.dart';
-import 'package:ssh_client/core/storage/secret_store.dart';
-import 'package:ssh_client/features/profiles/data/catalog_store.dart';
+import 'package:ssh_vault_term/app/profile_session.dart';
+import 'package:ssh_vault_term/core/database/database_key_store.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/core/security/secure_random.dart';
+import 'package:ssh_vault_term/core/storage/secret_store.dart';
+import 'package:ssh_vault_term/features/profiles/data/catalog_store.dart';
 
 import '../../support/test_context.dart';
 

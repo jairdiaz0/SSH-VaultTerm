@@ -1,5 +1,5 @@
-import 'package:ssh_client/features/connections/data/credential_service.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/features/connections/data/credential_service.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 
 import 'app_harness.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/theme/app_palette.dart';
-import 'package:ssh_client/app/theme/app_theme.dart';
-import 'package:ssh_client/app/theme/app_tokens.dart';
+import 'package:ssh_vault_term/app/theme/app_palette.dart';
+import 'package:ssh_vault_term/app/theme/app_theme.dart';
+import 'package:ssh_vault_term/app/theme/app_tokens.dart';
 
 void main() {
   test('light palette uses the agreed neutrals', () {

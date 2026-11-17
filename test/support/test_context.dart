@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/app/profile_session.dart';
+import 'package:ssh_vault_term/app/profile_session.dart';
 
-import 'package:ssh_client/core/database/database_key_store.dart';
-import 'package:ssh_client/core/security/password_hasher.dart';
-import 'package:ssh_client/core/storage/app_paths.dart';
-import 'package:ssh_client/features/authentication/data/authentication_service.dart';
-import 'package:ssh_client/features/profiles/data/catalog_store.dart';
-import 'package:ssh_client/features/profiles/data/profile_service.dart';
+import 'package:ssh_vault_term/core/database/database_key_store.dart';
+import 'package:ssh_vault_term/core/security/password_hasher.dart';
+import 'package:ssh_vault_term/core/storage/app_paths.dart';
+import 'package:ssh_vault_term/features/authentication/data/authentication_service.dart';
+import 'package:ssh_vault_term/features/profiles/data/catalog_store.dart';
+import 'package:ssh_vault_term/features/profiles/data/profile_service.dart';
 
 import 'in_memory_secret_store.dart';
 
@@ -57,7 +57,7 @@ class TestContext {
   final MutableClock clock;
 
   static Future<TestContext> create() async {
-    final root = Directory.systemTemp.createTempSync('ssh_client_test_');
+    final root = Directory.systemTemp.createTempSync('ssh_vault_term_test_');
     final paths = AppPaths(root.path);
     final secrets = InMemorySecretStore();
     final keys = DatabaseKeyStore(secrets: secrets);

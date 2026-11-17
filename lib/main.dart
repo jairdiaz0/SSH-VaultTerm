@@ -34,7 +34,7 @@ Future<void> main() async {
     }
     final services = await AppServices.bootstrap(logger: logger);
     runApp(
-      SshClientApp(
+      SshVaultTermApp(
         services: services,
         themeController: themeController,
         // Rebuilds the whole service graph after "Restablecer la aplicación".

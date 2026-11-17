@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/settings/presentation/settings_dialog.dart';
-import 'package:ssh_client/features/shell/presentation/shell_controller.dart';
-import 'package:ssh_client/features/ssh/domain/ssh_connection_state.dart';
-import 'package:ssh_client/features/workspace/presentation/workspace_panel.dart';
-import 'package:ssh_client/shared/models/known_host.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/settings/presentation/settings_dialog.dart';
+import 'package:ssh_vault_term/features/shell/presentation/shell_controller.dart';
+import 'package:ssh_vault_term/features/ssh/domain/ssh_connection_state.dart';
+import 'package:ssh_vault_term/features/workspace/presentation/workspace_panel.dart';
+import 'package:ssh_vault_term/shared/models/known_host.dart';
 
 import '../../support/app_harness.dart';
 import '../../support/shell_harness.dart';

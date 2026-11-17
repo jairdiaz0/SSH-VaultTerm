@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:ssh_client/core/storage/secret_store.dart';
+import 'package:ssh_vault_term/core/storage/secret_store.dart';
 
 /// Test double for [SecretStore]. Never used by the app.
 class InMemorySecretStore implements SecretStore {

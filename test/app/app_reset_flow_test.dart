@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/app.dart';
-import 'package:ssh_client/app/app_services.dart';
-import 'package:ssh_client/app/theme/theme_controller.dart';
-import 'package:ssh_client/core/database/database_key_store.dart';
-import 'package:ssh_client/core/security/password_hasher.dart';
-import 'package:ssh_client/core/storage/app_paths.dart';
-import 'package:ssh_client/core/storage/app_reset_service.dart';
-import 'package:ssh_client/core/storage/secret_store.dart';
-import 'package:ssh_client/features/profiles/presentation/first_run_screen.dart';
+import 'package:ssh_vault_term/app/app.dart';
+import 'package:ssh_vault_term/app/app_services.dart';
+import 'package:ssh_vault_term/app/theme/theme_controller.dart';
+import 'package:ssh_vault_term/core/database/database_key_store.dart';
+import 'package:ssh_vault_term/core/security/password_hasher.dart';
+import 'package:ssh_vault_term/core/storage/app_paths.dart';
+import 'package:ssh_vault_term/core/storage/app_reset_service.dart';
+import 'package:ssh_vault_term/core/storage/secret_store.dart';
+import 'package:ssh_vault_term/features/profiles/presentation/first_run_screen.dart';
 
 import '../support/app_harness.dart';
 import '../support/in_memory_secret_store.dart';
@@ -50,7 +50,7 @@ void main() {
       final theme = ThemeController.memory(mode: ThemeMode.dark);
 
       await tester.pumpWidget(
-        SshClientApp(
+        SshVaultTermApp(
           services: services,
           themeController: theme,
           rebuildServices: build,

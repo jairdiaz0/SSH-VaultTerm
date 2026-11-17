@@ -1,4 +1,4 @@
-name: ssh_client
+name: ssh_vault_term
 description: "Minimalist, local-first SSH and SFTP client built with Flutter."
 publish_to: 'none'
 version: 0.1.0+1

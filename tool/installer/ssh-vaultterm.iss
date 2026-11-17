@@ -1,12 +1,12 @@
-; Inno Setup script for the Windows build of SSH Client.
+; Inno Setup script for the Windows build of SSH-VaultTerm.
 ;
 ; Build the release first (the script aborts if the exe is missing):
 ;   flutter build windows --release
 ; Then:
-;   "C:\Program Files\Inno Setup 7\ISCC.exe" tool\installer\ssh-client.iss
+;   "C:\Program Files\Inno Setup 7\ISCC.exe" tool\installer\ssh-vaultterm.iss
 
-#define AppName "SSH Client"
-#define AppExeName "ssh_client.exe"
+#define AppName "SSH-VaultTerm"
+#define AppExeName "ssh_vault_term.exe"
 #define AppPublisher "dev.sshclient"
 #define AppId "{{79B09999-D946-42E3-AB86-A7DF44FD4280}"
 #define ReleaseDir "..\..\build\windows\x64\runner\Release"
@@ -35,7 +35,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\..\build\installer
-OutputBaseFilename=ssh-client-{#AppVersion}-windows-x64-setup
+OutputBaseFilename=ssh-vaultterm-{#AppVersion}-windows-x64-setup
 SetupIconFile=..\..\windows\runner\resources\app_icon.ico
 UninstallDisplayIcon={app}\{#AppExeName}
 UninstallDisplayName={#AppName} {#AppVersion}

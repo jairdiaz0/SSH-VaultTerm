@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/features/sftp/domain/posix_path.dart';
+import 'package:ssh_vault_term/features/sftp/domain/posix_path.dart';
 
 void main() {
   group('PosixPath.normalize', () {

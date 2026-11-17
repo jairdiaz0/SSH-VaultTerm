@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/localizations.dart';
-import 'package:ssh_client/app/theme/app_theme.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/shared/widgets/confirm_password_dialog.dart';
+import 'package:ssh_vault_term/app/localizations.dart';
+import 'package:ssh_vault_term/app/theme/app_theme.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/shared/widgets/confirm_password_dialog.dart';
 
 Widget host(Widget child) => MaterialApp(
   theme: AppTheme.dark(),

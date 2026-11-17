@@ -2,11 +2,11 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
-import 'package:ssh_client/features/ssh/data/ssh_connection.dart';
-import 'package:ssh_client/features/ssh/domain/host_key_verifier.dart';
-import 'package:ssh_client/features/ssh/domain/ssh_connection_state.dart';
-import 'package:ssh_client/shared/models/known_host.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/features/ssh/data/ssh_connection.dart';
+import 'package:ssh_vault_term/features/ssh/domain/host_key_verifier.dart';
+import 'package:ssh_vault_term/features/ssh/domain/ssh_connection_state.dart';
+import 'package:ssh_vault_term/shared/models/known_host.dart';
 
 import '../../support/ssh_integration_harness.dart';
 import '../../support/ssh_test_server.dart';

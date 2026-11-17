@@ -94,11 +94,11 @@ BEGIN
             // ProductName stay untouched: path_provider derives the Roaming
             // app folder from them, and changing one would orphan the stored
             // keys of every existing installation.
-            VALUE "FileDescription", "SSH Client" "\0"
+            VALUE "FileDescription", "SSH-VaultTerm" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "ssh_client" "\0"
+            VALUE "InternalName", "ssh_vault_term" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 dev.sshclient. All rights reserved." "\0"
-            VALUE "OriginalFilename", "ssh_client.exe" "\0"
+            VALUE "OriginalFilename", "ssh_vault_term.exe" "\0"
             VALUE "ProductName", "ssh_client" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END

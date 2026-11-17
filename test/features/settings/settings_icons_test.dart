@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/theme/app_icons.dart';
+import 'package:ssh_vault_term/app/theme/app_icons.dart';
 
 import '../../support/shell_harness.dart';
 

@@ -1,4 +1,4 @@
-# Builds the distributable artifacts of SSH Client.
+# Builds the distributable artifacts of SSH-VaultTerm.
 #
 # Targets:
 #   windows  release exe + Inno Setup installer
@@ -92,10 +92,10 @@ try {
 
     Write-Step 'Compiling the installer'
     $iscc = Resolve-InnoSetupCompiler $InnoSetupCompiler
-    Invoke-Native $iscc @('/Q', (Join-Path $RepositoryRoot 'tool/installer/ssh-client.iss'))
+    Invoke-Native $iscc @('/Q', (Join-Path $RepositoryRoot 'tool/installer/ssh-vaultterm.iss'))
 
     $releaseDir = Join-Path $RepositoryRoot 'build/windows/x64/runner/Release'
-    Add-Result (Join-Path $releaseDir 'ssh_client.exe') 'exe'
+    Add-Result (Join-Path $releaseDir 'ssh_vault_term.exe') 'exe'
     Get-ChildItem (Join-Path $RepositoryRoot 'build/installer') -Filter '*.exe' -ErrorAction SilentlyContinue |
       Sort-Object LastWriteTime |
       Select-Object -Last 1 |

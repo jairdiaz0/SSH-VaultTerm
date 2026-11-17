@@ -2,7 +2,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/features/terminal/data/remote_terminal.dart';
+import 'package:ssh_vault_term/features/terminal/data/remote_terminal.dart';
 
 import '../../support/ssh_integration_harness.dart';
 import '../../support/ssh_test_server.dart';

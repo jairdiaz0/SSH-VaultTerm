@@ -1,15 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/app/app_services.dart';
-import 'package:ssh_client/app/profile_session.dart';
-import 'package:ssh_client/core/security/password_hasher.dart';
-import 'package:ssh_client/core/storage/app_paths.dart';
-import 'package:ssh_client/core/storage/secret_store.dart';
-import 'package:ssh_client/features/backup/data/backup_importer.dart';
-import 'package:ssh_client/features/backup/domain/backup_document.dart';
-import 'package:ssh_client/features/connections/data/credential_service.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/app/app_services.dart';
+import 'package:ssh_vault_term/app/profile_session.dart';
+import 'package:ssh_vault_term/core/security/password_hasher.dart';
+import 'package:ssh_vault_term/core/storage/app_paths.dart';
+import 'package:ssh_vault_term/core/storage/secret_store.dart';
+import 'package:ssh_vault_term/features/backup/data/backup_importer.dart';
+import 'package:ssh_vault_term/features/backup/domain/backup_document.dart';
+import 'package:ssh_vault_term/features/connections/data/credential_service.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 
 import '../../support/app_harness.dart';
 import '../../support/in_memory_secret_store.dart';

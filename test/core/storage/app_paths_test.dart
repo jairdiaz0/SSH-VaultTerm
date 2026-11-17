@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:ssh_client/core/storage/app_paths.dart';
-import 'package:ssh_client/core/storage/secret_store.dart';
+import 'package:ssh_vault_term/core/storage/app_paths.dart';
+import 'package:ssh_vault_term/core/storage/secret_store.dart';
 
 void main() {
   late Directory root;
   late AppPaths paths;
 
   setUp(() {
-    root = Directory.systemTemp.createTempSync('ssh_client_paths_test_');
+    root = Directory.systemTemp.createTempSync('ssh_vault_term_paths_test_');
     paths = AppPaths(root.path);
   });
 

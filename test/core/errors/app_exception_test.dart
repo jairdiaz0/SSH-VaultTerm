@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
 
 void main() {
   test('description exposes the code and the cause type only', () {

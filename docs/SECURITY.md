@@ -1,10 +1,10 @@
-# SECURITY — SSH Client
+# SECURITY — SSH-VaultTerm
 
 Modelo de amenazas, inventario criptográfico y reglas de implementación. Este
 documento describe lo que el producto **sí** protege y lo que **no**, sin
 prometer garantías que no existen.
 
-## 1. Modelo de amenazas (SPEC §1)
+## 1. Modelo de amenazas
 
 ### Protege contra
 
@@ -59,8 +59,8 @@ parámetros **almacenados**, no los globales. Si en el futuro se suben, un
 rehash perezoso en el siguiente desbloqueo correcto es el camino previsto; hoy no
 se rehashea automáticamente.
 
-Verificado contra un vector de referencia de `argon2-cffi` (ver
-`docs/TESTING.md`), no solo contra sí mismo.
+Verificado contra un vector de referencia publicado por `argon2-cffi` (ver
+`test/core/security/password_hasher_test.dart`), no solo contra sí mismo.
 
 ## 3. Claves y secretos
 
@@ -166,9 +166,9 @@ Implementado en `features/ssh/domain/host_key_verifier.dart` y conectado a
 - La huella guardada pertenece a `(perfil, conexión, hostname, puerto)`; el
   repositorio rechaza sobrescribir una huella distinta incluso fuera de la UI.
 
-Pendiente (fase 4): pantalla de Ajustes → Seguridad para revisar y borrar
-huellas. El repositorio y el servicio ya exponen `byConnection`, `find`,
-`delete` y `deleteForConnection`, con tests.
+Las huellas se revisan en la sección «Huellas» del shell y en Ajustes; el
+borrado se hace desde el diálogo de Ajustes. El repositorio y el servicio
+exponen `byConnection`, `find`, `delete` y `deleteForConnection`, con tests.
 
 ## 6. Logs
 

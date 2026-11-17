@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/shared/models/connection.dart';
+import 'package:ssh_vault_term/shared/models/connection.dart';
 
 import '../../support/shell_harness.dart';
 

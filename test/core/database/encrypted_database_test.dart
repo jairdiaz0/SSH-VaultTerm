@@ -4,10 +4,10 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:ssh_client/core/database/encrypted_database.dart';
-import 'package:ssh_client/core/database/migrations.dart';
-import 'package:ssh_client/core/database/schemas.dart';
-import 'package:ssh_client/core/errors/app_exception.dart';
+import 'package:ssh_vault_term/core/database/encrypted_database.dart';
+import 'package:ssh_vault_term/core/database/migrations.dart';
+import 'package:ssh_vault_term/core/database/schemas.dart';
+import 'package:ssh_vault_term/core/errors/app_exception.dart';
 
 void main() {
   late Directory dir;

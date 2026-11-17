@@ -4,12 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/app.dart';
-import 'package:ssh_client/app/app_services.dart';
-import 'package:ssh_client/core/security/password_hasher.dart';
-import 'package:ssh_client/core/storage/app_paths.dart';
-import 'package:ssh_client/core/storage/secure_storage_secret_store.dart';
-import 'package:ssh_client/features/sftp/presentation/sftp_panel.dart';
+import 'package:ssh_vault_term/app/app.dart';
+import 'package:ssh_vault_term/app/app_services.dart';
+import 'package:ssh_vault_term/core/security/password_hasher.dart';
+import 'package:ssh_vault_term/core/storage/app_paths.dart';
+import 'package:ssh_vault_term/core/storage/secure_storage_secret_store.dart';
+import 'package:ssh_vault_term/features/sftp/presentation/sftp_panel.dart';
 import 'package:xterm/xterm.dart';
 
 import 'support/server_config.dart';
@@ -98,7 +98,7 @@ void main() {
     }
 
     // Isolated data directory and secret namespace: never the real profile.
-    final temp = Directory.systemTemp.createTempSync('ssh_client_it_');
+    final temp = Directory.systemTemp.createTempSync('ssh_vault_term_it_');
     final namespace = 'it_${DateTime.now().microsecondsSinceEpoch}';
     final secrets = SecureStorageSecretStore(namespace: namespace);
     expect(await secrets.isAvailable(), isTrue);
@@ -125,7 +125,7 @@ void main() {
     });
 
     await tester.pumpWidget(
-      SshClientApp(
+      SshVaultTermApp(
         services: services,
         rebuildServices: () => AppServices.fromStorage(
           secrets: secrets,

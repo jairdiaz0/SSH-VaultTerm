@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/localizations.dart';
-import 'package:ssh_client/app/theme/app_theme.dart';
-import 'package:ssh_client/features/backup/data/backup_importer.dart';
-import 'package:ssh_client/features/backup/domain/backup_document.dart';
-import 'package:ssh_client/features/backup/presentation/backup_dialogs.dart';
-import 'package:ssh_client/l10n/generated/app_localizations.dart';
+import 'package:ssh_vault_term/app/localizations.dart';
+import 'package:ssh_vault_term/app/theme/app_theme.dart';
+import 'package:ssh_vault_term/features/backup/data/backup_importer.dart';
+import 'package:ssh_vault_term/features/backup/domain/backup_document.dart';
+import 'package:ssh_vault_term/features/backup/presentation/backup_dialogs.dart';
+import 'package:ssh_vault_term/l10n/generated/app_localizations.dart';
 
 Widget host(Widget child) => MaterialApp(
   theme: AppTheme.dark(),

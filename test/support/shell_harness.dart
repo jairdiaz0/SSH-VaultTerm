@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:ssh_client/app/profile_session.dart';
-import 'package:ssh_client/features/shell/presentation/home_shell.dart';
+import 'package:ssh_vault_term/app/profile_session.dart';
+import 'package:ssh_vault_term/features/shell/presentation/home_shell.dart';
 
 import 'app_harness.dart';
 import 'test_context.dart';
